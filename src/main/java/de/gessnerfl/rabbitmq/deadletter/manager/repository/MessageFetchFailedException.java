@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.deadletter.manager.service;
+package de.gessnerfl.rabbitmq.deadletter.manager.repository;
 
 public class MessageFetchFailedException extends RuntimeException {
 

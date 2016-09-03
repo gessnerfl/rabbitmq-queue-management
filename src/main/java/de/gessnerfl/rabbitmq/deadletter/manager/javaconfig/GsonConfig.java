@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.deadletter.manager.config;
+package de.gessnerfl.rabbitmq.deadletter.manager.javaconfig;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

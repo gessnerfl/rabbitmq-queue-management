@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.deadletter.manager.service;
+package de.gessnerfl.rabbitmq.deadletter.manager.repository;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
@@ -21,10 +21,11 @@ import com.rabbitmq.client.MessageProperties;
 import de.gessnerfl.rabbitmq.deadletter.manager.connection.CloseableChannelWrapper;
 import de.gessnerfl.rabbitmq.deadletter.manager.connection.Connector;
 import de.gessnerfl.rabbitmq.deadletter.manager.model.Message;
-import de.gessnerfl.rabbitmq.deadletter.manager.service.MessageRepository;
+import de.gessnerfl.rabbitmq.deadletter.manager.repository.MessageRepository;
 import de.gessnerfl.rabbitmq.deadletter.manager.AbstractIntegrationTest;
 
 public class MessageRepositoryIntegrationTest extends AbstractIntegrationTest {
+  private final static int MAX_NUMBER_OF_MESSAGES = MessageRepository.DEFAULT_FETCH_COUNT;
   private final static Logger LOGGER =
       LoggerFactory.getLogger(MessageRepositoryIntegrationTest.class);
 
@@ -40,7 +41,7 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTest {
 
   @Before
   public void init() throws Exception {
-    try (CloseableChannelWrapper wrapper = connector.connect()) {
+    try (CloseableChannelWrapper wrapper = connector.connectAsClosable()) {
       Channel channel = wrapper.getChannel();
       declareExchange(channel);
       declareQueue(channel);
@@ -52,7 +53,7 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTest {
 
   @After
   public void cleanup() {
-    try (CloseableChannelWrapper wrapper = connector.connect()) {
+    try (CloseableChannelWrapper wrapper = connector.connectAsClosable()) {
       Channel channel = wrapper.getChannel();
       deleteQueue(channel);
       deleteExchange(channel);
@@ -60,39 +61,39 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTest {
   }
 
   @Test
-  public void shouldReturnAllMessagesWhenNumberOfMessagesIsExactlyTheSameAsTheFetchCount() throws IOException {
-    int numberOfMessages = MessageRepository.DEFAULT_FETCH_COUNT;
-    publishMessages(numberOfMessages);
+  public void shouldReturnAllMessagesWhenNumberOfExistingMessagesIsExactlyTheSameAsTheMaxNumbertoBeRetrieved() throws IOException {
+    int expectedNumberOfMessages = MessageRepository.DEFAULT_FETCH_COUNT;
+    publishMessages(expectedNumberOfMessages);
     
-    List<Message> messages = sut.getMessagesFromQueue(QUEUE_NAME);
+    List<Message> messages = sut.getMessagesFromQueue(QUEUE_NAME, MAX_NUMBER_OF_MESSAGES);
 
-    assertThat(messages, hasSize(numberOfMessages));
-    for(int i = 0; i < numberOfMessages; i++){
+    assertThat(messages, hasSize(expectedNumberOfMessages));
+    for(int i = 0; i < expectedNumberOfMessages; i++){
       byte[] body = buildMessage(i);
       assertArrayEquals(body, messages.get(i).getBody());
     }
   }
   
   @Test
-  public void shouldReturnAllMessagesWhenNumberOfMessagesIsLessThenTheFetchCount() throws IOException {
-    int numberOfMessages = MessageRepository.DEFAULT_FETCH_COUNT - 1;
-    publishMessages(numberOfMessages);
+  public void shouldReturnAllMessagesWhenNumberOfExistingMessagesIsLessThenTheMaxNumberToBeRetrieved() throws IOException {
+    int expectedNumberOfMessages = MessageRepository.DEFAULT_FETCH_COUNT - 1;
+    publishMessages(expectedNumberOfMessages);
     
-    List<Message> messages = sut.getMessagesFromQueue(QUEUE_NAME);
+    List<Message> messages = sut.getMessagesFromQueue(QUEUE_NAME, MAX_NUMBER_OF_MESSAGES);
 
-    assertThat(messages, hasSize(numberOfMessages));
-    for(int i = 0; i < numberOfMessages; i++){
+    assertThat(messages, hasSize(expectedNumberOfMessages));
+    for(int i = 0; i < expectedNumberOfMessages; i++){
       byte[] body = buildMessage(i);
       assertArrayEquals(body, messages.get(i).getBody());
     }
   }
   
   @Test
-  public void shouldReturnSubsetOfMessagesWhenNumberOfMessagesIsAboveFetchCount() throws IOException {
-    int numberOfMessages = MessageRepository.DEFAULT_FETCH_COUNT + 1;
-    publishMessages(numberOfMessages);
+  public void shouldReturnSubsetOfMessagesWhenNumberOfExistingMessagesIsGreaterThanTheMaxNumbertoBeRetrieved() throws IOException {
+    int expectedNumberOfMessages = MessageRepository.DEFAULT_FETCH_COUNT + 1;
+    publishMessages(expectedNumberOfMessages);
     
-    List<Message> messages = sut.getMessagesFromQueue(QUEUE_NAME);
+    List<Message> messages = sut.getMessagesFromQueue(QUEUE_NAME, MAX_NUMBER_OF_MESSAGES);
 
     assertThat(messages, hasSize(MessageRepository.DEFAULT_FETCH_COUNT));
     for(int i = 0; i < MessageRepository.DEFAULT_FETCH_COUNT; i++){
@@ -111,7 +112,7 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTest {
   }
 
   private void publishMessages(int numberOfMessages) throws IOException {
-    try (CloseableChannelWrapper wrapper = connector.connect()) {
+    try (CloseableChannelWrapper wrapper = connector.connectAsClosable()) {
       Channel channel = wrapper.getChannel();
       for (int i = 0; i < numberOfMessages; i++) {
         byte[] body = buildMessage(i);
@@ -138,7 +139,7 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTest {
     try {
       channel.exchangeDelete(EXCHANGE_NAME);
     } catch (IOException e) {
-      LOGGER.error("Failed to delete queue", e);
+      LOGGER.error("Failed to delete exchange", e);
     }
   }
 

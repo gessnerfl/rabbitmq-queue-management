@@ -1,9 +1,8 @@
 de:
   gessnerfl:
     rabbitmq:
-      addresses: localhost:5672
+      hostname: localhost
+      port: 5672
+      managementPort: 15672
       username: guest
       password: guest
-      queues:
-        - test.source
-        - test.targert
