@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.management.connection;
+package de.gessnerfl.rabbitmq.deadletter.manager.connection;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -15,7 +15,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
-import de.gessnerfl.rabbitmq.management.config.RabbitMqSettingsConfig;
+import de.gessnerfl.rabbitmq.deadletter.manager.config.RabbitMqSettingsConfig;
 
 @Service
 public class Connector {

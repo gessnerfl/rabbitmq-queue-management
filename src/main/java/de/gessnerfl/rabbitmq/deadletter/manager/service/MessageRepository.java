@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.management.service;
+package de.gessnerfl.rabbitmq.deadletter.manager.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;
 
-import de.gessnerfl.rabbitmq.management.connection.CloseableChannelWrapper;
-import de.gessnerfl.rabbitmq.management.connection.Connector;
-import de.gessnerfl.rabbitmq.management.model.Message;
+import de.gessnerfl.rabbitmq.deadletter.manager.connection.CloseableChannelWrapper;
+import de.gessnerfl.rabbitmq.deadletter.manager.connection.Connector;
+import de.gessnerfl.rabbitmq.deadletter.manager.model.Message;
 
 @Service
 public class MessageRepository {

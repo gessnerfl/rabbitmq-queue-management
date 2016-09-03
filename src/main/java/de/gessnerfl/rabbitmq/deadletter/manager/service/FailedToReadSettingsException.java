@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.management.service;
+package de.gessnerfl.rabbitmq.deadletter.manager.service;
 
 public class FailedToReadSettingsException extends RuntimeException {
 

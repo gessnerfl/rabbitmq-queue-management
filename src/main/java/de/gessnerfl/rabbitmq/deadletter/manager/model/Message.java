@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.management.model;
+package de.gessnerfl.rabbitmq.deadletter.manager.model;
 
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.AMQP.BasicProperties;

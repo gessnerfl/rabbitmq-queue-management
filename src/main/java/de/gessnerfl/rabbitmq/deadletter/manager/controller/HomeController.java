@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.management.controller;
+package de.gessnerfl.rabbitmq.deadletter.manager.controller;
 
 import org.springframework.stereotype.Controller;
 

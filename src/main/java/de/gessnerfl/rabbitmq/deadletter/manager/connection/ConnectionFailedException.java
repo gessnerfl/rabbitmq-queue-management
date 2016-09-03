@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.management.connection;
+package de.gessnerfl.rabbitmq.deadletter.manager.connection;
 
 public class ConnectionFailedException extends RuntimeException {
 

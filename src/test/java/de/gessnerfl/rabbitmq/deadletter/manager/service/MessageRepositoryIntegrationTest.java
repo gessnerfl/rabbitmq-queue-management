@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.management.service;
+package de.gessnerfl.rabbitmq.deadletter.manager.service;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
@@ -18,11 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
 
-import de.gessnerfl.rabbitmq.management.AbstractIntegrationTest;
-import de.gessnerfl.rabbitmq.management.connection.CloseableChannelWrapper;
-import de.gessnerfl.rabbitmq.management.connection.Connector;
-import de.gessnerfl.rabbitmq.management.model.Message;
-import de.gessnerfl.rabbitmq.management.service.MessageRepository;
+import de.gessnerfl.rabbitmq.deadletter.manager.connection.CloseableChannelWrapper;
+import de.gessnerfl.rabbitmq.deadletter.manager.connection.Connector;
+import de.gessnerfl.rabbitmq.deadletter.manager.model.Message;
+import de.gessnerfl.rabbitmq.deadletter.manager.service.MessageRepository;
+import de.gessnerfl.rabbitmq.deadletter.manager.AbstractIntegrationTest;
 
 public class MessageRepositoryIntegrationTest extends AbstractIntegrationTest {
   private final static Logger LOGGER =

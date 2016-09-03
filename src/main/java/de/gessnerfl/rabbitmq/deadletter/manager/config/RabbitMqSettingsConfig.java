@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.management.config;
+package de.gessnerfl.rabbitmq.deadletter.manager.config;
 
 import java.util.List;
 

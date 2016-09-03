@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.management;
+package de.gessnerfl.rabbitmq.deadletter.manager;
 
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
