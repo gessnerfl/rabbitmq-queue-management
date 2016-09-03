@@ -1,42 +1,58 @@
 buildscript {
-	ext {
-		springBootVersion = '1.4.0.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-	}
+	ext { springBootVersion = '1.4.0.RELEASE' }
+	repositories { jcenter() }
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 	}
 }
 
+plugins {
+	id "com.cinnober.gradle.semver-git" version "2.2.2"
+	id "com.jfrog.bintray" version "1.7.1"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'spring-boot'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
-jar {
-	baseName = 'rabbitmq-management'
-	version = '0.0.1-SNAPSHOT'
-}
+group = 'de.gessnerfl.rabbitmq'
+description = """RabbitMQ :: Dead Letter Manager :: List/Move/Delete dead lettered messages"""
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-	mavenCentral()
+	jcenter()
 }
-
 
 dependencies {
 	compile 'org.springframework.boot:spring-boot-starter-actuator'
 	compile 'org.springframework.boot:spring-boot-starter-remote-shell'
 	compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	compile 'com.google.code.gson:gson:2.7'
-	
+
 	compile 'org.webjars:jquery:2.2.4'
 	compile 'org.webjars:materializecss:0.97.7'
-	
+
 	compile 'com.rabbitmq:amqp-client:3.6.5'
-	
+
 	testCompile 'org.springframework.boot:spring-boot-starter-test'
 	testCompile 'org.hamcrest:hamcrest-core:1.3'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from javadoc.destinationDir
+}
+
+artifacts {
+	archives sourcesJar
+	archives javadocJar
 }
