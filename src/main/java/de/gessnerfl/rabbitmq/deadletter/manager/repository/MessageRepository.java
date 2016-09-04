@@ -22,10 +22,12 @@ public class MessageRepository {
   public static final int DEFAULT_FETCH_COUNT = 10;
 
   private final Connector connector;
+  private final MessageChecksum messageChecksum;
 
   @Autowired
-  public MessageRepository(Connector connector) {
+  public MessageRepository(Connector connector, MessageChecksum messageChecksum) {
     this.connector = connector;
+    this.messageChecksum = messageChecksum;
   }
 
   public List<Message> getMessagesFromQueue(String queue, int maxNumberOfMessages) {
@@ -38,7 +40,8 @@ public class MessageRepository {
       Long lastDeliveryTag = null;
       while (fetched < maxNumberOfMessages && messagesAvailable) {
         GetResponse response = channel.basicGet(queue, false);
-        messages.add(new Message(response.getEnvelope(), response.getProps(), response.getBody()));
+        String checksum = messageChecksum.createFor(response.getProps(), response.getBody());
+        messages.add(new Message(response.getEnvelope(), response.getProps(), response.getBody(), checksum));
         lastDeliveryTag = response.getEnvelope().getDeliveryTag();
         fetched++;
         messagesAvailable = response.getMessageCount() > 0;

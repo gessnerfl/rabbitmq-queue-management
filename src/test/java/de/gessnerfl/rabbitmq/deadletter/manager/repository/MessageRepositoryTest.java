@@ -38,9 +38,12 @@ public class MessageRepositoryTest {
   private final static AMQP.BasicProperties DEFAULT_BASIC_PROPERTIES = mock(AMQP.BasicProperties.class);
   private final static byte[] DEFAULT_PAYLOAD = "defaultPayload".getBytes(StandardCharsets.UTF_8);
   private final static Long DEFAULT_DELIVERY_TAG = 123L;
+  private final static String DEFAULT_CHECKSUM = "defaultChecksum";
   
   @Mock
   private Connector connector;
+  @Mock
+  private MessageChecksum messageChecksum;
   @Mock
   private CloseableChannelWrapper closeableChannelWrapper;
   @Mock
@@ -54,6 +57,7 @@ public class MessageRepositoryTest {
     when(closeableChannelWrapper.getChannel()).thenReturn(channel);
     when(connector.connectAsClosable()).thenReturn(closeableChannelWrapper);
     when(DEFAULT_ENVELOPE.getDeliveryTag()).thenReturn(DEFAULT_DELIVERY_TAG);
+    when(messageChecksum.createFor(DEFAULT_BASIC_PROPERTIES, DEFAULT_PAYLOAD)).thenReturn(DEFAULT_CHECKSUM);
   }
   
   @Test
