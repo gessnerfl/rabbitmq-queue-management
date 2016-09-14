@@ -38,13 +38,14 @@ public class QueueListOperation {
             Long lastDeliveryTag = null;
             while (fetched < maxNumberOfMessages && messagesAvailable) {
                 GetResponse response = channel.basicGet(queue, false);
-                String checksum =
-                        messageChecksum.createFor(response.getProps(), response.getBody());
-                messages.add(new Message(response.getEnvelope(), response.getProps(),
-                        response.getBody(), checksum));
-                lastDeliveryTag = response.getEnvelope().getDeliveryTag();
-                fetched++;
-                messagesAvailable = response.getMessageCount() > 0;
+                if(response != null){
+                    messages.add(createMessage(response));
+                    lastDeliveryTag = response.getEnvelope().getDeliveryTag();
+                    fetched++;
+                    messagesAvailable = response.getMessageCount() > 0;
+                }else{
+                    messagesAvailable = false;
+                }
             }
             if (lastDeliveryTag != null) {
                 channel.basicNack(lastDeliveryTag, true, true);
@@ -53,6 +54,11 @@ public class QueueListOperation {
         } catch (IOException e) {
             throw new MessageFetchFailedException(e);
         }
+    }
+
+    private Message createMessage(GetResponse response) {
+        String checksum =  messageChecksum.createFor(response.getProps(), response.getBody());
+        return new Message(response.getEnvelope(), response.getProps(), response.getBody(), checksum);
     }
 
 }

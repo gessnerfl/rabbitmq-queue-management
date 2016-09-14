@@ -1,5 +1,6 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -79,5 +80,10 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
         assertNotEquals(firstFetch.get(0).getChecksum(), secondFetch.get(1).getChecksum());
     }
 
-
+    @Test
+    public void shouldReturnEmptyListIfNoMessageIsAvailable(){
+        List<Message> firstFetch = sut.getMessagesFromQueue(QUEUE_NAME, 1);
+        
+        assertThat(firstFetch, empty());
+    }
 }

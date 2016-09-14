@@ -1,13 +1,9 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -78,6 +74,17 @@ public class QueueListOperationTest {
      assertDefaultMessage(messages.get(2));
     
      verify(channel, times(3)).basicGet(DEFAULT_QUEUE_NAME, false);
+  }
+  
+  @Test
+  public void shouldReturnEmptyListIfNoMessagesAreAvailable() throws Exception {
+      when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(null);
+      
+      List<Message> messages = sut.getMessagesFromQueue(DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
+      
+      assertThat(messages, empty());
+      verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
+      verify(channel, never()).basicNack(any(Long.class), anyBoolean(), anyBoolean());
   }
 
   @Test

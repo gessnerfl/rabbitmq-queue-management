@@ -26,7 +26,7 @@ public class MessageDeleteOperation {
     public void deleteFirstMessageInQueue(String queue, String messageChekcsum) {
         try (CloseableChannelWrapper wrapper = connector.connectAsClosable()) {
             Channel channel = wrapper.getChannel();
-            GetResponse response = channel.basicGet(queue, false);
+            GetResponse response = getFirstMessage(queue, channel);
             String checksum = messageChecksum.createFor(response.getProps(), response.getBody());
             if (messageChekcsum.equals(checksum)) {
                 channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
@@ -37,5 +37,13 @@ public class MessageDeleteOperation {
         } catch (IOException e) {
             throw new MessageDeletionFailedException(e);
         }
+    }
+
+    private GetResponse getFirstMessage(String queue, Channel channel) throws IOException {
+        GetResponse response = channel.basicGet(queue, false);
+        if (response != null) {
+            return response;
+        }
+        throw new MessageDeletionFailedException("No message in queue");
     }
 }

@@ -1,5 +1,6 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -59,4 +60,11 @@ public class MessageDeleteOperationIntegrationTest extends AbstractOperationInte
         assertEquals(firstFetch.get(0).getChecksum(), secondFetch.get(0).getChecksum());
     }
 
+    @Test(expected=MessageDeletionFailedException.class)
+    public void shouldFailToDeleteMessageIfMessageWasAlreadyDeletedOrNoMessageExists(){
+        List<Message> firstFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 2);
+        assertThat(firstFetch, empty());
+        
+        sut.deleteFirstMessageInQueue(QUEUE_NAME, "anyChecksum");
+    }
 }
