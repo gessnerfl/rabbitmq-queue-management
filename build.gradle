@@ -16,7 +16,7 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 group = 'de.gessnerfl.rabbitmq'
-description = """RabbitMQ :: Dead Letter Manager :: List/Move/Delete dead lettered messages"""
+description = """RabbitMQ :: Queue Management :: List/Move/Delete dead messages from queues"""
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
