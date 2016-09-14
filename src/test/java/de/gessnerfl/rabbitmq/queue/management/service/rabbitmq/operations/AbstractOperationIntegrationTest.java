@@ -16,7 +16,7 @@ import de.gessnerfl.rabbitmq.queue.management.AbstractIntegrationTest;
 import de.gessnerfl.rabbitmq.queue.management.connection.CloseableChannelWrapper;
 import de.gessnerfl.rabbitmq.queue.management.connection.Connector;
 
-public class AbstractOperationIntegrationTest extends AbstractIntegrationTest {
+public abstract class AbstractOperationIntegrationTest extends AbstractIntegrationTest {
     protected final static String EXCHANGE_NAME = "test.direct";
     protected final static String QUEUE_NAME = "test.queue";
     protected final static String DEFAULT_BODY_STRING = "default-body-";
