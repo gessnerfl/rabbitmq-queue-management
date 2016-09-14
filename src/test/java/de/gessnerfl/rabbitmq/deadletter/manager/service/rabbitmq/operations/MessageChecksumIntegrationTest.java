@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.deadletter.manager.repository;
+package de.gessnerfl.rabbitmq.deadletter.manager.service.rabbitmq.operations;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,6 +11,7 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.MessageProperties;
 
 import de.gessnerfl.rabbitmq.deadletter.manager.AbstractIntegrationTest;
+import de.gessnerfl.rabbitmq.deadletter.manager.service.rabbitmq.utils.MessageChecksum;
 
 public class MessageChecksumIntegrationTest extends AbstractIntegrationTest {
 

@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.deadletter.manager.repository;
+package de.gessnerfl.rabbitmq.deadletter.manager.service.rabbitmq.operations;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
@@ -29,9 +29,12 @@ import de.gessnerfl.rabbitmq.deadletter.manager.connection.CloseableChannelWrapp
 import de.gessnerfl.rabbitmq.deadletter.manager.connection.ConnectionFailedException;
 import de.gessnerfl.rabbitmq.deadletter.manager.connection.Connector;
 import de.gessnerfl.rabbitmq.deadletter.manager.model.Message;
+import de.gessnerfl.rabbitmq.deadletter.manager.service.rabbitmq.operations.MessageFetchFailedException;
+import de.gessnerfl.rabbitmq.deadletter.manager.service.rabbitmq.operations.QueueListOperation;
+import de.gessnerfl.rabbitmq.deadletter.manager.service.rabbitmq.utils.MessageChecksum;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MessageRepositoryTest {
+public class QueueListOperationTest {
   private final static String DEFAULT_QUEUE_NAME = "defaultQueue";
   private final static int DEFAULT_MAX_NO_OF_MESSAGES = 3;
   private final static Envelope DEFAULT_ENVELOPE = mock(Envelope.class);
@@ -50,7 +53,7 @@ public class MessageRepositoryTest {
   private Channel channel;
 
   @InjectMocks
-  private MessageRepository sut;
+  private QueueListOperation sut;
   
   @Before
   public void init(){
@@ -145,7 +148,7 @@ public class MessageRepositoryTest {
       assertSame(expectedException, e.getCause());
     }
     
-    verify(channel).basicQos(MessageRepository.DEFAULT_FETCH_COUNT);
+    verify(channel).basicQos(QueueListOperation.DEFAULT_FETCH_COUNT);
     verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
     verifyNoMoreInteractions(channel);
   }
@@ -163,7 +166,7 @@ public class MessageRepositoryTest {
       assertSame(expectedException, e.getCause());
     }
     
-    verify(channel).basicQos(MessageRepository.DEFAULT_FETCH_COUNT);
+    verify(channel).basicQos(QueueListOperation.DEFAULT_FETCH_COUNT);
     verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
     verify(channel).basicNack(DEFAULT_DELIVERY_TAG, true, true);
     verifyNoMoreInteractions(channel);
