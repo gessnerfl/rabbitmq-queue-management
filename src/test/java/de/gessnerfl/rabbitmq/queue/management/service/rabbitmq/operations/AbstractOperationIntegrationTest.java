@@ -2,6 +2,8 @@ package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +37,7 @@ public abstract class AbstractOperationIntegrationTest extends AbstractIntegrati
         try (CloseableChannelWrapper wrapper = connector.connectAsClosable()) {
             Channel channel = wrapper.getChannel();
             declareExchange(channel);
-            declareQueue(channel);
+            declareQueues(channel);
         } catch (IOException e) {
             cleanup();
             throw e;
@@ -46,7 +48,7 @@ public abstract class AbstractOperationIntegrationTest extends AbstractIntegrati
     public void cleanup() {
         try (CloseableChannelWrapper wrapper = connector.connectAsClosable()) {
             Channel channel = wrapper.getChannel();
-            deleteQueue(channel);
+            deleteQueues(channel);
             deleteExchange(channel);
         }
     }
@@ -55,17 +57,25 @@ public abstract class AbstractOperationIntegrationTest extends AbstractIntegrati
         channel.exchangeDeclare(EXCHANGE_NAME, "direct", false, true, null);
     }
 
-    protected void declareQueue(Channel channel) throws IOException {
-        channel.queueDeclare(QUEUE_NAME, false, false, true, null);
-        channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, QUEUE_NAME);
+    protected void declareQueues(Channel channel) throws IOException {
+        for(String queue : getQueueNames()){
+            channel.queueDeclare(queue, false, false, true, null);
+            channel.queueBind(queue, EXCHANGE_NAME, queue);
+        }
     }
 
-    protected void deleteQueue(Channel channel) {
-        try {
-            channel.queueDelete(QUEUE_NAME);
-        } catch (IOException e) {
-            logger.error("Failed to delete queue", e);
+    protected void deleteQueues(Channel channel) {
+        for(String queue : getQueueNames()){
+            try {
+                channel.queueDelete(queue);
+            } catch (IOException e) {
+                logger.error("Failed to delete queue "+queue, e);
+            }
         }
+    }
+    
+    protected List<String> getQueueNames(){
+        return Arrays.asList(QUEUE_NAME);
     }
 
     protected void deleteExchange(Channel channel) {
@@ -75,7 +85,7 @@ public abstract class AbstractOperationIntegrationTest extends AbstractIntegrati
             logger.error("Failed to delete exchange", e);
         }
     }
-
+    
     protected void publishMessages(int numberOfMessages) throws IOException {
         try (CloseableChannelWrapper wrapper = connector.connectAsClosable()) {
             Channel channel = wrapper.getChannel();

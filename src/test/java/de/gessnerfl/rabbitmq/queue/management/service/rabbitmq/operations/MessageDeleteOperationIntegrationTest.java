@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.MessageDeleteOperation;
-import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.MessageDeletionFailedException;
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.MessageOperationFailedException;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.QueueListOperation;
 
 public class MessageDeleteOperationIntegrationTest extends AbstractOperationIntegrationTest {
@@ -50,7 +50,7 @@ public class MessageDeleteOperationIntegrationTest extends AbstractOperationInte
         try{
             sut.deleteFirstMessageInQueue(QUEUE_NAME, "invalidChecksum");
             fail("Deletion should fail");
-        }catch(MessageDeletionFailedException e){
+        }catch(MessageOperationFailedException e){
             //expected error
         }
 
@@ -60,7 +60,7 @@ public class MessageDeleteOperationIntegrationTest extends AbstractOperationInte
         assertEquals(firstFetch.get(0).getChecksum(), secondFetch.get(0).getChecksum());
     }
 
-    @Test(expected=MessageDeletionFailedException.class)
+    @Test(expected=MessageOperationFailedException.class)
     public void shouldFailToDeleteMessageIfMessageWasAlreadyDeletedOrNoMessageExists(){
         List<Message> firstFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 2);
         assertThat(firstFetch, empty());

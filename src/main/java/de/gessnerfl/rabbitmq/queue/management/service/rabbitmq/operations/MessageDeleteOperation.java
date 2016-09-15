@@ -1,49 +1,18 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
-import java.io.IOException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.GetResponse;
-
-import de.gessnerfl.rabbitmq.queue.management.connection.CloseableChannelWrapper;
-import de.gessnerfl.rabbitmq.queue.management.connection.Connector;
-import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.utils.MessageChecksum;
-
 @Service
 public class MessageDeleteOperation {
-    private final Connector connector;
-    private final MessageChecksum messageChecksum;
+    private final MessageOperationExecutor messageOperationExecutor;
 
     @Autowired
-    public MessageDeleteOperation(Connector connector, MessageChecksum messageChecksum) {
-        this.connector = connector;
-        this.messageChecksum = messageChecksum;
+    public MessageDeleteOperation(MessageOperationExecutor messageOperationExecutor) {
+        this.messageOperationExecutor = messageOperationExecutor;
     }
 
-    public void deleteFirstMessageInQueue(String queue, String messageChekcsum) {
-        try (CloseableChannelWrapper wrapper = connector.connectAsClosable()) {
-            Channel channel = wrapper.getChannel();
-            GetResponse response = getFirstMessage(queue, channel);
-            String checksum = messageChecksum.createFor(response.getProps(), response.getBody());
-            if (messageChekcsum.equals(checksum)) {
-                channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
-            } else {
-                channel.basicNack(response.getEnvelope().getDeliveryTag(), false, true);
-                throw new MessageDeletionFailedException("Checksum does not match");
-            }
-        } catch (IOException e) {
-            throw new MessageDeletionFailedException(e);
-        }
-    }
-
-    private GetResponse getFirstMessage(String queue, Channel channel) throws IOException {
-        GetResponse response = channel.basicGet(queue, false);
-        if (response != null) {
-            return response;
-        }
-        throw new MessageDeletionFailedException("No message in queue");
+    public void deleteFirstMessageInQueue(String queue, String messageChecksum) {
+        messageOperationExecutor.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(queue, messageChecksum, (c, r) -> {});
     }
 }
