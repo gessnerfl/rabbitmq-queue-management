@@ -1,10 +1,10 @@
-package de.gessnerfl.rabbitmq.queue.management.remoteapi;
+package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi;
 
 import java.util.List;
 
-import de.gessnerfl.rabbitmq.queue.management.remoteapi.model.Binding;
-import de.gessnerfl.rabbitmq.queue.management.remoteapi.model.Exchange;
-import de.gessnerfl.rabbitmq.queue.management.remoteapi.model.Queue;
+import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Binding;
+import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
+import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
 import feign.Param;
 import feign.RequestLine;
 

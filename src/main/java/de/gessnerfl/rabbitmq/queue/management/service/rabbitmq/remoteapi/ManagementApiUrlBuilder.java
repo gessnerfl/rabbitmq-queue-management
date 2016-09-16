@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.queue.management.remoteapi;
+package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

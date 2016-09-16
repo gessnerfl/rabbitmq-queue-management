@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.queue.management.remoteapi;
+package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi;
 
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.empty;
@@ -22,10 +22,9 @@ import com.rabbitmq.client.Channel;
 import de.gessnerfl.rabbitmq.queue.management.AbstractIntegrationTest;
 import de.gessnerfl.rabbitmq.queue.management.connection.CloseableChannelWrapper;
 import de.gessnerfl.rabbitmq.queue.management.connection.Connector;
-import de.gessnerfl.rabbitmq.queue.management.remoteapi.ManagementApi;
-import de.gessnerfl.rabbitmq.queue.management.remoteapi.model.Binding;
-import de.gessnerfl.rabbitmq.queue.management.remoteapi.model.Exchange;
-import de.gessnerfl.rabbitmq.queue.management.remoteapi.model.Queue;
+import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Binding;
+import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
+import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
 
 public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
     private final static Logger LOGGER =

@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import de.gessnerfl.rabbitmq.queue.management.remoteapi.ManagementApi;
-import de.gessnerfl.rabbitmq.queue.management.remoteapi.ManagementApiUrlBuilder;
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApi;
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApiUrlBuilder;
 import feign.Feign;
 
 @Configuration

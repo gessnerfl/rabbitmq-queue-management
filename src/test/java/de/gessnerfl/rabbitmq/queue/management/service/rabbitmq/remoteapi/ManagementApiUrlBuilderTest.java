@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.queue.management.remoteapi;
+package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import de.gessnerfl.rabbitmq.queue.management.javaconfig.RabbitMqSettingsConfig;
-import de.gessnerfl.rabbitmq.queue.management.remoteapi.ManagementApiUrlBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ManagementApiUrlBuilderTest {

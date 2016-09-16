@@ -1,4 +1,4 @@
-package de.gessnerfl.rabbitmq.queue.management.remoteapi.model;
+package de.gessnerfl.rabbitmq.queue.management.model.remoteapi;
 
 import java.util.Map;
 

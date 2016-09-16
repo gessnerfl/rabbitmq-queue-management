@@ -11,8 +11,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import de.gessnerfl.rabbitmq.queue.management.javaconfig.ManagementApiConfig;
-import de.gessnerfl.rabbitmq.queue.management.remoteapi.ManagementApi;
-import de.gessnerfl.rabbitmq.queue.management.remoteapi.ManagementApiUrlBuilder;
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApi;
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApiUrlBuilder;
 import feign.Feign;
 
 @RunWith(MockitoJUnitRunner.class)
