@@ -30,6 +30,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
     private final static Logger LOGGER =
             LoggerFactory.getLogger(ManagementApiIntegrationTest.class);
 
+    private final static String VHOST = "/";
     private final static String EXCHANGE_NAME = "test.direct";
     private final static String DEAD_LETTER_EXCHANGE_NAME = "test.direct.dlx";
     private final static String QUEUE_NAME = "test.queue";
@@ -66,7 +67,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void shouldGetAllExchanges() {
-        List<Exchange> exchanges = sut.getExchanges();
+        List<Exchange> exchanges = sut.getExchanges(VHOST);
 
         assertThat(exchanges, not(empty()));
         // check defined exchanges included
@@ -80,7 +81,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
             if (e.getName().equals(exchangeName)) {
                 found = true;
                 assertEquals("direct", e.getType());
-                assertEquals("/", e.getVhost());
+                assertEquals(VHOST, e.getVhost());
                 assertFalse(e.isDurable());
                 assertTrue(e.isAutoDelete());
                 assertFalse(e.isInternal());
@@ -91,7 +92,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void shouldGetAllQueues() {
-        List<Queue> queues = sut.getQueues();
+        List<Queue> queues = sut.getQueues(VHOST);
 
         assertThat(queues, not(empty()));
         // check defined exchanges included
@@ -104,7 +105,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
         for (Queue q : queues) {
             if (q.getName().equals(queueName)) {
                 found = true;
-                assertEquals("/", q.getVhost());
+                assertEquals(VHOST, q.getVhost());
                 assertFalse(q.isDurable());
                 assertTrue(q.isAutoDelete());
                 assertFalse(q.isExclusive());
@@ -125,13 +126,24 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
         }
         assertTrue(found);
     }
+    
+    @Test
+    public void shouldGetBindingsOfExchanged(){
+        List<Binding> bindings = sut.getExchangeSourceBindings(VHOST, EXCHANGE_NAME);
+        
+        assertThat(bindings, hasSize(1));
+        
+        Binding routing = bindings.get(0);
+        assertEquals(EXCHANGE_NAME, routing.getSource());
+        assertEquals(QUEUE_NAME, routing.getDestination());
+        assertEquals("queue", routing.getDestinationType());
+        assertEquals(ROUTING_KEY, routing.getRoutingKey());
+        assertEquals(VHOST, routing.getVhost());
+    }
 
     @Test
     public void shouldGetBindingsOfQueue() throws Exception {
-        String vhost = "/";
-        String queue = QUEUE_NAME;
-        
-        List<Binding> bindings = sut.getBindings(vhost, queue);
+        List<Binding> bindings = sut.getQueueBindings(VHOST, QUEUE_NAME);
 
         assertThat(bindings, hasSize(2));
 
@@ -141,7 +153,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
         assertEquals(QUEUE_NAME, defaultBinding.getDestination());
         assertEquals("queue", defaultBinding.getDestinationType());
         assertEquals(QUEUE_NAME, defaultBinding.getRoutingKey());
-        assertEquals("/", defaultBinding.getVhost());
+        assertEquals(VHOST, defaultBinding.getVhost());
 
         // should contain routing from exchange
         Binding routing = bindings.get(1);
@@ -149,7 +161,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
         assertEquals(QUEUE_NAME, routing.getDestination());
         assertEquals("queue", routing.getDestinationType());
         assertEquals(ROUTING_KEY, routing.getRoutingKey());
-        assertEquals("/", routing.getVhost());
+        assertEquals(VHOST, routing.getVhost());
     }
 
     private void declareExchanges(Channel channel) throws IOException {

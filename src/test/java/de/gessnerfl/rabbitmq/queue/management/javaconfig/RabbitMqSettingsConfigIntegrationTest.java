@@ -18,6 +18,7 @@ public class RabbitMqSettingsConfigIntegrationTest extends AbstractIntegrationTe
   public void shouldReadDefaultSettings(){
     assertEquals("localhost", rabbitMqSettingsConfig.getHostname());
     assertEquals(5672, rabbitMqSettingsConfig.getPort());
+    assertEquals("/", rabbitMqSettingsConfig.getVhost());
     assertEquals("guest", rabbitMqSettingsConfig.getUsername());
     assertEquals("guest", rabbitMqSettingsConfig.getPassword());
     assertEquals(15672, rabbitMqSettingsConfig.getManagementPort());

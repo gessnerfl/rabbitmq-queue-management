@@ -17,6 +17,7 @@ public class RabbitMqConfig {
     ConnectionFactory connectionFactory = new ConnectionFactory();
     connectionFactory.setHost(settings.getHostname());
     connectionFactory.setPort(settings.getPort());
+    connectionFactory.setVirtualHost(settings.getVhost());
     connectionFactory.setUsername(settings.getUsername());
     connectionFactory.setPassword(settings.getPassword());
     return connectionFactory;

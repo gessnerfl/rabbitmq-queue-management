@@ -11,12 +11,16 @@ import feign.RequestLine;
 
 public interface ManagementApi {
 
-  @RequestLine("GET /exchanges")
-  List<Exchange> getExchanges();
+    @RequestLine(value = "GET /exchanges/{vhost}", decodeSlash = false)
+    List<Exchange> getExchanges(@Param("vhost") String vhost);
 
-  @RequestLine("GET /queues")
-  List<Queue> getQueues();
+    @RequestLine(value = "GET /exchanges/{vhost}/{exchange}/bindings/source", decodeSlash = false)
+    List<Binding> getExchangeSourceBindings(@Param("vhost") String vhost,
+            @Param("exchange") String exchange);
 
-  @RequestLine(value="GET /queues/{vhost}/{queue}/bindings", decodeSlash = false)
-  List<Binding> getBindings(@Param("vhost") String vhost, @Param("queue") String queue);
+    @RequestLine(value = "GET /queues/{vhost}", decodeSlash = false)
+    List<Queue> getQueues(@Param("vhost") String vhost);
+
+    @RequestLine(value = "GET /queues/{vhost}/{queue}/bindings", decodeSlash = false)
+    List<Binding> getQueueBindings(@Param("vhost") String vhost, @Param("queue") String queue);
 }

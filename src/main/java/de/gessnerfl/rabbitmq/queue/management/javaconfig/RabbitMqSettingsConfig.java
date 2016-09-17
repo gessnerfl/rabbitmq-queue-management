@@ -6,59 +6,68 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "de.gessnerfl.rabbitmq")
 public class RabbitMqSettingsConfig {
-  private String hostname;
-  private int port = 5672;
-  private int managementPort = 15672;
-  private boolean managemnetPortSecured = false;
-  private String username = "guest";
-  private String password = "guest";
+    private String hostname;
+    private String vhost = "/";
+    private int port = 5672;
+    private int managementPort = 15672;
+    private boolean managemnetPortSecured = false;
+    private String username = "guest";
+    private String password = "guest";
 
-  public String getHostname() {
-    return hostname;
-  }
+    public String getHostname() {
+        return hostname;
+    }
 
-  public void setHostname(String hostname) {
-    this.hostname = hostname;
-  }
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
 
-  public int getPort() {
-    return port;
-  }
+    public String getVhost() {
+        return vhost;
+    }
 
-  public void setPort(int port) {
-    this.port = port;
-  }
+    public void setVhost(String vhost) {
+        this.vhost = vhost;
+    }
 
-  public int getManagementPort() {
-    return managementPort;
-  }
+    public int getPort() {
+        return port;
+    }
 
-  public void setManagementPort(int managementPort) {
-    this.managementPort = managementPort;
-  }
+    public void setPort(int port) {
+        this.port = port;
+    }
 
-  public boolean isManagemnetPortSecured() {
-    return managemnetPortSecured;
-  }
+    public int getManagementPort() {
+        return managementPort;
+    }
 
-  public void setManagemnetPortSecured(boolean managemnetPortSecured) {
-    this.managemnetPortSecured = managemnetPortSecured;
-  }
+    public void setManagementPort(int managementPort) {
+        this.managementPort = managementPort;
+    }
 
-  public String getUsername() {
-    return username;
-  }
+    public boolean isManagemnetPortSecured() {
+        return managemnetPortSecured;
+    }
 
-  public void setUsername(String username) {
-    this.username = username;
-  }
+    public void setManagemnetPortSecured(boolean managemnetPortSecured) {
+        this.managemnetPortSecured = managemnetPortSecured;
+    }
 
-  public String getPassword() {
-    return password;
-  }
+    public String getUsername() {
+        return username;
+    }
 
-  public void setPassword(String password) {
-    this.password = password;
-  }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
 }
