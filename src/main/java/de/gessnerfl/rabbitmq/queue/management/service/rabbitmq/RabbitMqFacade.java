@@ -51,7 +51,7 @@ public class RabbitMqFacade {
         operations.deleteFirstMessageInQueue(queue, messageChecksum);
     }
     
-    public void requeueFirstMessageInQueue(String queue, String messageChecksum, String targetExchange, String targetRoutingKey){
-        operations.requeueFirstMessageInQueue(queue, messageChecksum, targetExchange, targetRoutingKey);
+    public void moveFirstMessageInQueue(String queue, String messageChecksum, String targetExchange, String targetRoutingKey){
+        operations.moveFirstMessageInQueue(queue, messageChecksum, targetExchange, targetRoutingKey);
     }
 }

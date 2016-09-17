@@ -27,7 +27,7 @@ public class OperationsTest {
     @Mock
     private QueueListOperation queueListOperation;
     @Mock
-    private MessageRequeueOperation messageRequeueOperation;
+    private MessageMoveOperation messageMoveOperation;
     @Mock
     private MessageDeleteOperation messageDeleteOperation;
     
@@ -55,9 +55,9 @@ public class OperationsTest {
     }
     
     @Test
-    public void shouldDelegateRequeueOperation(){
-        sut.requeueFirstMessageInQueue(QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
+    public void shouldDelegateMoveOperation(){
+        sut.moveFirstMessageInQueue(QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
         
-        verify(messageRequeueOperation).requeueFirstMessage(QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
+        verify(messageMoveOperation).moveFirstMessage(QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
     }
 }

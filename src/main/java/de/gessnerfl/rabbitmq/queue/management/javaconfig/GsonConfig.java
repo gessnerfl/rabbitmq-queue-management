@@ -8,10 +8,12 @@ import com.google.gson.GsonBuilder;
 
 @Configuration
 public class GsonConfig {
+    
+    private final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
 	@Bean
 	public Gson gson(){
-		return new GsonBuilder().create();
+		return new GsonBuilder().setDateFormat(DATE_FORMAT).create();
 	}
 	
 }

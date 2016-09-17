@@ -120,9 +120,9 @@ public class RabbitMqFacadeTest {
     }
 
     @Test
-    public void shouldDelegateCallToRequeueFirstMessageInQueue() {
-        sut.requeueFirstMessageInQueue(QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
+    public void shouldDelegateCallToMoveFirstMessageInQueue() {
+        sut.moveFirstMessageInQueue(QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
         
-        verify(operations).requeueFirstMessageInQueue(QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
+        verify(operations).moveFirstMessageInQueue(QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
     }
 }

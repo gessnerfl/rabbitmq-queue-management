@@ -12,13 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
 
-public class MessageRequeueOperationIntegrationTest extends AbstractOperationIntegrationTest {
+public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegrationTest {
     protected final static String TARGET_QUEUE_NAME = "test.requeue.target";
     @Autowired
     private QueueListOperation queueListOperation;
 
     @Autowired
-    public MessageRequeueOperation sut;
+    public MessageMoveOperation sut;
 
     @Override
     protected List<String> getQueueNames() {
@@ -26,7 +26,7 @@ public class MessageRequeueOperationIntegrationTest extends AbstractOperationInt
     }
 
     @Test
-    public void shouldRequeueMessage() throws Exception {
+    public void shouldMoveMessage() throws Exception {
         publishMessages(1);
 
         List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 5);
@@ -35,7 +35,7 @@ public class MessageRequeueOperationIntegrationTest extends AbstractOperationInt
         assertThat(sourceFirstFetch, hasSize(1));
         assertThat(targetFirstFetch, empty());
 
-        sut.requeueFirstMessage(QUEUE_NAME, sourceFirstFetch.get(0).getChecksum(), EXCHANGE_NAME, TARGET_QUEUE_NAME);
+        sut.moveFirstMessage(QUEUE_NAME, sourceFirstFetch.get(0).getChecksum(), EXCHANGE_NAME, TARGET_QUEUE_NAME);
 
         List<Message> sourceSecondFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 5);
         List<Message> targetSecondFetch = queueListOperation.getMessagesFromQueue(TARGET_QUEUE_NAME, 5);
@@ -45,7 +45,7 @@ public class MessageRequeueOperationIntegrationTest extends AbstractOperationInt
     }
 
     @Test
-    public void shouldFailToRequeueMessageWhenExchangeIsNotValid() throws Exception {
+    public void shouldFailToMoveMessageWhenExchangeIsNotValid() throws Exception {
         publishMessages(1);
 
         List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 5);
@@ -55,7 +55,7 @@ public class MessageRequeueOperationIntegrationTest extends AbstractOperationInt
         assertThat(targetFirstFetch, empty());
 
         try {
-            sut.requeueFirstMessage(QUEUE_NAME, sourceFirstFetch.get(0).getChecksum(), "invalidExchangeName", TARGET_QUEUE_NAME);
+            sut.moveFirstMessage(QUEUE_NAME, sourceFirstFetch.get(0).getChecksum(), "invalidExchangeName", TARGET_QUEUE_NAME);
             fail();
         } catch (MessageOperationFailedException e) {
         }
@@ -68,7 +68,7 @@ public class MessageRequeueOperationIntegrationTest extends AbstractOperationInt
     }
 
     @Test
-    public void shouldFailToRequeueMessageWhenNoQueueIsBoundToTheGivenRoutingKey() throws Exception {
+    public void shouldFailToMoveMessageWhenNoQueueIsBoundToTheGivenRoutingKey() throws Exception {
         publishMessages(1);
 
         List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 5);
@@ -78,7 +78,7 @@ public class MessageRequeueOperationIntegrationTest extends AbstractOperationInt
         assertThat(targetFirstFetch, empty());
 
         try {
-            sut.requeueFirstMessage(QUEUE_NAME, sourceFirstFetch.get(0).getChecksum(), EXCHANGE_NAME, "invalidRoutingKey");
+            sut.moveFirstMessage(QUEUE_NAME, sourceFirstFetch.get(0).getChecksum(), EXCHANGE_NAME, "invalidRoutingKey");
             fail();
         } catch (MessageOperationFailedException e) {
         }

@@ -27,6 +27,7 @@ dependencies {
   compile 'org.springframework.boot:spring-boot-starter-actuator'
   compile 'org.springframework.boot:spring-boot-starter-remote-shell'
   compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+  compile 'org.springframework.boot:spring-boot-devtools'
   compile 'io.github.openfeign:feign-core:9.3.1'
   compile 'io.github.openfeign:feign-gson:9.3.1'
   compile 'io.github.openfeign:feign-slf4j:9.3.1'

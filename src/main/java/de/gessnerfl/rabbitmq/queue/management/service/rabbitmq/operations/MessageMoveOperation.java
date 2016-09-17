@@ -11,17 +11,17 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.ReturnListener;
 
 @Service
-public class MessageRequeueOperation {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessageRequeueOperation.class);
+public class MessageMoveOperation {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageMoveOperation.class);
     private static final long MAX_WAIT_FOR_CONFIRM = 5000;
     private final MessageOperationExecutor messageOperationExecutor;
 
     @Autowired
-    public MessageRequeueOperation(MessageOperationExecutor messageOperationExecutor) {
+    public MessageMoveOperation(MessageOperationExecutor messageOperationExecutor) {
         this.messageOperationExecutor = messageOperationExecutor;
     }
     
-    public void requeueFirstMessage(String queue, String checksum, String targetExchange, String targetRoutingKey){
+    public void moveFirstMessage(String queue, String checksum, String targetExchange, String targetRoutingKey){
         messageOperationExecutor.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(queue, checksum, (channel,response) -> {
             StateKeepingReturnListener returnListener = new StateKeepingReturnListener();
             channel.addReturnListener(returnListener);
@@ -30,7 +30,7 @@ public class MessageRequeueOperation {
             channel.basicPublish(targetExchange, targetRoutingKey, true, response.getProps(), response.getBody());
             channel.waitForConfirmsOrDie(MAX_WAIT_FOR_CONFIRM);
             if(returnListener.isReceived()){
-                throw new MessageOperationFailedException("Requeue failed, basic.return received");
+                throw new MessageOperationFailedException("Move failed, basic.return received");
             }
             
             channel.removeReturnListener(returnListener);
