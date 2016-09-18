@@ -55,6 +55,10 @@ module.controller('main', function($scope, $http) {
 		$scope.messages = undefined;
 	};
 	
+	$scope.renderBody = function(body){
+	    return Base64.decode(body);
+	};
+	
 	$scope.openMoveModal = function(m){
 		$scope.selectedMessage = m;
 		$("#moveMessageModal > .modal").modal('show');

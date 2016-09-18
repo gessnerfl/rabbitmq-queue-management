@@ -40,6 +40,7 @@ dependencies {
   compile 'org.webjars.bower:angular-resource:1.5.8'
   compile 'org.webjars.bower:bootstrap:3.3.7'
   compile 'org.webjars.bower:json-formatter:0.6.0'
+  compile 'org.webjars.bower:js-base64:2.1.9'
 
   compile 'com.rabbitmq:amqp-client:3.6.5'
 
