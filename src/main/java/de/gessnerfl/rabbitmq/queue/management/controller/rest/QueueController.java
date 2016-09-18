@@ -17,6 +17,8 @@ import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 @RestController
 public class QueueController {
     
+    public static final int DEFAULT_LIMIT = 10;
+    
     private final RabbitMqFacade facade;
     
     @Autowired
@@ -31,7 +33,7 @@ public class QueueController {
 
     @GetMapping("/queues/{queue}/messages")
     public List<Message> getQueueMessages(@PathVariable String queue) {
-        return facade.getMessagesOfQueue(queue, 10);
+        return facade.getMessagesOfQueue(queue, DEFAULT_LIMIT);
     }
     
     @RequestMapping(value = "/queues/{queue}/messages", method = RequestMethod.DELETE)
@@ -40,7 +42,7 @@ public class QueueController {
     }
     
     @RequestMapping(value = "/queues/{queue}/messages/move", method = RequestMethod.POST)
-    public void deleteFirstMessageInQueue(@PathVariable String queue, 
+    public void moveFirstMessageInQueue(@PathVariable String queue, 
             @RequestParam(value="checksum", required=false) String checksum,
             @RequestParam(value="targetExchange", required=false) String targetExchange,
             @RequestParam(value="targetRoutingKey", required=false) String targetRoutingKey){
