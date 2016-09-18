@@ -2,11 +2,16 @@ package de.gessnerfl.rabbitmq.queue.management;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 
-@EnableWebMvc
 @SpringBootApplication
-public class RabbitmqQueueManagementApplication {
+public class RabbitmqQueueManagementApplication extends SpringBootServletInitializer {
+    
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(RabbitmqQueueManagementApplication.class);
+    }
 
 	public static void main(String[] args) {
 		SpringApplication.run(RabbitmqQueueManagementApplication.class, args);

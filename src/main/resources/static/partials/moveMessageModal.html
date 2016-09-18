@@ -1,0 +1,32 @@
+<div class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-show="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Move Message</h4>
+      </div>
+      <div class="modal-body">
+      	<div ng-if="error" class="alert alert-danger" role="alert">{{ error }}</div>
+        <p>Move the first message of queue <b>{{ getQueueName() }}</b> with the checksum</p> 
+        <pre>{{ getChecksum() }}</pre>
+        
+        <p>
+        	<b><span class="badge">1</span> Select Target Exchange:</b>
+        </p>
+        <p>
+        	<select id="sel-exchange" class="form-control" name="exchange" ng-options="e as buildExchangeName(e.name) for e in exchanges" ng-model="targetExchange" ng-change="onExchangeSelected()" ng-disabled="isExchangeSelectionDisabled()"></select>
+        </p>
+        <p>
+        	<b><span class="badge">2</span> Select Target Routing Key:</b>
+        </p>
+        <p>
+        	<select id="sel-routing-key" class="form-control" name="routingKey" ng-options="r for r in routingKeys" ng-model="targetRoutingKey" ng-disabled="isRoutingKeySelectionDisabled()"></select>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;No</button>
+        <button type="button" class="btn btn-success" ng-click="move($event)" ng-disabled="isTargetDefined()"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>&nbsp;Yes</button>
+      </div>
+    </div>
+  </div>
+</div>

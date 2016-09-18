@@ -36,6 +36,9 @@ public class MessageOperationExecutor {
                 throw new MessageOperationFailedException("Checksum does not match");
             }
         } catch (Exception e) {
+            if(e instanceof MessageOperationFailedException){
+                throw (MessageOperationFailedException)e;
+            }
             throw new MessageOperationFailedException(e);
         }
     }

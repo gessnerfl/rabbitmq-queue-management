@@ -26,6 +26,7 @@ repositories { jcenter() }
 dependencies {
   compile 'org.springframework.boot:spring-boot-starter-actuator'
   compile 'org.springframework.boot:spring-boot-starter-remote-shell'
+  compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
   compile 'org.springframework.boot:spring-boot-devtools'
   compile 'io.github.openfeign:feign-core:9.3.1'
@@ -34,8 +35,11 @@ dependencies {
   compile 'com.google.code.gson:gson:2.7'
   compile 'commons-codec:commons-codec:1.10'
 
-  compile 'org.webjars:jquery:2.2.4'
-  compile 'org.webjars:materializecss:0.97.7'
+  compile 'org.webjars.bower:jquery:3.1.0'
+  compile 'org.webjars.bower:angularjs:1.5.8'
+  compile 'org.webjars.bower:angular-resource:1.5.8'
+  compile 'org.webjars.bower:bootstrap:3.3.7'
+  compile 'org.webjars.bower:json-formatter:0.6.0'
 
   compile 'com.rabbitmq:amqp-client:3.6.5'
 

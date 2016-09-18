@@ -1,0 +1,61 @@
+body {
+	font-size: 12px;
+}
+
+.list-group > .selected {
+	background-color: #f0f0f0 !important;
+}
+
+.custom-bootstrap-menu.navbar-default .navbar-brand {
+    color: #fafafa;
+}
+.custom-bootstrap-menu.navbar-default {
+    font-size: 14px;
+    background-color: rgba(46, 134, 193, 1);
+    background: -webkit-linear-gradient(top, rgba(40, 116, 166, 1) 0%, rgba(46, 134, 193, 1) 100%);
+    background: linear-gradient(to bottom, rgba(40, 116, 166, 1) 0%, rgba(46, 134, 193, 1) 100%);
+    border-width: 1px;
+}
+.custom-bootstrap-menu.navbar-default .navbar-nav>li>a {
+    color: rgba(224, 224, 224, 1);
+    background-color: rgba(46, 134, 193, 1);
+    background: -webkit-linear-gradient(top, rgba(40, 116, 166, 1) 0%, rgba(46, 134, 193, 1) 100%);
+    background: linear-gradient(to bottom, rgba(40, 116, 166, 1) 0%, rgba(46, 134, 193, 1) 100%);
+}
+.custom-bootstrap-menu.navbar-default .navbar-nav>li>a:hover,
+.custom-bootstrap-menu.navbar-default .navbar-nav>li>a:focus {
+    color: rgba(255, 255, 255, 1);
+    background-color: rgba(33, 97, 140, 1);
+}
+.custom-bootstrap-menu.navbar-default .navbar-nav>.active>a,
+.custom-bootstrap-menu.navbar-default .navbar-nav>.active>a:hover,
+.custom-bootstrap-menu.navbar-default .navbar-nav>.active>a:focus {
+    color: rgba(255, 255, 255, 1);
+    background-color: rgba(33, 97, 140, 1);
+}
+.custom-bootstrap-menu.navbar-default .navbar-toggle {
+    border-color: #21618c;
+}
+.custom-bootstrap-menu.navbar-default .navbar-toggle:hover,
+.custom-bootstrap-menu.navbar-default .navbar-toggle:focus {
+    background-color: #21618c;
+}
+.custom-bootstrap-menu.navbar-default .navbar-toggle .icon-bar {
+    background-color: #21618c;
+}
+.custom-bootstrap-menu.navbar-default .navbar-toggle:hover .icon-bar,
+.custom-bootstrap-menu.navbar-default .navbar-toggle:focus .icon-bar {
+    background-color: #2e86c1;
+}
+
+.badge.s {
+	font-size : 10px;
+}
+
+.dl-horizontal.title-s dt {
+    width: 80px;
+}
+
+.dl-horizontal.title-s dd {
+    margin-left: 100px;
+}
