@@ -113,8 +113,8 @@ public class MessageOperationExecutorTest {
 
         try {
             sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
-        } catch (ConnectionFailedException e) {
-            assertSame(expectedException, e);
+        } catch (MessageOperationFailedException e) {
+            assertSame(expectedException, e.getCause());
         }
 
         verify(function, never()).apply(any(Channel.class), any(GetResponse.class));

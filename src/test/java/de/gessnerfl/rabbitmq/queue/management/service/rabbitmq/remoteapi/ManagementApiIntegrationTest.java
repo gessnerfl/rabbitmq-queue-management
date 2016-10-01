@@ -1,68 +1,67 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi;
 
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.rabbitmq.client.Channel;
-
 import de.gessnerfl.rabbitmq.queue.management.AbstractIntegrationTest;
-import de.gessnerfl.rabbitmq.queue.management.connection.CloseableChannelWrapper;
-import de.gessnerfl.rabbitmq.queue.management.connection.Connector;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Binding;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
 
 public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
-    private final static Logger LOGGER =
-            LoggerFactory.getLogger(ManagementApiIntegrationTest.class);
 
     private final static String VHOST = "/";
     private final static String EXCHANGE_NAME = "test.direct";
     private final static String DEAD_LETTER_EXCHANGE_NAME = "test.direct.dlx";
+    private final static String DEAD_LETTER_ROUTING_KEY = "routing.key.dlx";
     private final static String QUEUE_NAME = "test.queue";
     private final static String ROUTING_KEY = "routing.key";
     private final static String DEAD_LETTERED_QUEUE_NAME = "test.queue.dl";
 
     @Autowired
-    private Connector connector;
-
+    private RabbitMqTestEnvironmentBuilderFactory testEnvironmentBuilderFactor;
+    private RabbitMqTestEnvironment testEnvironment;
+    
     @Autowired
     private ManagementApi sut;
 
-
     @Before
     public void init() throws Exception {
-        try (CloseableChannelWrapper wrapper = connector.connectAsClosable()) {
-            Channel channel = wrapper.getChannel();
-            declareExchanges(channel);
-            declareQueues(channel);
-        } catch (IOException e) {
-            cleanup();
-            throw e;
-        }
+        RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
+        testEnvironment = builder.withExchange(EXCHANGE_NAME)
+                            .withExchange(DEAD_LETTER_EXCHANGE_NAME)
+                            .withQueue(QUEUE_NAME)
+                                .exchange(EXCHANGE_NAME)
+                                .routingKey(ROUTING_KEY)
+                                .build()
+                            .withQueue(DEAD_LETTERED_QUEUE_NAME)
+                                .exchange(DEAD_LETTER_EXCHANGE_NAME)
+                                .routingKey(ROUTING_KEY)
+                                .deadLetterExchange(DEAD_LETTER_EXCHANGE_NAME)
+                                .deadLetterRoutingKey(DEAD_LETTER_ROUTING_KEY)
+                                .build()
+                            .build();
+        testEnvironment.setup();
     }
 
     @After
     public void cleanup() {
-        try (CloseableChannelWrapper wrapper = connector.connectAsClosable()) {
-            Channel channel = wrapper.getChannel();
-            deleteQueues(channel);
-            deleteExchanges(channel);
-        }
+        testEnvironment.cleanup();
     }
 
     @Test
@@ -82,8 +81,8 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
                 found = true;
                 assertEquals("direct", e.getType());
                 assertEquals(VHOST, e.getVhost());
-                assertFalse(e.isDurable());
-                assertTrue(e.isAutoDelete());
+                assertEquals(RabbitMqTestEnvironment.EXCHANGE_DURABLE, e.isDurable());
+                assertEquals(RabbitMqTestEnvironment.EXCHANGE_AUTO_DELETE, e.isAutoDelete());
                 assertFalse(e.isInternal());
             }
         }
@@ -106,21 +105,17 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
             if (q.getName().equals(queueName)) {
                 found = true;
                 assertEquals(VHOST, q.getVhost());
-                assertFalse(q.isDurable());
-                assertTrue(q.isAutoDelete());
-                assertFalse(q.isExclusive());
+                assertEquals(RabbitMqTestEnvironment.QUEUE_DURABLE, q.isDurable());
+                assertEquals(RabbitMqTestEnvironment.QUEUE_AUTO_DELETE, q.isAutoDelete());
+                assertEquals(RabbitMqTestEnvironment.QUEUE_EXCLUSIVE, q.isExclusive());
 
                 assertEquals(isDeadLettered, q.isDeadLettered());
-                assertEquals(isDeadLettered,
-                        q.getArguments().containsKey(Queue.DEAD_LETTER_EXCHANGE_ARGUMENT));
-                assertEquals(isDeadLettered,
-                        q.getArguments().containsKey(Queue.DEAD_LETTER_ROUTINGKEY_ARGUMENT));
+                assertEquals(isDeadLettered, q.getArguments().containsKey(Queue.DEAD_LETTER_EXCHANGE_ARGUMENT));
+                assertEquals(isDeadLettered, q.getArguments().containsKey(Queue.DEAD_LETTER_ROUTINGKEY_ARGUMENT));
 
                 if (isDeadLettered) {
-                    assertEquals(DEAD_LETTER_EXCHANGE_NAME,
-                            q.getArguments().get(Queue.DEAD_LETTER_EXCHANGE_ARGUMENT));
-                    assertEquals(DEAD_LETTERED_QUEUE_NAME,
-                            q.getArguments().get(Queue.DEAD_LETTER_ROUTINGKEY_ARGUMENT));
+                    assertEquals(DEAD_LETTER_EXCHANGE_NAME, q.getArguments().get(Queue.DEAD_LETTER_EXCHANGE_ARGUMENT));
+                    assertEquals(DEAD_LETTER_ROUTING_KEY, q.getArguments().get(Queue.DEAD_LETTER_ROUTINGKEY_ARGUMENT));
                 }
             }
         }
@@ -164,50 +159,4 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
         assertEquals(VHOST, routing.getVhost());
     }
 
-    private void declareExchanges(Channel channel) throws IOException {
-        declareExchange(EXCHANGE_NAME, channel);
-        declareExchange(DEAD_LETTER_EXCHANGE_NAME, channel);
-    }
-
-    private void declareExchange(String exchangeName, Channel channel) throws IOException {
-        channel.exchangeDeclare(exchangeName, "direct", false, true, null);
-    }
-
-    private void declareQueues(Channel channel) throws IOException {
-        channel.queueDeclare(QUEUE_NAME, false, false, true, null);
-
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put(Queue.DEAD_LETTER_EXCHANGE_ARGUMENT, DEAD_LETTER_EXCHANGE_NAME);
-        arguments.put(Queue.DEAD_LETTER_ROUTINGKEY_ARGUMENT, DEAD_LETTERED_QUEUE_NAME);
-        channel.queueDeclare(DEAD_LETTERED_QUEUE_NAME, false, false, true, arguments);
-
-        channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, ROUTING_KEY);
-        channel.queueBind(DEAD_LETTERED_QUEUE_NAME, DEAD_LETTER_EXCHANGE_NAME, ROUTING_KEY);
-    }
-
-    private void deleteQueues(Channel channel) {
-        deleteQueue(QUEUE_NAME, channel);
-        deleteQueue(DEAD_LETTERED_QUEUE_NAME, channel);
-    }
-
-    private void deleteQueue(String queueName, Channel channel) {
-        try {
-            channel.queueDelete(queueName);
-        } catch (IOException e) {
-            LOGGER.error("Failed to delete queue", e);
-        }
-    }
-
-    private void deleteExchanges(Channel channel) {
-        deleteExchange(EXCHANGE_NAME, channel);
-        deleteExchange(DEAD_LETTER_EXCHANGE_NAME, channel);
-    }
-
-    private void deleteExchange(String exchangeName, Channel channel) {
-        try {
-            channel.exchangeDelete(exchangeName);
-        } catch (IOException e) {
-            LOGGER.error("Failed to delete exchange", e);
-        }
-    }
 }

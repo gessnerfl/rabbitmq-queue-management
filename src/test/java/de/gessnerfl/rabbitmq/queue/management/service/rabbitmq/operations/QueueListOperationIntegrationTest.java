@@ -32,7 +32,7 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
 
         assertThat(messages, hasSize(expectedNumberOfMessages));
         for (int i = 0; i < expectedNumberOfMessages; i++) {
-            byte[] body = buildMessage(i);
+            byte[] body = testEnvironment.buildMessage(i);
             assertArrayEquals(body, messages.get(i).getBody());
         }
     }
@@ -47,7 +47,7 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
 
         assertThat(messages, hasSize(expectedNumberOfMessages));
         for (int i = 0; i < expectedNumberOfMessages; i++) {
-            byte[] body = buildMessage(i);
+            byte[] body = testEnvironment.buildMessage(i);
             assertArrayEquals(body, messages.get(i).getBody());
         }
     }
@@ -62,7 +62,7 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
 
         assertThat(messages, hasSize(QueueListOperation.DEFAULT_FETCH_COUNT));
         for (int i = 0; i < QueueListOperation.DEFAULT_FETCH_COUNT; i++) {
-            byte[] body = buildMessage(i);
+            byte[] body = testEnvironment.buildMessage(i);
             assertArrayEquals(body, messages.get(i).getBody());
         }
     }
