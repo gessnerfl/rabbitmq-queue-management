@@ -26,7 +26,7 @@ import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilde
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
 
 public class QueueControllerIntegrationTest extends AbstractControllerIntegrationTest {
-
+    private final static String BROKER_NAME = "local";
     private final static String EXCHANGE_NAME = "test.ex";
     private final static String QUEUE_IN_NAME = "test.controller.in";
     private final static String QUEUE_OUT_NAME = "test.controller.out";
@@ -62,7 +62,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
     
     @Test
     public void shouldReturnAllQueues() throws Exception {
-        mockMvc.perform(get("/queues"))
+        mockMvc.perform(get("/api/"+BROKER_NAME+"/queues"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(contentType))
             .andExpect(jsonPath(ALL_QUEUES_JSON_PATH_FILTER, hasSize(2)))
@@ -80,7 +80,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
     
     @Test
     public void shouldReturnEmptyListWhenQueueIsEmpty() throws Exception {
-        mockMvc.perform(get("/queues/"+QUEUE_IN_NAME+"/messages"))
+        mockMvc.perform(get("/api/"+BROKER_NAME+"/queues/"+QUEUE_IN_NAME+"/messages"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(contentType))
             .andExpect(jsonPath("$", empty()));
@@ -89,7 +89,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
     @Test
     public void shouldReturnMessagesOfQueue() throws Exception {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
-        mockMvc.perform(get("/queues/"+QUEUE_IN_NAME+"/messages"))
+        mockMvc.perform(get("/api/"+BROKER_NAME+"/queues/"+QUEUE_IN_NAME+"/messages"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(contentType))
             .andExpect(jsonPath("$", hasSize(1)));
@@ -99,32 +99,32 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
     public void shouldDeleteMessageFromQueue() throws Exception {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
         
-        List<Message> messages = facade.getMessagesOfQueue(QUEUE_IN_NAME, 1);
+        List<Message> messages = facade.getMessagesOfQueue(BROKER_NAME, QUEUE_IN_NAME, 1);
         assertThat(messages, hasSize(1));
         Message message = messages.get(0);
         
-        mockMvc.perform(delete("/queues/"+QUEUE_IN_NAME+"/messages").param("checksum", message.getChecksum()))
+        mockMvc.perform(delete("/api/"+BROKER_NAME+"/queues/"+QUEUE_IN_NAME+"/messages").param("checksum", message.getChecksum()))
             .andExpect(status().isOk());
         
-        assertThat(facade.getMessagesOfQueue(QUEUE_IN_NAME, 1), empty());
+        assertThat(facade.getMessagesOfQueue(BROKER_NAME, QUEUE_IN_NAME, 1), empty());
     }
     
     @Test
     public void shouldMoveMessageFromQueueInToQueueOut() throws Exception {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
         
-        List<Message> messages = facade.getMessagesOfQueue(QUEUE_IN_NAME, 1);
+        List<Message> messages = facade.getMessagesOfQueue(BROKER_NAME, QUEUE_IN_NAME, 1);
         assertThat(messages, hasSize(1));
-        assertThat(facade.getMessagesOfQueue(QUEUE_OUT_NAME, 1), empty());
+        assertThat(facade.getMessagesOfQueue(BROKER_NAME, QUEUE_OUT_NAME, 1), empty());
         Message message = messages.get(0);
         
-        mockMvc.perform(post("/queues/"+QUEUE_IN_NAME+"/messages/move")
+        mockMvc.perform(post("/api/"+BROKER_NAME+"/queues/"+QUEUE_IN_NAME+"/messages/move")
                             .param("checksum", message.getChecksum())
                             .param("targetExchange", EXCHANGE_NAME)
                             .param("targetRoutingKey", QUEUE_OUT_NAME))
             .andExpect(status().isOk());
         
-        assertThat(facade.getMessagesOfQueue(QUEUE_IN_NAME, 1), empty());
-        assertThat(facade.getMessagesOfQueue(QUEUE_OUT_NAME, 1), hasSize(1));
+        assertThat(facade.getMessagesOfQueue(BROKER_NAME, QUEUE_IN_NAME, 1), empty());
+        assertThat(facade.getMessagesOfQueue(BROKER_NAME, QUEUE_OUT_NAME, 1), hasSize(1));
     }
 }

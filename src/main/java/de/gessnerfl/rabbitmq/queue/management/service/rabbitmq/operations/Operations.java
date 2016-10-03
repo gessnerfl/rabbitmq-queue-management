@@ -22,16 +22,16 @@ public class Operations {
         this.messageDeleteOperation = messageDeleteOperation;
     }
 
-    public List<Message> getMessagesOfQueue(String queueName, int limit){
-        return queueListOperation.getMessagesFromQueue(queueName, limit);
+    public List<Message> getMessagesOfQueue(String brokerName, String queueName, int limit){
+        return queueListOperation.getMessagesFromQueue(brokerName, queueName, limit);
     }
     
-    public void deleteFirstMessageInQueue(String queueName, String messageChecksum){
-        messageDeleteOperation.deleteFirstMessageInQueue(queueName, messageChecksum);
+    public void deleteFirstMessageInQueue(String brokerName, String queueName, String messageChecksum){
+        messageDeleteOperation.deleteFirstMessageInQueue(brokerName, queueName, messageChecksum);
     }
     
-    public void moveFirstMessageInQueue(String queueName, String messageChecksum, String targetExchange, String targetRoutingKey){
-        messageMoveOperation.moveFirstMessage(queueName, messageChecksum, targetExchange, targetRoutingKey);
+    public void moveFirstMessageInQueue(String brokerName, String queueName, String messageChecksum, String targetExchange, String targetRoutingKey){
+        messageMoveOperation.moveFirstMessage(brokerName, queueName, messageChecksum, targetExchange, targetRoutingKey);
     }
     
 }

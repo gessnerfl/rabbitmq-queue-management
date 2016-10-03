@@ -33,6 +33,7 @@ import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.utils.MessageChec
 
 @RunWith(MockitoJUnitRunner.class)
 public class MessageOperationExecutorTest {
+    private final static String DEFAULT_BROKER_NAME = "defaultBroker";
     private final static String DEFAULT_QUEUE_NAME = "defaultQueue";
     private final static Envelope DEFAULT_ENVELOPE = mock(Envelope.class);
     private final static Long DEFAULT_DELIVERY_TAG = 123L;
@@ -58,7 +59,7 @@ public class MessageOperationExecutorTest {
     @Before
     public void init() {
         when(closeableChannelWrapper.getChannel()).thenReturn(channel);
-        when(connector.connectAsClosable()).thenReturn(closeableChannelWrapper);
+        when(connector.connectAsClosable(DEFAULT_BROKER_NAME)).thenReturn(closeableChannelWrapper);
         when(DEFAULT_ENVELOPE.getDeliveryTag()).thenReturn(DEFAULT_DELIVERY_TAG);
         when(messageChecksum.createFor(DEFAULT_BASIC_PROPERTIES, DEFAULT_PAYLOAD))
                 .thenReturn(DEFAULT_CHECKSUM);
@@ -70,7 +71,7 @@ public class MessageOperationExecutorTest {
         GetResponse response = mockDefaultGetResponse();
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(response);
 
-        sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
+        sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
 
         verify(function).apply(channel, response);
         verify(channel).basicAck(DEFAULT_DELIVERY_TAG, false);
@@ -83,7 +84,7 @@ public class MessageOperationExecutorTest {
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(response);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_QUEUE_NAME, "invalidChecksum", function);
+            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, "invalidChecksum", function);
             fail();
         } catch (MessageOperationFailedException e) {
         }
@@ -97,7 +98,7 @@ public class MessageOperationExecutorTest {
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(null);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_QUEUE_NAME, "anyChecksum", function);
+            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, "anyChecksum", function);
             fail();
         } catch (MessageOperationFailedException e) {
         }
@@ -109,10 +110,10 @@ public class MessageOperationExecutorTest {
     @Test
     public void shouldThrowExcpetionWhenConnectionCannotBeEstablished() throws Exception {
         ConnectionFailedException expectedException = new ConnectionFailedException(null);
-        when(connector.connectAsClosable()).thenThrow(expectedException);
+        when(connector.connectAsClosable(DEFAULT_BROKER_NAME)).thenThrow(expectedException);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
+            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
         } catch (MessageOperationFailedException e) {
             assertSame(expectedException, e.getCause());
         }
@@ -126,7 +127,7 @@ public class MessageOperationExecutorTest {
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenThrow(expectedException);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
+            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
         } catch (MessageOperationFailedException e) {
             assertSame(expectedException, e.getCause());
         }
@@ -147,7 +148,7 @@ public class MessageOperationExecutorTest {
         doThrow(expectedException).when(function).apply(channel, getResponse);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
+            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
         } catch (MessageOperationFailedException e) {
             assertSame(expectedException, e.getCause());
         }
@@ -168,7 +169,7 @@ public class MessageOperationExecutorTest {
         doThrow(expectedException).when(channel).basicAck(DEFAULT_DELIVERY_TAG, false);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
+            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
         } catch (MessageOperationFailedException e) {
             assertSame(expectedException, e.getCause());
         }
@@ -191,7 +192,7 @@ public class MessageOperationExecutorTest {
         doThrow(expectedException).when(channel).basicNack(DEFAULT_DELIVERY_TAG, false, true);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_QUEUE_NAME, "invalidMessage", function);
+            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, "invalidMessage", function);
         } catch (MessageOperationFailedException e) {
             assertSame(expectedException, e.getCause());
         }

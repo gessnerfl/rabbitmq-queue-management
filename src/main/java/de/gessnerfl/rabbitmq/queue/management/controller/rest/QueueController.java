@@ -26,26 +26,26 @@ public class QueueController {
         this.facade = facade;
     }
 
-    @GetMapping("/queues")
-    public List<Queue> getQueues() {
-        return facade.getQueues();
+    @GetMapping("/api/{broker}/queues")
+    public List<Queue> getQueues(@PathVariable String broker) {
+        return facade.getQueues(broker);
     }
 
-    @GetMapping("/queues/{queue}/messages")
-    public List<Message> getQueueMessages(@PathVariable String queue) {
-        return facade.getMessagesOfQueue(queue, DEFAULT_LIMIT);
+    @GetMapping("/api/{broker}/queues/{queue}/messages")
+    public List<Message> getQueueMessages(@PathVariable String broker, @PathVariable String queue) {
+        return facade.getMessagesOfQueue(broker, queue, DEFAULT_LIMIT);
     }
     
-    @RequestMapping(value = "/queues/{queue}/messages", method = RequestMethod.DELETE)
-    public void deleteFirstMessageInQueue(@PathVariable String queue, @RequestParam(value="checksum", required=false) String checksum){
-        facade.deleteFirstMessageInQueue(queue, checksum);
+    @RequestMapping(value = "/api/{broker}/queues/{queue}/messages", method = RequestMethod.DELETE)
+    public void deleteFirstMessageInQueue(@PathVariable String broker, @PathVariable String queue, @RequestParam(value="checksum", required=false) String checksum){
+        facade.deleteFirstMessageInQueue(broker, queue, checksum);
     }
     
-    @RequestMapping(value = "/queues/{queue}/messages/move", method = RequestMethod.POST)
-    public void moveFirstMessageInQueue(@PathVariable String queue, 
+    @RequestMapping(value = "/api/{broker}/queues/{queue}/messages/move", method = RequestMethod.POST)
+    public void moveFirstMessageInQueue(@PathVariable String broker, @PathVariable String queue, 
             @RequestParam(value="checksum", required=false) String checksum,
             @RequestParam(value="targetExchange", required=false) String targetExchange,
             @RequestParam(value="targetRoutingKey", required=false) String targetRoutingKey){
-        facade.moveFirstMessageInQueue(queue, checksum, targetExchange, targetRoutingKey);
+        facade.moveFirstMessageInQueue(broker, queue, checksum, targetExchange, targetRoutingKey);
     }
 }

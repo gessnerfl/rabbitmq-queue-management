@@ -15,6 +15,7 @@ import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.MessageDeleteOperation;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.MessageOperationFailedException;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.QueueListOperation;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 
 public class MessageDeleteOperationIntegrationTest extends AbstractOperationIntegrationTest {
     @Autowired
@@ -27,13 +28,13 @@ public class MessageDeleteOperationIntegrationTest extends AbstractOperationInte
     public void shouldDeleteFirstMessageInQueue() throws Exception {
         publishMessages(2);
         
-        List<Message> firstFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 2);
+        List<Message> firstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 2);
         
         assertThat(firstFetch, hasSize(2));
         
-        sut.deleteFirstMessageInQueue(QUEUE_NAME, firstFetch.get(0).getChecksum());
+        sut.deleteFirstMessageInQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, firstFetch.get(0).getChecksum());
 
-        List<Message> secondFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 2);
+        List<Message> secondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 2);
         
         assertThat(secondFetch, hasSize(1));
         assertEquals(firstFetch.get(1).getChecksum(), secondFetch.get(0).getChecksum());
@@ -43,18 +44,18 @@ public class MessageDeleteOperationIntegrationTest extends AbstractOperationInte
     public void shouldFailToDeleteFirstMessageInQueueWhenChecksumDoesNotMacht() throws Exception {
         publishMessages(2);
         
-        List<Message> firstFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 2);
+        List<Message> firstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 2);
         
         assertThat(firstFetch, hasSize(2));
         
         try{
-            sut.deleteFirstMessageInQueue(QUEUE_NAME, "invalidChecksum");
+            sut.deleteFirstMessageInQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, "invalidChecksum");
             fail("Deletion should fail");
         }catch(MessageOperationFailedException e){
             //expected error
         }
 
-        List<Message> secondFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 2);
+        List<Message> secondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 2);
         
         assertThat(secondFetch, hasSize(2));
         assertEquals(firstFetch.get(0).getChecksum(), secondFetch.get(0).getChecksum());
@@ -62,9 +63,9 @@ public class MessageDeleteOperationIntegrationTest extends AbstractOperationInte
 
     @Test(expected=MessageOperationFailedException.class)
     public void shouldFailToDeleteMessageIfMessageWasAlreadyDeletedOrNoMessageExists(){
-        List<Message> firstFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 2);
+        List<Message> firstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 2);
         assertThat(firstFetch, empty());
         
-        sut.deleteFirstMessageInQueue(QUEUE_NAME, "anyChecksum");
+        sut.deleteFirstMessageInQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, "anyChecksum");
     }
 }

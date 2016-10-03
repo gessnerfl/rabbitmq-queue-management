@@ -3,7 +3,8 @@ package commands
 import java.util.List
 
 import org.crsh.cli.Command
-import org.crsh.cli.Option;
+import org.crsh.cli.Option
+import org.crsh.cli.Required;
 import org.crsh.cli.Usage
 import org.crsh.command.InvocationContext
 import org.junit.After
@@ -18,15 +19,18 @@ class exchanges {
 
     @Usage("List all available exchanges of the given virtual host")
     @Command
-    def ls(InvocationContext context) {
-        List<Exchange> exchanges = getFacade(context).getExchanges()
+    def ls(@Usage("The broker name") @Option(names=["b", "broker"]) @Required String broker, 
+           InvocationContext context) {
+        List<Exchange> exchanges = getFacade(context).getExchanges(broker)
         getConsoleUtil(context).render(context, exchanges)
     }
 
     @Usage("List all bindings of the given exchange within the given virtual host where the exchange is the source")
     @Command
-    def binds(@Usage("The exchagne name") @Option(names=["e", "exchange"]) String exchange, InvocationContext context) {
-        List<Binding> bindings = getFacade(context).getExchangeSourceBindings(exchange)
+    def binds(@Usage("The broker name") @Option(names=["b", "broker"]) @Required String broker,
+              @Usage("The exchagne name") @Option(names=["e", "exchange"]) String exchange, 
+              InvocationContext context) {
+        List<Binding> bindings = getFacade(context).getExchangeSourceBindings(broker, exchange)
         getConsoleUtil(context).render(context, bindings)
     }
     

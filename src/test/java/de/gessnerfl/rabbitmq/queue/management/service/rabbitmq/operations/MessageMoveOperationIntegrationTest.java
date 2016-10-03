@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 
 public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegrationTest {
     protected final static String TARGET_QUEUE_NAME = "test.requeue.target";
@@ -29,16 +30,16 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
     public void shouldMoveMessage() throws Exception {
         publishMessages(1);
 
-        List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 5);
-        List<Message> targetFirstFetch = queueListOperation.getMessagesFromQueue(TARGET_QUEUE_NAME, 5);
+        List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
+        List<Message> targetFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
 
         assertThat(sourceFirstFetch, hasSize(1));
         assertThat(targetFirstFetch, empty());
 
-        sut.moveFirstMessage(QUEUE_NAME, sourceFirstFetch.get(0).getChecksum(), EXCHANGE_NAME, TARGET_QUEUE_NAME);
+        sut.moveFirstMessage(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, sourceFirstFetch.get(0).getChecksum(), EXCHANGE_NAME, TARGET_QUEUE_NAME);
 
-        List<Message> sourceSecondFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 5);
-        List<Message> targetSecondFetch = queueListOperation.getMessagesFromQueue(TARGET_QUEUE_NAME, 5);
+        List<Message> sourceSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
+        List<Message> targetSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
 
         assertThat(sourceSecondFetch, empty());
         assertThat(targetSecondFetch, hasSize(1));
@@ -48,20 +49,20 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
     public void shouldFailToMoveMessageWhenExchangeIsNotValid() throws Exception {
         publishMessages(1);
 
-        List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 5);
-        List<Message> targetFirstFetch = queueListOperation.getMessagesFromQueue(TARGET_QUEUE_NAME, 5);
+        List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
+        List<Message> targetFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
 
         assertThat(sourceFirstFetch, hasSize(1));
         assertThat(targetFirstFetch, empty());
 
         try {
-            sut.moveFirstMessage(QUEUE_NAME, sourceFirstFetch.get(0).getChecksum(), "invalidExchangeName", TARGET_QUEUE_NAME);
+            sut.moveFirstMessage(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, sourceFirstFetch.get(0).getChecksum(), "invalidExchangeName", TARGET_QUEUE_NAME);
             fail();
         } catch (MessageOperationFailedException e) {
         }
 
-        List<Message> sourceSecondFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 5);
-        List<Message> targetSecondFetch = queueListOperation.getMessagesFromQueue(TARGET_QUEUE_NAME, 5);
+        List<Message> sourceSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
+        List<Message> targetSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
 
         assertThat(sourceSecondFetch, hasSize(1));
         assertThat(targetSecondFetch, empty());
@@ -71,20 +72,20 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
     public void shouldFailToMoveMessageWhenNoQueueIsBoundToTheGivenRoutingKey() throws Exception {
         publishMessages(1);
 
-        List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 5);
-        List<Message> targetFirstFetch = queueListOperation.getMessagesFromQueue(TARGET_QUEUE_NAME, 5);
+        List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
+        List<Message> targetFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
 
         assertThat(sourceFirstFetch, hasSize(1));
         assertThat(targetFirstFetch, empty());
 
         try {
-            sut.moveFirstMessage(QUEUE_NAME, sourceFirstFetch.get(0).getChecksum(), EXCHANGE_NAME, "invalidRoutingKey");
+            sut.moveFirstMessage(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, sourceFirstFetch.get(0).getChecksum(), EXCHANGE_NAME, "invalidRoutingKey");
             fail();
         } catch (MessageOperationFailedException e) {
         }
 
-        List<Message> sourceSecondFetch = queueListOperation.getMessagesFromQueue(QUEUE_NAME, 5);
-        List<Message> targetSecondFetch = queueListOperation.getMessagesFromQueue(TARGET_QUEUE_NAME, 5);
+        List<Message> sourceSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
+        List<Message> targetSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
 
         assertThat(sourceSecondFetch, hasSize(1));
         assertThat(targetSecondFetch, empty());

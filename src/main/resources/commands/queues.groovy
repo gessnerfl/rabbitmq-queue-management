@@ -21,41 +21,49 @@ class queues {
 
     @Usage("List all available queues of the given virtual host")
     @Command
-    def ls(InvocationContext context) {
-        List<Queue> queues = getFacade(context).getQueues()
+    def ls(@Usage("The broker name") @Option(names=["b", "broker"]) @Required String broker,
+           InvocationContext context) {
+        List<Queue> queues = getFacade(context).getQueues(broker)
         getConsoleUtil(context).render(context, queues)
     }
 
     @Usage("List all messages of the given queue within the given virtual host")
     @Command
-    def msgs(@Usage("The queue name") @Option(names=["q", "queue"]) @Required String queue, @Usage("Max number of messages") @Option(names=["l", "limit"]) Integer limit, InvocationContext context) {
+    def msgs(@Usage("The broker name") @Option(names=["b", "broker"]) @Required String broker,
+             @Usage("The queue name") @Option(names=["q", "queue"]) @Required String queue, 
+             @Usage("Max number of messages") @Option(names=["l", "limit"]) Integer limit, 
+             InvocationContext context) {
         int l = limit != null ? limit : 5
-        List<Message> messages = getFacade(context).getMessagesOfQueue(queue, l)
+        List<Message> messages = getFacade(context).getMessagesOfQueue(broker, queue, l)
         getConsoleUtil(context).render(context, messages)
     }
     
     @Usage("Deletes the first message from the queue")
     @Command
-    def rmf(@Usage("Name of the queue contain the message") @Option(names=["q", "queue"]) @Required String queue,
-           @Usage("The checksum of the message") @Option(names=["c", "checksum"]) @Required String checksum,
-           InvocationContext context) {
-        getFacade(context).deleteFirstMessageInQueue(queue, checksum);
+    def rmf(@Usage("The broker name") @Option(names=["b", "broker"]) @Required String broker,
+            @Usage("Name of the queue contain the message") @Option(names=["q", "queue"]) @Required String queue,
+            @Usage("The checksum of the message") @Option(names=["c", "checksum"]) @Required String checksum,
+            InvocationContext context) {
+        getFacade(context).deleteFirstMessageInQueue(broker, queue, checksum);
     }
 
     @Usage("Move the first message from the queue to a target exchange and routing key")
     @Command
-    def mvf(@Usage("Name of the queue contain the message") @Option(names=["q", "queue"]) @Required String queue,
-           @Usage("The checksum of the message") @Option(names=["c", "checksum"]) @Required String checksum,
-           @Usage("The target exchange name") @Option(names=["e", "exchange"]) @Required String exchange,
-           @Usage("The routing key used to publishing of the message") @Option(names=["r", "routingkey"]) @Required String routingKey,
-           InvocationContext context) {
-        getFacade(context).moveFirstMessageInQueue(queue, checksum, exchange, routingKey);
+    def mvf(@Usage("The broker name") @Option(names=["b", "broker"]) @Required String broker,
+            @Usage("Name of the queue contain the message") @Option(names=["q", "queue"]) @Required String queue,
+            @Usage("The checksum of the message") @Option(names=["c", "checksum"]) @Required String checksum,
+            @Usage("The target exchange name") @Option(names=["e", "exchange"]) @Required String exchange,
+            @Usage("The routing key used to publishing of the message") @Option(names=["r", "routingkey"]) @Required String routingKey,
+            InvocationContext context) {
+        getFacade(context).moveFirstMessageInQueue(broker, queue, checksum, exchange, routingKey);
     }
 
     @Usage("List all bindings of the given queue within the given virtual host")
     @Command
-    def binds(@Usage("The queue name") @Option(names=["q", "queue"]) String queue, InvocationContext context) {
-        List<Binding> bindings = getFacade(context).getQueueBindings(queue)
+    def binds(@Usage("The broker name") @Option(names=["b", "broker"]) @Required String broker,
+              @Usage("The queue name") @Option(names=["q", "queue"]) String queue, 
+              InvocationContext context) {
+        List<Binding> bindings = getFacade(context).getQueueBindings(broker, queue)
         getConsoleUtil(context).render(context, bindings)
     }
     

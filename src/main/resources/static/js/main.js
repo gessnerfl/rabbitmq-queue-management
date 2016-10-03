@@ -1,10 +1,14 @@
 var module = angular.module('rmqmgmt', ['jsonFormatter']);
-module.controller('main', function($scope, $http) {
+module.controller('main', function($scope, $http, $location) {
 	
 	$scope.queuesFound = false;
 	
 	$scope.init = function(){
-		$http.get('/queues').then(function(response) { 
+	    $scope.brokerName = getParameterByName("selected");
+	    if(isEmptyString($scope.brokerName)){
+	        window.location = "/";
+	    }
+		$http.get('/api/'+$scope.brokerName+'/queues').then(function(response) { 
 	    	if(response.data !== undefined && response.data.length > 0){
 	    		$scope.queues = response.data;
 	    		$scope.queuesFound = true;
@@ -15,6 +19,15 @@ module.controller('main', function($scope, $http) {
 	    });
 	};
 	$scope.init();
+	
+	function getParameterByName(name) {
+	    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+	    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+	}
+	
+	function isEmptyString(str){
+	    return str === undefined || str === null || str.trim().length === 0;
+	}
 	
 	$scope.isQueueSelected = function(q){
 	    return $scope.selectedQueue !== undefined && $scope.selectedQueue.name === q.name;
@@ -30,7 +43,7 @@ module.controller('main', function($scope, $http) {
 	};
 	
 	$scope.loadMessages = function(){
-		$http.get('/queues/'+$scope.selectedQueue.name+"/messages").then(function(response) { 
+		$http.get('/api/'+$scope.brokerName+'/queues/'+$scope.selectedQueue.name+"/messages").then(function(response) { 
 	    	if(response.data !== undefined && response.data.length > 0){
 	    		$scope.renderMessages(response.data);
 	    	}else{

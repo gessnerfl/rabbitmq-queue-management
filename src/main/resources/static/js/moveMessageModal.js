@@ -4,6 +4,7 @@ angular.module('rmqmgmt').directive('moveMessageModal', function() {
         restrict : 'A',
         templateUrl : '/partials/moveMessageModal.html',
         scope : {
+            broker : '=broker',
             queue : '=queue',
             message : '=message',
             successCallback : '=successCallback'
@@ -22,11 +23,13 @@ angular.module('rmqmgmt').directive('moveMessageModal', function() {
         controller : [ '$scope', '$http', 'modalRestExecutor', function($scope, $http, modalRestExecutor) {
             
             $scope.loadExchanges = function(){
-                $http.get('/exchanges').then(function(response) { 
-                    if(response.data !== undefined && response.data.length > 0){
-                        $scope.exchanges = response.data;
-                    }
-                });
+                if($scope.broker !== undefined){
+                    $http.get('/api/'+$scope.broker+'/exchanges').then(function(response) { 
+                        if(response.data !== undefined && response.data.length > 0){
+                            $scope.exchanges = response.data;
+                        }
+                    });
+                }
             };
             $scope.loadExchanges();
             
@@ -43,7 +46,7 @@ angular.module('rmqmgmt').directive('moveMessageModal', function() {
             
             $scope.onExchangeSelected = function(){
                 if($scope.targetExchange !== undefined){
-                    $http.get('/exchanges/'+$scope.targetExchange.name+"/routingKeys").then(function(response) { 
+                    $http.get('/api/'+$scope.broker+'/exchanges/'+$scope.targetExchange.name+"/routingKeys").then(function(response) { 
                         if(response.data !== undefined && response.data.length > 0){
                             $scope.routingKeys = response.data;
                         }
@@ -75,7 +78,7 @@ angular.module('rmqmgmt').directive('moveMessageModal', function() {
 
             $scope.move = function($event) {
                 if (!($($event.currentTarget).hasClass('disabled'))){
-                    var url = '/queues/' + $scope.queue.name + 
+                    var url = '/api/'+$scope.broker+'/queues/' + $scope.queue.name + 
                                 '/messages/move?checksum=' + $scope.message.checksum + 
                                 '&targetExchange=' + $scope.targetExchange.name +
                                 "&targetRoutingKey=" + $scope.targetRoutingKey;

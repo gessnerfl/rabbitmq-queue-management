@@ -12,7 +12,7 @@ public class MessageDeleteOperation {
         this.messageOperationExecutor = messageOperationExecutor;
     }
 
-    public void deleteFirstMessageInQueue(String queue, String messageChecksum) {
-        messageOperationExecutor.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(queue, messageChecksum, (c, r) -> {});
+    public void deleteFirstMessageInQueue(String brokerName, String queueName, String messageChecksum) {
+        messageOperationExecutor.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(brokerName, queueName, messageChecksum, (c, r) -> {});
     }
 }

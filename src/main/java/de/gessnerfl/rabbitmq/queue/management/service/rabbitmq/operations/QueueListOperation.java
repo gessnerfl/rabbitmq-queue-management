@@ -28,8 +28,8 @@ public class QueueListOperation {
         this.messageChecksum = messageChecksum;
     }
 
-    public List<Message> getMessagesFromQueue(String queue, int maxNumberOfMessages) {
-        try (CloseableChannelWrapper wrapper = connector.connectAsClosable()) {
+    public List<Message> getMessagesFromQueue(String brokerName, String queueName, int maxNumberOfMessages) {
+        try (CloseableChannelWrapper wrapper = connector.connectAsClosable(brokerName)) {
             List<Message> messages = new ArrayList<>();
             Channel channel = wrapper.getChannel();
             channel.basicQos(DEFAULT_FETCH_COUNT);
@@ -37,7 +37,7 @@ public class QueueListOperation {
             boolean messagesAvailable = true;
             Long lastDeliveryTag = null;
             while (fetched < maxNumberOfMessages && messagesAvailable) {
-                GetResponse response = channel.basicGet(queue, false);
+                GetResponse response = channel.basicGet(queueName, false);
                 if(response != null){
                     messages.add(createMessage(response));
                     lastDeliveryTag = response.getEnvelope().getDeliveryTag();

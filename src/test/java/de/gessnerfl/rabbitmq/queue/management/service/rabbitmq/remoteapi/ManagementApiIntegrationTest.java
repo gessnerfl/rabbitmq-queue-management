@@ -24,7 +24,8 @@ import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilde
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
 
 public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
-
+    private final static String DEFAULT_BROKER = "local";
+    
     private final static String VHOST = "/";
     private final static String EXCHANGE_NAME = "test.direct";
     private final static String DEAD_LETTER_EXCHANGE_NAME = "test.direct.dlx";
@@ -38,10 +39,14 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
     private RabbitMqTestEnvironment testEnvironment;
     
     @Autowired
+    private ManagementApiFactory managementApiFactory;
+    
     private ManagementApi sut;
 
     @Before
     public void init() throws Exception {
+        sut = managementApiFactory.createFor(DEFAULT_BROKER);
+        
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
                             .withExchange(DEAD_LETTER_EXCHANGE_NAME)

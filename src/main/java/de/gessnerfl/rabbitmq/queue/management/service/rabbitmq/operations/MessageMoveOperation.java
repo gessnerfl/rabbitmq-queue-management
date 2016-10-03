@@ -21,8 +21,8 @@ public class MessageMoveOperation {
         this.messageOperationExecutor = messageOperationExecutor;
     }
     
-    public void moveFirstMessage(String queue, String checksum, String targetExchange, String targetRoutingKey){
-        messageOperationExecutor.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(queue, checksum, (channel,response) -> {
+    public void moveFirstMessage(String brokerName, String queueName, String checksum, String targetExchange, String targetRoutingKey){
+        messageOperationExecutor.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(brokerName, queueName, checksum, (channel,response) -> {
             StateKeepingReturnListener returnListener = new StateKeepingReturnListener();
             channel.addReturnListener(returnListener);
             channel.confirmSelect();

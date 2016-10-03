@@ -15,17 +15,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import de.gessnerfl.rabbitmq.queue.management.javaconfig.RabbitMqSettingsConfig;
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Binding;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
+import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.BrokerConfig;
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.config.RabbitMqBrokers;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.Operations;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApi;
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApiFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RabbitMqFacadeTest {
-    
+    private final static String DEFAULT_BROKER = "broker";
     private final static String VHOST = "vhost";
     private final static String QUEUE = "queue";
     private final static int MAX_NUMBER_MESSAGE = 10;
@@ -34,18 +36,24 @@ public class RabbitMqFacadeTest {
     private final static String ROUTING_KEY = "routingKey";
 
     @Mock
+    private ManagementApiFactory managementApiFactory;
+    @Mock
     private ManagementApi managementApi;
     @Mock
     private Operations operations;
     @Mock
-    private RabbitMqSettingsConfig rabbitMqSettingsConfig;
+    private RabbitMqBrokers rabbitMqBrokers;
+    @Mock
+    private BrokerConfig brokerConfig;
 
     @InjectMocks
     private RabbitMqFacade sut;
     
     @Before
     public void init(){
-        when(rabbitMqSettingsConfig.getVhost()).thenReturn(VHOST);
+        when(managementApiFactory.createFor(DEFAULT_BROKER)).thenReturn(managementApi);
+        when(rabbitMqBrokers.getBrokerConfig(DEFAULT_BROKER)).thenReturn(brokerConfig);
+        when(brokerConfig.getVhost()).thenReturn(VHOST);
     }
 
     @Test
@@ -54,10 +62,9 @@ public class RabbitMqFacadeTest {
         List<Exchange> exchanges = Arrays.asList(exchange);
         when(managementApi.getExchanges(VHOST)).thenReturn(exchanges);
         
-        List<Exchange> result = sut.getExchanges();
+        List<Exchange> result = sut.getExchanges(DEFAULT_BROKER);
         
         assertSame(exchanges, result);
-        verify(rabbitMqSettingsConfig).getVhost();
         verify(managementApi).getExchanges(VHOST);
     }
 
@@ -67,10 +74,9 @@ public class RabbitMqFacadeTest {
         List<Queue> queues = Arrays.asList(queue);
         when(managementApi.getQueues(VHOST)).thenReturn(queues);
 
-        List<Queue> result = sut.getQueues();
+        List<Queue> result = sut.getQueues(DEFAULT_BROKER);
         
         assertSame(queues, result);
-        verify(rabbitMqSettingsConfig).getVhost();
         verify(managementApi).getQueues(VHOST);
     }
 
@@ -80,10 +86,9 @@ public class RabbitMqFacadeTest {
         List<Binding> bindings = Arrays.asList(binding);
         when(managementApi.getExchangeSourceBindings(VHOST, EXCHANGE)).thenReturn(bindings);
 
-        List<Binding> result = sut.getExchangeSourceBindings(EXCHANGE);
+        List<Binding> result = sut.getExchangeSourceBindings(DEFAULT_BROKER, EXCHANGE);
         
         assertSame(bindings, result);
-        verify(rabbitMqSettingsConfig).getVhost();
         verify(managementApi).getExchangeSourceBindings(VHOST, EXCHANGE);
     }
 
@@ -93,10 +98,9 @@ public class RabbitMqFacadeTest {
         List<Binding> bindings = Arrays.asList(binding);
         when(managementApi.getQueueBindings(VHOST, QUEUE)).thenReturn(bindings);
 
-        List<Binding> result = sut.getQueueBindings(QUEUE);
+        List<Binding> result = sut.getQueueBindings(DEFAULT_BROKER, QUEUE);
         
         assertSame(bindings, result);
-        verify(rabbitMqSettingsConfig).getVhost();
         verify(managementApi).getQueueBindings(VHOST, QUEUE);
     }
 
@@ -104,25 +108,25 @@ public class RabbitMqFacadeTest {
     public void shouldDelegateCallToGetQueueMessages() {
         Message message = mock(Message.class);
         List<Message> messages = Arrays.asList(message);
-        when(operations.getMessagesOfQueue(QUEUE, MAX_NUMBER_MESSAGE)).thenReturn(messages);
+        when(operations.getMessagesOfQueue(DEFAULT_BROKER, QUEUE, MAX_NUMBER_MESSAGE)).thenReturn(messages);
         
-        List<Message> result = sut.getMessagesOfQueue(QUEUE, MAX_NUMBER_MESSAGE);
+        List<Message> result = sut.getMessagesOfQueue(DEFAULT_BROKER, QUEUE, MAX_NUMBER_MESSAGE);
         
         assertSame(messages, result);
-        verify(operations).getMessagesOfQueue(QUEUE, MAX_NUMBER_MESSAGE);
+        verify(operations).getMessagesOfQueue(DEFAULT_BROKER, QUEUE, MAX_NUMBER_MESSAGE);
     }
 
     @Test
     public void shouldDelegateCallToDeleteFirstMessageInQueue() {
-        sut.deleteFirstMessageInQueue(QUEUE, CHECKSUM);
+        sut.deleteFirstMessageInQueue(DEFAULT_BROKER, QUEUE, CHECKSUM);
         
-        verify(operations).deleteFirstMessageInQueue(QUEUE, CHECKSUM);
+        verify(operations).deleteFirstMessageInQueue(DEFAULT_BROKER, QUEUE, CHECKSUM);
     }
 
     @Test
     public void shouldDelegateCallToMoveFirstMessageInQueue() {
-        sut.moveFirstMessageInQueue(QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
+        sut.moveFirstMessageInQueue(DEFAULT_BROKER, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
         
-        verify(operations).moveFirstMessageInQueue(QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
+        verify(operations).moveFirstMessageInQueue(DEFAULT_BROKER, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
     }
 }

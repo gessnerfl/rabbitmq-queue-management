@@ -22,6 +22,8 @@ import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExchangeControllerTest {
+    
+    private final static String DEFAULT_BROKER = "defaultBroker";
 
     @Mock
     private RabbitMqFacade rabbitMqFacade;
@@ -34,24 +36,24 @@ public class ExchangeControllerTest {
         Exchange exchange = mock(Exchange.class);
         List<Exchange> exchanges = Arrays.asList(exchange);
         
-        when(rabbitMqFacade.getExchanges()).thenReturn(exchanges);
+        when(rabbitMqFacade.getExchanges(DEFAULT_BROKER)).thenReturn(exchanges);
         
-        List<Exchange> result = sut.getExchanges();
+        List<Exchange> result = sut.getExchanges(DEFAULT_BROKER);
         
         assertSame(exchanges, result);
-        verify(rabbitMqFacade).getExchanges();
+        verify(rabbitMqFacade).getExchanges(DEFAULT_BROKER);
     }
     
     @Test
     public void shouldReturnListOfDistinctRoutingKeys(){
         String exchangeName = "exchange";
         List<Binding> bindings = Arrays.asList(mockBinding("a"), mockBinding("b"), mockBinding("a"));
-        when(rabbitMqFacade.getExchangeSourceBindings(exchangeName)).thenReturn(bindings);
+        when(rabbitMqFacade.getExchangeSourceBindings(DEFAULT_BROKER, exchangeName)).thenReturn(bindings);
         
-        List<String> result = sut.getSourceBindings(exchangeName);
+        List<String> result = sut.getSourceBindings(DEFAULT_BROKER, exchangeName);
         
         assertThat(result, containsInAnyOrder("a", "b"));
-        verify(rabbitMqFacade).getExchangeSourceBindings(exchangeName);
+        verify(rabbitMqFacade).getExchangeSourceBindings(DEFAULT_BROKER, exchangeName);
     }
     
     private Binding mockBinding(String routingKey){

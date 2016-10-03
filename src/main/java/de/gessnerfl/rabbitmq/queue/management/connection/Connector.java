@@ -1,6 +1,8 @@
 package de.gessnerfl.rabbitmq.queue.management.connection;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PreDestroy;
@@ -16,49 +18,63 @@ import com.rabbitmq.client.ConnectionFactory;
 
 @Service
 public class Connector {
-  private final static Logger LOGGER = LoggerFactory.getLogger(Connector.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(Connector.class);
 
-  private final ConnectionFactory connectionFactory;
+    private final ConnectionFactories connectionFactories;
 
-  private Connection connection;
+    Map<String, Connection> connections = new HashMap<>();
 
-  @Autowired
-  public Connector(ConnectionFactory connectionFactory) {
-    this.connectionFactory = connectionFactory;
-  }
-
-  public CloseableChannelWrapper connectAsClosable() {
-    try {
-      Channel channel = connect();
-      return new CloseableChannelWrapper(channel);
-    } catch (IOException e) {
-      throw new ConnectionFailedException(e);
+    @Autowired
+    public Connector(ConnectionFactories connectionFactories) {
+        this.connectionFactories = connectionFactories;
     }
-  }
 
-  public Channel connect() throws IOException {
-    Connection connection = getConnection();
-    return connection.createChannel();
-  }
-
-  private Connection getConnection() {
-    if (connection == null || !connection.isOpen()) {
-      try {
-        connection = connectionFactory.newConnection();
-      } catch (IOException | TimeoutException e) {
-        throw new ConnectionFailedException(e);
-      }
+    public CloseableChannelWrapper connectAsClosable(String brokerName) {
+        Channel channel = connect(brokerName);
+        return new CloseableChannelWrapper(channel);
     }
-    return connection;
-  }
 
-  @PreDestroy
-  public void shutdown() {
-    try {
-      connection.close();
-    } catch (IOException e) {
-      LOGGER.warn("Failed to close RabbitMQ connection", e);
+    public Channel connect(String brokerName) {
+        try {
+            Connection connection = getConnection(brokerName);
+            return connection.createChannel();
+        } catch (IOException e) {
+            throw new ConnectionFailedException(e);
+        }
     }
-  }
+
+    private synchronized Connection getConnection(String brokerName) {
+        if (connections.containsKey(brokerName)) {
+            Connection connection = connections.get(brokerName);
+            if (connection == null || !connection.isOpen()) {
+                return initializeNewConnection(brokerName);
+            }
+            return connection;
+        } else {
+            return initializeNewConnection(brokerName);
+        }
+    }
+
+    private Connection initializeNewConnection(String brokerName) {
+        try {
+            ConnectionFactory connectionFactory = connectionFactories.getOrCreate(brokerName);
+            Connection connection = connectionFactory.newConnection();
+            connections.put(brokerName, connection);
+            return connection;
+        } catch (IOException | TimeoutException e) {
+            throw new ConnectionFailedException(e);
+        }
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        for (Connection connection : connections.values()) {
+            try {
+                connection.close();
+            } catch (IOException e) {
+                LOGGER.warn("Failed to close RabbitMQ connection", e);
+            }
+        }
+    }
 
 }

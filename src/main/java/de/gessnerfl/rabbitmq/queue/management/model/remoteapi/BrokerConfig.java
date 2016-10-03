@@ -1,11 +1,6 @@
-package de.gessnerfl.rabbitmq.queue.management.javaconfig;
+package de.gessnerfl.rabbitmq.queue.management.model.remoteapi;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
-@Component
-@ConfigurationProperties(prefix = "de.gessnerfl.rabbitmq")
-public class RabbitMqSettingsConfig {
+public class BrokerConfig {
     private String hostname;
     private String vhost = "/";
     private int port = 5672;
@@ -69,5 +64,4 @@ public class RabbitMqSettingsConfig {
     public void setPassword(String password) {
         this.password = password;
     }
-
 }

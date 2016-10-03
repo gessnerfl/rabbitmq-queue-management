@@ -31,6 +31,7 @@ import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.utils.MessageChec
 
 @RunWith(MockitoJUnitRunner.class)
 public class QueueListOperationTest {
+    private final static String DEFAULT_BROKER_NAME = "defaultBroker";
   private final static String DEFAULT_QUEUE_NAME = "defaultQueue";
   private final static int DEFAULT_MAX_NO_OF_MESSAGES = 3;
   private final static Envelope DEFAULT_ENVELOPE = mock(Envelope.class);
@@ -54,7 +55,7 @@ public class QueueListOperationTest {
   @Before
   public void init(){
     when(closeableChannelWrapper.getChannel()).thenReturn(channel);
-    when(connector.connectAsClosable()).thenReturn(closeableChannelWrapper);
+    when(connector.connectAsClosable(DEFAULT_BROKER_NAME)).thenReturn(closeableChannelWrapper);
     when(DEFAULT_ENVELOPE.getDeliveryTag()).thenReturn(DEFAULT_DELIVERY_TAG);
     when(messageChecksum.createFor(DEFAULT_BASIC_PROPERTIES, DEFAULT_PAYLOAD)).thenReturn(DEFAULT_CHECKSUM);
   }
@@ -66,7 +67,7 @@ public class QueueListOperationTest {
      GetResponse getResponse3 = mockDefaultGetResponse(0);
      when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse1, getResponse2, getResponse3);
      
-     List<Message> messages = sut.getMessagesFromQueue(DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
+     List<Message> messages = sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
      
      assertThat(messages, hasSize(3));
      assertDefaultMessage(messages.get(0));
@@ -80,7 +81,7 @@ public class QueueListOperationTest {
   public void shouldReturnEmptyListIfNoMessagesAreAvailable() throws Exception {
       when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(null);
       
-      List<Message> messages = sut.getMessagesFromQueue(DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
+      List<Message> messages = sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
       
       assertThat(messages, empty());
       verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
@@ -95,7 +96,7 @@ public class QueueListOperationTest {
     GetResponse getResponse4 = mockDefaultGetResponse(0);
     when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse1, getResponse2, getResponse3, getResponse4);
     
-    List<Message> messages = sut.getMessagesFromQueue(DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
+    List<Message> messages = sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
     
     assertThat(messages, hasSize(3));
     assertDefaultMessage(messages.get(0));
@@ -111,7 +112,7 @@ public class QueueListOperationTest {
     GetResponse getResponse2 = mockDefaultGetResponse(0);
     when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse1, getResponse2);
     
-    List<Message> messages = sut.getMessagesFromQueue(DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
+    List<Message> messages = sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
     
     assertThat(messages, hasSize(2));
     assertDefaultMessage(messages.get(0));
@@ -127,7 +128,7 @@ public class QueueListOperationTest {
     GetResponse getResponse3 = mockDefaultGetResponse(0);
     when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse1, getResponse2, getResponse3);
     
-    sut.getMessagesFromQueue(DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
+    sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
    
     verify(channel).basicNack(DEFAULT_DELIVERY_TAG, true, true);
   }
@@ -135,10 +136,10 @@ public class QueueListOperationTest {
   @Test
   public void shouldThrowExcpetionWhenConnectionCannotBeEstablished() throws Exception {
     ConnectionFailedException expectedException = new ConnectionFailedException(null);
-    when(connector.connectAsClosable()).thenThrow(expectedException);
+    when(connector.connectAsClosable(DEFAULT_BROKER_NAME)).thenThrow(expectedException);
     
     try{
-      sut.getMessagesFromQueue(DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
+      sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
     }catch(ConnectionFailedException e){
       assertSame(expectedException, e);
     }
@@ -150,7 +151,7 @@ public class QueueListOperationTest {
     when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenThrow(expectedException);
     
     try{
-      sut.getMessagesFromQueue(DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
+      sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
     }catch(MessageFetchFailedException e){
       assertSame(expectedException, e.getCause());
     }
@@ -168,7 +169,7 @@ public class QueueListOperationTest {
     doThrow(expectedException).when(channel).basicNack(DEFAULT_DELIVERY_TAG, true, true);
     
     try{
-      sut.getMessagesFromQueue(DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
+      sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
     }catch(MessageFetchFailedException e){
       assertSame(expectedException, e.getCause());
     }
