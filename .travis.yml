@@ -4,7 +4,7 @@ jdk:
 sudo: false
 services:
   - rabbitmq
-script: ./gradlew --stacktrace build
+script: ./gradlew -i --stacktrace build
 cache:
   directories:
   - $HOME/.gradle/caches
