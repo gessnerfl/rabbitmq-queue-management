@@ -1,4 +1,5 @@
 # RabbitMQ Queue Management
+[![Build Status](https://travis-ci.org/gessnerfl/rabbitmq-queue-management.svg?branch=master)](https://travis-ci.org/gessnerfl/rabbitmq-queue-management)
 
 *Application to list, delete and re-queue messages of queues.*
 
