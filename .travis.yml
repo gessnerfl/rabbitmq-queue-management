@@ -18,6 +18,6 @@ deploy:
   provider: releases
   api_key:
     secure: SWblzz9vIOgEzcl4FxNCvEaKeuZOP5SdmUM2gJmuWPIDfBxX6vp8gj4KxBHazKpzGpdyzQ20sobSryRzC/4mnno7tJL39ziSuPhI647DVikeT3y4pV6+Yv/9sF68dgcOEh9plI126Eq1YDZ3b6urPUidvx3/rbp4LrXHkn9Uvpz9TJHdF7nwWWG+OXF1QhW0V49LLjgJbyVaiZw/LFo1DR5H3rDfgschf6P/hPzDDR5orZjyVFwykQ815QrWccTszKUuwcntxhgXACbCzfhWm7qM6pfy0J3APiohwpS2X+mbGTbzlU7DGB7EPfWuUyhHquHPO82GKSAJICw0qA214cksS4cclbygahWM88+ZE6FJ5FtX/h6iVWse4btG3+1WBCK1bLlzlLaIseArQNy2TT3Kt8lk8eRcQR2WUVI2qgnkk19VeuwJKk2OajGZOL5dvAgIrP6lvUYR2Lsdgdkxf9RUHSy2fe33yfkJBL/W8foK0pFDPWdE91sGVUY+4pPVFWTx3cLAfvZC+y/rlPePjDv53pkPHEwITurthZq/OU1pU1x3ahxpfHw9OM70uwTS2S56g+KcGmpLEDG5lOgSAWuRkAV1nq+zR10BesfSeQu0r5JtScbKZ1pTP0CX1AiW8jXrzaQ+6/fLH/TJZrnSZJBdD0/P81VTjox6CaKi2Dk=
-  file: gessnerfl/rabbitmq-queue-management/build/libs/rabbitmq-queue-management-$TRAVIS_TAG.jar
+  file: build/libs/rabbitmq-queue-management-$TRAVIS_TAG.jar
   on:
     tags: true
