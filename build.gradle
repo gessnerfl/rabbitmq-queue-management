@@ -6,14 +6,11 @@ buildscript {
 
 plugins {
   id "com.cinnober.gradle.semver-git" version "2.2.2"
-  //id "com.jfrog.bintray" version "1.7.1"
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'spring-boot'
-//apply plugin: 'maven'
-//apply plugin: 'maven-publish'
 
 group = 'de.gessnerfl.rabbitmq'
 description = """RabbitMQ :: Queue Management :: List/Move/Delete dead messages from queues"""
@@ -65,86 +62,3 @@ artifacts {
   archives sourcesJar
   archives javadocJar
 }
-
-//publishing {
-//    publications {
-//        BintrayPublication(MavenPublication) {
-//            from components.java
-//            artifact sourcesJar
-//            artifact javadocJar
-//            
-//            groupId project.group
-//            artifactId project.name
-//            version project.version
-//            
-//            pom.withXml {
-//                asNode().children().last() + {
-//                    resolveStrategy = Closure.DELEGATE_FIRST
-//
-//                    name project.name
-//                    description project.description
-//                    url project.projectUrl
-//
-//                    scm {
-//                        connection 'scm:git:'+project.scmUrl
-//                        developerConnection 'scm:git:'+project.scmUrl
-//                        url project.scmUrl
-//                    }
-//
-//                    licenses {
-//                        license {
-//                            name 'The Apache License, Version 2.0'
-//                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-//                        }
-//                    }
-//
-//                    developers {
-//                        developer {
-//                            id 'gessnerfl'
-//                            name 'Florian Gessner'
-//                            email 'flo.gessner@gmail.com'
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//bintray {
-//    user = project.hasProperty('bintrayUser') ? project.getProperty('bintrayUser') : null
-//    key = project.hasProperty('bintrayKey') ? project.getProperty('bintrayKey') : null
-//    
-//    publications = ['BintrayPublication']
-//    dryRun = false
-//    publish = true
-//    pkg {
-//        repo = 'oss-de.gessnerfl'
-//
-//        name = project.name
-//        desc = project.description
-//        userOrg = null
-//
-//        websiteUrl = project.projectUrl
-//        issueTrackerUrl = project.projectUrl+'/issues'
-//        vcsUrl = project.scmUrl
-//        licenses = ['Apache-2.0']
-//        labels = [ 'rabbitmq' ]
-//        publicDownloadNumbers = true
-//        attributes = [:]
-//        version {
-//            name = project.version
-//            vcsTag = project.version
-//            attributes = [:]
-//            gpg {
-//                sign = true
-//                passphrase = project.hasProperty('gpgPassphrase') ? project.getProperty('gpgPassphrase') : null
-//            }
-//            mavenCentralSync {
-//                sync = true
-//                user = project.hasProperty('sonatypeUsername') ? project.getProperty('sonatypeUsername') : null
-//                password = project.hasProperty('sonatypePassword') ? project.getProperty('sonatypePassword') : null
-//            }
-//        }
-//    }
-//}
