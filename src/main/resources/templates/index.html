@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.7/dist/css/bootstrap.min.css}"></link>
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.7/dist/css/bootstrap-theme.min.css}"></link>
+	
+	<link rel="stylesheet" th:href="@{/css/customization.css}"></link>
+
+	<script type="text/javascript" th:src="@{/webjars/jquery/3.1.0/dist/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/dist/js/bootstrap.min.js}"></script>
+	
+	<title>RabbitMQ :: Queue Management</title>
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+	<div th:replace="fragments/navbar :: navbar"></div>
+	<div class="container" style="margin-top:60px">
+        <div class="row">
+    		<div class="col-xs-12">
+    			<ol class="breadcrumb">
+				  <li><a href="#"><i class="glyphicon glyphicon-home" aria-hidden="true"></i>&nbsp;Home</a></li>
+				</ol>
+			</div>
+   		</div>
+   		<div class="row">
+    		<div class="col-xs-12">
+    			<h1>Select Broker</h1>
+    			<div th:if="${#lists.isEmpty(brokers)}" class="alert alert-warning" role="alert">
+    				<strong>Warning!</strong> No brokers available. Check your configuration
+    			</div>
+    			<div th:if="${not #lists.isEmpty(brokers)}" class="list-group">
+					<a  th:each="broker : ${brokers}" th:href="${'/broker?selected=' + broker.name}" class="list-group-item">
+						<h4 class="list-group-item-heading" th:text="${broker.name}">Broker Name</h4>
+						<p class="list-group-item-text" th:text="${broker.displayName}">Broker Display Name</p>
+					</a>
+				</div>
+    		</div>
+   		</div>
+    </div>
+</body>
+</html>

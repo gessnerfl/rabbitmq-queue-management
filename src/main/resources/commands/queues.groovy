@@ -7,7 +7,6 @@ import org.crsh.cli.Option;
 import org.crsh.cli.Required;
 import org.crsh.cli.Usage
 import org.crsh.command.InvocationContext
-import org.junit.After
 import org.springframework.beans.factory.BeanFactory;
 
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
