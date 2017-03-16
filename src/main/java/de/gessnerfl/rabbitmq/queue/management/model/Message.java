@@ -1,7 +1,6 @@
 package de.gessnerfl.rabbitmq.queue.management.model;
 
 import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.AMQP.BasicProperties;
 
 public class Message {
   private final Envelope envelope;
