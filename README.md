@@ -13,7 +13,6 @@ RabbitMQ does not provide tooling to re-queue or move messages out of the box. H
 * Delete first message from queue
 * Move first message from queue
 * Web UI
-* SSH Console (not active by default)
 
 As messages must not have a unique identifier in RabbitMQ this tools creates a checksum of the message and compares the checksum before applying move or delete operations on messages to avoid unintended changes.
 
@@ -73,13 +72,4 @@ The following snippet shows the pre-defined web application configuration
 
     server.port=8780     #Port of the web interface
     management.port=8781 #Port of the http management api
-
-## SSH Console
-By default the SSH Console is inactive. To activate the management console add and adjust the following configuration. For more details check the Spring Boot Documentation.
-
-    management.shell.ssh.enabled=true                   #Active SSH console
-    management.shell.ssh.port=8722                      #Port number of the SSH console
-    management.shell.auth.type=simple                   #Active simple authentication
-    management.shell.auth.simple.user.name=admin        #Username of simple authentication
-    management.shell.auth.simple.user.password=Test1234 #Password of simple authentication
 
