@@ -78,7 +78,7 @@ module.controller('main', function($scope, $http, $location) {
 	$scope.formatBody = function(message){
 	    var body = Base64.decode(message.body);
 	    try {
-           var json = JSON.parse(body);
+           var json = JSON.parse(body.replace(/\s/g, ""));
            message.formattedBody = JSON.stringify(json, null , 2);
         } catch(e) {
            message.formattedBody = body;
