@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.gessnerfl.rabbitmq.queue.management.controller.AbstractControllerIntegrationTest;
-import de.gessnerfl.rabbitmq.queue.management.model.AmqpMessage;
+import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
@@ -99,9 +99,9 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
     public void shouldDeleteMessageFromQueue() throws Exception {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
         
-        List<AmqpMessage> messages = facade.getMessagesOfQueue(BROKER_NAME, QUEUE_IN_NAME, 1);
+        List<Message> messages = facade.getMessagesOfQueue(BROKER_NAME, QUEUE_IN_NAME, 1);
         assertThat(messages, hasSize(1));
-        AmqpMessage message = messages.get(0);
+        Message message = messages.get(0);
         
         mockMvc.perform(delete("/api/"+BROKER_NAME+"/queues/"+QUEUE_IN_NAME+"/messages").param("checksum", message.getChecksum()))
             .andExpect(status().isOk());
@@ -113,10 +113,10 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
     public void shouldMoveMessageFromQueueInToQueueOut() throws Exception {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
         
-        List<AmqpMessage> messages = facade.getMessagesOfQueue(BROKER_NAME, QUEUE_IN_NAME, 1);
+        List<Message> messages = facade.getMessagesOfQueue(BROKER_NAME, QUEUE_IN_NAME, 1);
         assertThat(messages, hasSize(1));
         assertThat(facade.getMessagesOfQueue(BROKER_NAME, QUEUE_OUT_NAME, 1), empty());
-        AmqpMessage message = messages.get(0);
+        Message message = messages.get(0);
         
         mockMvc.perform(post("/api/"+BROKER_NAME+"/queues/"+QUEUE_IN_NAME+"/messages/move")
                             .param("checksum", message.getChecksum())

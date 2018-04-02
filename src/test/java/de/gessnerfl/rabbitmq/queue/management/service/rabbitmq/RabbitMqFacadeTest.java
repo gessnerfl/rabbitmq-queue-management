@@ -15,7 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import de.gessnerfl.rabbitmq.queue.management.model.AmqpMessage;
+import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Binding;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
@@ -106,11 +106,11 @@ public class RabbitMqFacadeTest {
 
     @Test
     public void shouldDelegateCallToGetQueueMessages() {
-        AmqpMessage message = mock(AmqpMessage.class);
-        List<AmqpMessage> messages = Arrays.asList(message);
+        Message message = mock(Message.class);
+        List<Message> messages = Arrays.asList(message);
         when(operations.getMessagesOfQueue(DEFAULT_BROKER, QUEUE, MAX_NUMBER_MESSAGE)).thenReturn(messages);
         
-        List<AmqpMessage> result = sut.getMessagesOfQueue(DEFAULT_BROKER, QUEUE, MAX_NUMBER_MESSAGE);
+        List<Message> result = sut.getMessagesOfQueue(DEFAULT_BROKER, QUEUE, MAX_NUMBER_MESSAGE);
         
         assertSame(messages, result);
         verify(operations).getMessagesOfQueue(DEFAULT_BROKER, QUEUE, MAX_NUMBER_MESSAGE);

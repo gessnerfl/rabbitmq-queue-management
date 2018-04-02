@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.gessnerfl.rabbitmq.queue.management.model.AmqpMessage;
+import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 
@@ -32,7 +32,7 @@ public class QueueController {
     }
 
     @GetMapping("/api/{broker}/queues/{queue}/messages")
-    public List<AmqpMessage> getQueueMessages(@PathVariable String broker, @PathVariable String queue) {
+    public List<Message> getQueueMessages(@PathVariable String broker, @PathVariable String queue) {
         return facade.getMessagesOfQueue(broker, queue, DEFAULT_LIMIT);
     }
     
