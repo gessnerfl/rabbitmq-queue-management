@@ -1,46 +1,25 @@
-# use glob syntax.
-syntax: glob
-*.ser
-*.class
-*~
-*.bak
-#*.off
-*.old
-
-#gradle
 .gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
 
-# eclipse conf file
-.settings
+### STS ###
+.apt_generated
 .classpath
+.factorypath
 .project
-.manager
-.scala_dependencies
-.cache
+.settings
+.springBeans
 
-# idea
+### IntelliJ IDEA ###
 .idea
+*.iws
 *.iml
+*.ipr
 
-# building
-target
-build
-null
-tmp/*
-temp/*
-dist
-test-output
-build.log
-
-# other scm
-.svn
-.CVS
-.hg*
-
-# switch to regexp syntax.
-#  syntax: regexp
-#  ^\.pc/
-
-#SHITTY output not in target directory
-build.log
-/bin/
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/

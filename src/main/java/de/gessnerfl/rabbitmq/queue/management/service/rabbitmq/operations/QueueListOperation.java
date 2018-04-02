@@ -12,7 +12,7 @@ import com.rabbitmq.client.GetResponse;
 
 import de.gessnerfl.rabbitmq.queue.management.connection.CloseableChannelWrapper;
 import de.gessnerfl.rabbitmq.queue.management.connection.Connector;
-import de.gessnerfl.rabbitmq.queue.management.model.Message;
+import de.gessnerfl.rabbitmq.queue.management.model.AmqpMessage;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.utils.MessageChecksum;
 
 @Repository
@@ -28,9 +28,9 @@ public class QueueListOperation {
         this.messageChecksum = messageChecksum;
     }
 
-    public List<Message> getMessagesFromQueue(String brokerName, String queueName, int maxNumberOfMessages) {
+    public List<AmqpMessage> getMessagesFromQueue(String brokerName, String queueName, int maxNumberOfMessages) {
         try (CloseableChannelWrapper wrapper = connector.connectAsClosable(brokerName)) {
-            List<Message> messages = new ArrayList<>();
+            List<AmqpMessage> messages = new ArrayList<>();
             Channel channel = wrapper.getChannel();
             channel.basicQos(DEFAULT_FETCH_COUNT);
             int fetched = 0;
@@ -56,9 +56,9 @@ public class QueueListOperation {
         }
     }
 
-    private Message createMessage(GetResponse response) {
+    private AmqpMessage createMessage(GetResponse response) {
         String checksum =  messageChecksum.createFor(response.getProps(), response.getBody());
-        return new Message(response.getEnvelope(), response.getProps(), response.getBody(), checksum);
+        return new AmqpMessage(response.getEnvelope(), response.getProps(), response.getBody(), checksum);
     }
 
 }

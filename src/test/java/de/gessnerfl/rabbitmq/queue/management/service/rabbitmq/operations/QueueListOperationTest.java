@@ -24,9 +24,7 @@ import com.rabbitmq.client.GetResponse;
 import de.gessnerfl.rabbitmq.queue.management.connection.CloseableChannelWrapper;
 import de.gessnerfl.rabbitmq.queue.management.connection.ConnectionFailedException;
 import de.gessnerfl.rabbitmq.queue.management.connection.Connector;
-import de.gessnerfl.rabbitmq.queue.management.model.Message;
-import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.MessageFetchFailedException;
-import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.QueueListOperation;
+import de.gessnerfl.rabbitmq.queue.management.model.AmqpMessage;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.utils.MessageChecksum;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -67,7 +65,7 @@ public class QueueListOperationTest {
      GetResponse getResponse3 = mockDefaultGetResponse(0);
      when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse1, getResponse2, getResponse3);
      
-     List<Message> messages = sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
+     List<AmqpMessage> messages = sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
      
      assertThat(messages, hasSize(3));
      assertDefaultMessage(messages.get(0));
@@ -81,7 +79,7 @@ public class QueueListOperationTest {
   public void shouldReturnEmptyListIfNoMessagesAreAvailable() throws Exception {
       when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(null);
       
-      List<Message> messages = sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
+      List<AmqpMessage> messages = sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
       
       assertThat(messages, empty());
       verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
@@ -96,7 +94,7 @@ public class QueueListOperationTest {
     GetResponse getResponse4 = mockDefaultGetResponse(0);
     when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse1, getResponse2, getResponse3, getResponse4);
     
-    List<Message> messages = sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
+    List<AmqpMessage> messages = sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
     
     assertThat(messages, hasSize(3));
     assertDefaultMessage(messages.get(0));
@@ -112,7 +110,7 @@ public class QueueListOperationTest {
     GetResponse getResponse2 = mockDefaultGetResponse(0);
     when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse1, getResponse2);
     
-    List<Message> messages = sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
+    List<AmqpMessage> messages = sut.getMessagesFromQueue(DEFAULT_BROKER_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
     
     assertThat(messages, hasSize(2));
     assertDefaultMessage(messages.get(0));
@@ -189,7 +187,7 @@ public class QueueListOperationTest {
     return response;
   }
 
-  private void assertDefaultMessage(Message message) {
+  private void assertDefaultMessage(AmqpMessage message) {
     assertEquals(DEFAULT_ENVELOPE, message.getEnvelope());
     assertEquals(DEFAULT_BASIC_PROPERTIES, message.getProperties());
     assertEquals(DEFAULT_PAYLOAD, message.getBody());

@@ -43,7 +43,7 @@ module.controller('main', function($scope, $http, $location) {
 	};
 	
 	$scope.loadMessages = function(){
-		$http.get('/api/'+$scope.brokerName+'/queues/'+$scope.selectedQueue.name+"/messages").then(function(response) { 
+		$http.get('/api/'+$scope.brokerName+'/queues/'+$scope.selectedQueue.name+"/messages").then(function(response) {
 	    	if(response.data !== undefined && response.data.length > 0){
 	    		$scope.renderMessages(response.data);
 	    	}else{
@@ -68,9 +68,22 @@ module.controller('main', function($scope, $http, $location) {
 		$scope.messages = undefined;
 	};
 	
-	$scope.renderBody = function(body){
-	    return Base64.decode(body);
+	$scope.renderBody = function(message){
+	    if(message.formattedBody === undefined){
+	        $scope.formatBody(message)
+	    }
+	    return message.formattedBody;
 	};
+
+	$scope.formatBody = function(message){
+	    var body = Base64.decode(message.body);
+	    try {
+           var json = JSON.parse(body);
+           message.formattedBody = JSON.stringify(json, null , 2);
+        } catch(e) {
+           message.formattedBody = body;
+        }
+	}
 	
 	$scope.openMoveModal = function(m){
 		$scope.selectedMessage = m;

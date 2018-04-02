@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.7/dist/css/bootstrap.min.css}"></link>
-	<link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.7/dist/css/bootstrap-theme.min.css}"></link>
+	<link rel="stylesheet" th:href="@{/webjars/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css}"></link>
 	<link rel="stylesheet" th:href="@{/webjars/json-formatter/0.6.0/dist/json-formatter.min.css}"></link>
 	
 	<link rel="stylesheet" th:href="@{/css/customization.css}"></link>
+	<link rel="stylesheet" th:href="@{/css/custom-bootstrap-theme.css}"></link>
 
-	<script type="text/javascript" th:src="@{/webjars/jquery/3.1.0/dist/jquery.min.js}"></script>
-	<script type="text/javascript" th:src="@{/webjars/angularjs/1.5.8/angular.min.js}"></script>
-	<script type="text/javascript" th:src="@{/webjars/angular-resource/1.5.8/angular-resource.min.js}"></script>
-	<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/dist/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" th:src="@{/webjars/jquery/3.3.1/dist/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/webjars/angularjs/1.6.5/angular.min.js}"></script>
+	<script type="text/javascript" th:src="@{/webjars/angular-resource/1.6.5/angular-resource.min.js}"></script>
+	<script type="text/javascript" th:src="@{/webjars/bootstrap/4.0.0/dist/js/bootstrap.min.js}"></script>
 	<script type="text/javascript" th:src="@{/webjars/json-formatter/0.6.0/dist/json-formatter.min.js}"></script>
-	<script type="text/javascript" th:src="@{/webjars/js-base64/2.1.9/base64.min.js}"></script>
+	<script type="text/javascript" th:src="@{/webjars/js-base64/2.3.2/base64.min.js}"></script>
 	
 	<script type="text/javascript" th:src="@{/js/main.js}"></script>
 	<script type="text/javascript" th:src="@{/js/modalRestExecutor.js}"></script>
@@ -27,17 +27,17 @@
 
 <body ng-app="rmqmgmt">
 	<div th:replace="fragments/navbar :: navbar"></div>
-	<div class="container" style="margin-top:60px" ng-controller="main">
+	<div class="container-fluid" style="margin-top:60px" ng-controller="main">
 		<div class="row">
-    		<div class="col-xs-12">
+    		<div class="col-12">
     			<ol class="breadcrumb">
-				  <li><a href="/"><i class="glyphicon glyphicon-home" aria-hidden="true"></i>&nbsp;Home</a></li>
-				  <li>{{brokerName}}</li>
+				  <li class="breadcrumb-item"><a href="/"><i class="oi oi-home" aria-hidden="true"></i>&nbsp;Home</a></li>
+				  <li class="breadcrumb-item active">{{brokerName}}</li>
 				</ol>
 			</div>
    		</div>
         <div class="row">
-    		<div class="col-xs-4">
+    		<div class="col-4">
     			<div class="panel panel-default">
 					<div class="panel-heading">
 				    	<h3 class="panel-title">Queues</h3>
@@ -46,17 +46,19 @@
 				  		<div ng-if="!queuesFound" class="alert alert-info" role="alert">No Queue available</div>
 				  		<div ng-if="queuesFound">
 				  			<div class="list-group">
-  								<a ng-repeat="q in queues" href="#" class="list-group-item" ng-class="{active: isQueueSelected(q)}" ng-click="selectQueue(q)">
-  									<span class="badge s" ng-if="hasDlx(q)">DLX</span>
-    								<span class="badge s" ng-if="hasDlk(q)">DLK</span>
+  								<a ng-repeat="q in queues" href="#" class="list-group-item d-flex justify-content-between align-items-center" ng-class="{active: isQueueSelected(q)}" ng-click="selectQueue(q)">
   									{{q.name}}
+									<div>
+										<span class="badge badge-warning" ng-if="hasDlx(q)">DLX</span>
+										<span class="badge badge-warning" ng-if="hasDlk(q)">DLK</span>
+									</div>
   								</a>
  							</div>
 				  		</div>
 	  				</div>
   				</div>
 			</div>
-    		<div class="col-xs-8">
+    		<div class="col-8">
   				<div class="panel panel-default">
 					<div class="panel-heading">
 				    	<h3 class="panel-title">Queue Messages:</h3>
@@ -69,20 +71,29 @@
 			  				</div>
 			  				<div ng-if="messages">
 			  					<div class="list-group">
-			  						<div ng-repeat="m in messages" class="list-group-item" ng-class="{selected: $first}">
-			  							<dl class="dl-horizontal title-s" style="margin-bottom:0">
-				  							<dt>Envelope:</dt>
-				  							<dd><json-formatter json="m.envelope"></json-formatter></dd>
-				  							<dt>Properties:</dt>
-				  							<dd><json-formatter json="m.properties"></json-formatter></dd>
-				  							<dt>Checksum:</dt>
-				  							<dd>{{m.checksum}}</dd>
-				  							<dt>Body:</dt>
-				  							<dd><pre>{{ renderBody(m.body) }}</pre></dd>
-				  						</dl>
-				  						<div class="btn-group pull-right" role="group" ng-if="$first">
-										  <button type="button" class="btn btn-sm btn-default" ng-click="openMoveModal(m)"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>&nbsp;Move</button>
-										  <button type="button" class="btn btn-sm btn-default" ng-click="openDeleteModal(m)"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;Delete</button>
+			  						<div ng-repeat="m in messages" class="list-group-item border-primary amqp-message" ng-class="{selected: $first}">
+                                        <h5>Message&nbsp;{{$index + 1}}</h5>
+                                        <div class="amqp-message-content">
+                                            <div class="row">
+                                                <div class="col-4">Envelope:</div>
+                                                <div class="col-8"><json-formatter json="m.envelope"></json-formatter></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-4">Properties:</div>
+                                                <div class="col-8"><json-formatter json="m.properties"></json-formatter></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-4">Checksum:</div>
+                                                <div class="col-8">{{m.checksum}}</div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-4">Body:</div>
+                                                <div class="col-8"><pre>{{ renderBody(m) }}</pre></div>
+                                            </div>
+                                        </div>
+				  						<div class="btn-group float-right" role="group" ng-if="$first">
+										  <button type="button" class="btn btn-sm btn-primary" ng-click="openMoveModal(m)"><span class="oi oi-share" aria-hidden="true"></span>&nbsp;Move</button>
+										  <button type="button" class="btn btn-sm btn-primary" ng-click="openDeleteModal(m)"><span class="oi oi-trash" aria-hidden="true"></span>&nbsp;Delete</button>
 										</div>
 										<div class="clearfix"></div>
 			  						</div>

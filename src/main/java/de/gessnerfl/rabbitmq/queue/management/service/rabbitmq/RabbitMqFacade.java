@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.gessnerfl.rabbitmq.queue.management.model.Message;
+import de.gessnerfl.rabbitmq.queue.management.model.AmqpMessage;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Binding;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
@@ -45,7 +45,7 @@ public class RabbitMqFacade {
         return getManagementApi(brokerName).getQueueBindings(getVhost(brokerName), queueName);
     }
     
-    public List<Message> getMessagesOfQueue(String brokerName, String queueName, int limit){
+    public List<AmqpMessage> getMessagesOfQueue(String brokerName, String queueName, int limit){
         return operations.getMessagesOfQueue(brokerName, queueName, limit);
     }
     

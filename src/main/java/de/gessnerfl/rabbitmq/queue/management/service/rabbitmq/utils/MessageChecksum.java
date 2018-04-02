@@ -19,11 +19,11 @@ public class MessageChecksum {
   static final String PROPERTIES_KEY = "properties";
   static final String ALGORITHM = "{sha256}";
   
-  private final JsonSerializer jsonSerizizer;
+  private final JsonSerializer jsonSerializer;
   
   @Autowired
-  public MessageChecksum(JsonSerializer jsonSerizizer){
-    this.jsonSerizizer = jsonSerizizer;
+  public MessageChecksum(JsonSerializer jsonSerializer){
+    this.jsonSerializer = jsonSerializer;
   }
 
   public String createFor(BasicProperties props, byte[] body) {
@@ -35,7 +35,7 @@ public class MessageChecksum {
     Map<String,Object> data = new HashMap<>();
     data.put(PROPERTIES_KEY, props);
     data.put(BODY_KEY, encode(body));
-    return jsonSerizizer.toJson(data);
+    return jsonSerializer.toJson(data);
   }
 
   private String encode(byte[] body) {

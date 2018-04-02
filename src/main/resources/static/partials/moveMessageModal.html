@@ -2,8 +2,8 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
+        <h5 class="modal-title">Move Message</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Move Message</h4>
       </div>
       <div class="modal-body">
       	<div ng-if="error" class="alert alert-danger" role="alert">{{ error }}</div>
@@ -24,8 +24,8 @@
         </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp;No</button>
-        <button type="button" class="btn btn-success" ng-click="move($event)" ng-disabled="isTargetDefined()"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>&nbsp;Yes</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal"><span class="oi oi-x" aria-hidden="true"></span>&nbsp;No</button>
+        <button type="button" class="btn btn-success" ng-click="move($event)" ng-disabled="isTargetDefined()"><span class="oi oi-check" aria-hidden="true"></span>&nbsp;Yes</button>
       </div>
     </div>
   </div>

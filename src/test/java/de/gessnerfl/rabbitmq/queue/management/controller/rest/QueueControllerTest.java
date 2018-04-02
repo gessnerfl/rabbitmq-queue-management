@@ -14,7 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import de.gessnerfl.rabbitmq.queue.management.model.Message;
+import de.gessnerfl.rabbitmq.queue.management.model.AmqpMessage;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 
@@ -49,11 +49,11 @@ public class QueueControllerTest {
     
     @Test
     public void shouldDelegateCallToGetAllMessagesOfQueue(){
-        Message message = mock(Message.class);
-        List<Message> messages = Arrays.asList(message);
+        AmqpMessage message = mock(AmqpMessage.class);
+        List<AmqpMessage> messages = Arrays.asList(message);
         when(rabbitMqFacade.getMessagesOfQueue(BROKER, QUEUE, QueueController.DEFAULT_LIMIT)).thenReturn(messages);
         
-        List<Message> result = sut.getQueueMessages(BROKER, QUEUE);
+        List<AmqpMessage> result = sut.getQueueMessages(BROKER, QUEUE);
         
         assertSame(messages, result);
         verify(rabbitMqFacade).getMessagesOfQueue(BROKER, QUEUE, QueueController.DEFAULT_LIMIT);

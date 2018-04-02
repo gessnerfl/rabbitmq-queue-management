@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.7/dist/css/bootstrap.min.css}"></link>
-	<link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.7/dist/css/bootstrap-theme.min.css}"></link>
-	
-	<link rel="stylesheet" th:href="@{/css/customization.css}"></link>
+	<link rel="stylesheet" th:href="@{/webjars/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css}"></link>
+    <link rel="stylesheet" th:href="@{/css/custom-bootstrap-theme.css}"></link>
 
-	<script type="text/javascript" th:src="@{/webjars/jquery/3.1.0/dist/jquery.min.js}"></script>
-	<script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/dist/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" th:src="@{/webjars/jquery/3.3.1/dist/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/webjars/bootstrap/4.0.0/dist/js/bootstrap.min.js}"></script>
 	
 	<title>RabbitMQ :: Queue Management</title>
 
@@ -17,16 +15,16 @@
 
 <body>
 	<div th:replace="fragments/navbar :: navbar"></div>
-	<div class="container" style="margin-top:60px">
+	<div class="container-fluid" style="margin-top:60px">
         <div class="row">
-    		<div class="col-xs-12">
+    		<div class="col-12">
     			<ol class="breadcrumb">
-				  <li><a href="#"><i class="glyphicon glyphicon-home" aria-hidden="true"></i>&nbsp;Home</a></li>
+				  <li class="breadcrumb-item active"><a href="#"><i class="oi oi-home" aria-hidden="true"></i>&nbsp;Home</a></li>
 				</ol>
 			</div>
    		</div>
    		<div class="row">
-    		<div class="col-xs-12">
+    		<div class="col-12">
     			<h1>Select Broker</h1>
     			<div th:if="${#lists.isEmpty(brokers)}" class="alert alert-warning" role="alert">
     				<strong>Warning!</strong> No brokers available. Check your configuration

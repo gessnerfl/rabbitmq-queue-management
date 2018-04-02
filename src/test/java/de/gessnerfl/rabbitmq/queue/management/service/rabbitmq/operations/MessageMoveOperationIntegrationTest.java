@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.gessnerfl.rabbitmq.queue.management.model.Message;
+import de.gessnerfl.rabbitmq.queue.management.model.AmqpMessage;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 
 public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegrationTest {
@@ -30,16 +30,16 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
     public void shouldMoveMessage() throws Exception {
         publishMessages(1);
 
-        List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
-        List<Message> targetFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
+        List<AmqpMessage> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
+        List<AmqpMessage> targetFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
 
         assertThat(sourceFirstFetch, hasSize(1));
         assertThat(targetFirstFetch, empty());
 
         sut.moveFirstMessage(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, sourceFirstFetch.get(0).getChecksum(), EXCHANGE_NAME, TARGET_QUEUE_NAME);
 
-        List<Message> sourceSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
-        List<Message> targetSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
+        List<AmqpMessage> sourceSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
+        List<AmqpMessage> targetSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
 
         assertThat(sourceSecondFetch, empty());
         assertThat(targetSecondFetch, hasSize(1));
@@ -49,8 +49,8 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
     public void shouldFailToMoveMessageWhenExchangeIsNotValid() throws Exception {
         publishMessages(1);
 
-        List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
-        List<Message> targetFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
+        List<AmqpMessage> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
+        List<AmqpMessage> targetFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
 
         assertThat(sourceFirstFetch, hasSize(1));
         assertThat(targetFirstFetch, empty());
@@ -61,8 +61,8 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
         } catch (MessageOperationFailedException e) {
         }
 
-        List<Message> sourceSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
-        List<Message> targetSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
+        List<AmqpMessage> sourceSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
+        List<AmqpMessage> targetSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
 
         assertThat(sourceSecondFetch, hasSize(1));
         assertThat(targetSecondFetch, empty());
@@ -72,8 +72,8 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
     public void shouldFailToMoveMessageWhenNoQueueIsBoundToTheGivenRoutingKey() throws Exception {
         publishMessages(1);
 
-        List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
-        List<Message> targetFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
+        List<AmqpMessage> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
+        List<AmqpMessage> targetFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
 
         assertThat(sourceFirstFetch, hasSize(1));
         assertThat(targetFirstFetch, empty());
@@ -84,8 +84,8 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
         } catch (MessageOperationFailedException e) {
         }
 
-        List<Message> sourceSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
-        List<Message> targetSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
+        List<AmqpMessage> sourceSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 5);
+        List<AmqpMessage> targetSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, TARGET_QUEUE_NAME, 5);
 
         assertThat(sourceSecondFetch, hasSize(1));
         assertThat(targetSecondFetch, empty());

@@ -32,7 +32,7 @@ angular.module('rmqmgmt').directive('deleteMessageModal', function() {
             };
 
             $scope.onConfirm = function() {
-                var url = '/api/'+$scope.broker+'/queues/' + $scope.queue.name + '/messages?checksum=' + $scope.message.checksum;
+                var url = '/api/' + $scope.broker + '/queues/' + $scope.queue.name + '/messages?checksum=' + window.encodeURIComponent($scope.message.checksum);
                 modalRestExecutor('DELETE', url, $scope);
             };
 

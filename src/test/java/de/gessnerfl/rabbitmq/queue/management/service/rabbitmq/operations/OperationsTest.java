@@ -14,7 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import de.gessnerfl.rabbitmq.queue.management.model.Message;
+import de.gessnerfl.rabbitmq.queue.management.model.AmqpMessage;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OperationsTest {
@@ -37,12 +37,12 @@ public class OperationsTest {
     
     @Test
     public void shouldDelegateListOperation(){
-        Message message = mock(Message.class);
-        List<Message> messages = Arrays.asList(message);
+        AmqpMessage message = mock(AmqpMessage.class);
+        List<AmqpMessage> messages = Arrays.asList(message);
         
         when(queueListOperation.getMessagesFromQueue(BROKER_NAME, QUEUE_NAME, MAX_NUMBER_MESSAGE)).thenReturn(messages);
         
-        List<Message> result = sut.getMessagesOfQueue(BROKER_NAME, QUEUE_NAME, MAX_NUMBER_MESSAGE);
+        List<AmqpMessage> result = sut.getMessagesOfQueue(BROKER_NAME, QUEUE_NAME, MAX_NUMBER_MESSAGE);
         
         assertSame(messages, result);
         verify(queueListOperation).getMessagesFromQueue(BROKER_NAME, QUEUE_NAME, MAX_NUMBER_MESSAGE);

@@ -1,16 +1,19 @@
 buildscript {
-  ext { springBootVersion = '1.4.0.RELEASE' }
+  ext { springBootVersion = '2.0.0.RELEASE' }
   repositories { jcenter() }
   dependencies { classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") }
 }
 
 plugins {
   id "com.cinnober.gradle.semver-git" version "2.2.2"
+  id 'org.springframework.boot' version '2.0.0.RELEASE'
 }
 
+//apply plugin: 'java-library'
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply plugin: 'spring-boot'
+apply plugin: 'idea'
+apply plugin: 'io.spring.dependency-management'
 
 group = 'de.gessnerfl.rabbitmq'
 description = """RabbitMQ :: Queue Management :: List/Move/Delete dead messages from queues"""
@@ -25,24 +28,24 @@ repositories { jcenter() }
 
 dependencies {
   compile 'org.springframework.boot:spring-boot-starter-actuator'
-  compile 'org.springframework.boot:spring-boot-starter-remote-shell'
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
   compile 'org.springframework.boot:spring-boot-devtools'
-  compile 'io.github.openfeign:feign-core:9.3.1'
-  compile 'io.github.openfeign:feign-gson:9.3.1'
-  compile 'io.github.openfeign:feign-slf4j:9.3.1'
-  compile 'com.google.code.gson:gson:2.7'
-  compile 'commons-codec:commons-codec:1.10'
+  compile 'io.github.openfeign:feign-core:9.6.0'
+  compile 'io.github.openfeign:feign-gson:9.6.0'
+  compile 'io.github.openfeign:feign-slf4j:9.6.0'
+  compile 'com.google.code.gson:gson:2.8.2'
+  compile 'commons-codec:commons-codec:1.11'
 
-  compile 'org.webjars.bower:jquery:3.1.0'
-  compile 'org.webjars.bower:angularjs:1.5.8'
-  compile 'org.webjars.bower:angular-resource:1.5.8'
-  compile 'org.webjars.bower:bootstrap:3.3.7'
+  compile 'org.webjars.bower:jquery:3.3.1'
+  compile 'org.webjars.bower:angularjs:1.6.5'
+  compile 'org.webjars.bower:angular-resource:1.6.5'
+  compile 'org.webjars.bower:bootstrap:4.0.0'
+  compile 'org.webjars.bower:open-iconic:1.1.1'
   compile 'org.webjars.bower:json-formatter:0.6.0'
-  compile 'org.webjars.bower:js-base64:2.1.9'
+  compile 'org.webjars.bower:js-base64:2.3.2'
 
-  compile 'com.rabbitmq:amqp-client:3.6.5'
+  compile 'com.rabbitmq:amqp-client:5.2.0'
 
   testCompile 'org.springframework.boot:spring-boot-starter-test'
   testCompile 'org.hamcrest:hamcrest-core:1.3'
