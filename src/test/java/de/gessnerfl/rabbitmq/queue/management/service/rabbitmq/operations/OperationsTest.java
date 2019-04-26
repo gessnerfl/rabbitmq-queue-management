@@ -18,7 +18,7 @@ import de.gessnerfl.rabbitmq.queue.management.model.Message;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OperationsTest {
-    private final static String BROKER_NAME = "broker";
+    private final static String VHOST = "vhost";
     private final static String QUEUE_NAME = "queue";
     private final static int MAX_NUMBER_MESSAGE = 10;
     private final static String CHECKSUM = "checksum";
@@ -40,25 +40,25 @@ public class OperationsTest {
         Message message = mock(Message.class);
         List<Message> messages = Arrays.asList(message);
         
-        when(queueListOperation.getMessagesFromQueue(BROKER_NAME, QUEUE_NAME, MAX_NUMBER_MESSAGE)).thenReturn(messages);
+        when(queueListOperation.getMessagesFromQueue(VHOST, QUEUE_NAME, MAX_NUMBER_MESSAGE)).thenReturn(messages);
         
-        List<Message> result = sut.getMessagesOfQueue(BROKER_NAME, QUEUE_NAME, MAX_NUMBER_MESSAGE);
+        List<Message> result = sut.getMessagesOfQueue(VHOST, QUEUE_NAME, MAX_NUMBER_MESSAGE);
         
         assertSame(messages, result);
-        verify(queueListOperation).getMessagesFromQueue(BROKER_NAME, QUEUE_NAME, MAX_NUMBER_MESSAGE);
+        verify(queueListOperation).getMessagesFromQueue(VHOST, QUEUE_NAME, MAX_NUMBER_MESSAGE);
     }
     
     @Test
     public void shouldDelegateDeleteOperation(){
-        sut.deleteFirstMessageInQueue(BROKER_NAME, QUEUE_NAME, CHECKSUM);
+        sut.deleteFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM);
         
-        verify(messageDeleteOperation).deleteFirstMessageInQueue(BROKER_NAME, QUEUE_NAME, CHECKSUM);
+        verify(messageDeleteOperation).deleteFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM);
     }
     
     @Test
     public void shouldDelegateMoveOperation(){
-        sut.moveFirstMessageInQueue(BROKER_NAME, QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
+        sut.moveFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
         
-        verify(messageMoveOperation).moveFirstMessage(BROKER_NAME, QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
+        verify(messageMoveOperation).moveFirstMessage(VHOST, QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
     }
 }

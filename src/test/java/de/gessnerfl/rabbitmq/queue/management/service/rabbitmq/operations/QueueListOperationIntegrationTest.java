@@ -28,7 +28,7 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
         int expectedNumberOfMessages = QueueListOperation.DEFAULT_FETCH_COUNT;
         publishMessages(expectedNumberOfMessages);
 
-        List<Message> messages = sut.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, MAX_NUMBER_OF_MESSAGES);
+        List<Message> messages = sut.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, MAX_NUMBER_OF_MESSAGES);
 
         assertThat(messages, hasSize(expectedNumberOfMessages));
         for (int i = 0; i < expectedNumberOfMessages; i++) {
@@ -43,7 +43,7 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
         int expectedNumberOfMessages = QueueListOperation.DEFAULT_FETCH_COUNT - 1;
         publishMessages(expectedNumberOfMessages);
 
-        List<Message> messages = sut.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, MAX_NUMBER_OF_MESSAGES);
+        List<Message> messages = sut.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, MAX_NUMBER_OF_MESSAGES);
 
         assertThat(messages, hasSize(expectedNumberOfMessages));
         for (int i = 0; i < expectedNumberOfMessages; i++) {
@@ -58,7 +58,7 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
         int expectedNumberOfMessages = QueueListOperation.DEFAULT_FETCH_COUNT + 1;
         publishMessages(expectedNumberOfMessages);
 
-        List<Message> messages = sut.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, MAX_NUMBER_OF_MESSAGES);
+        List<Message> messages = sut.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, MAX_NUMBER_OF_MESSAGES);
 
         assertThat(messages, hasSize(QueueListOperation.DEFAULT_FETCH_COUNT));
         for (int i = 0; i < QueueListOperation.DEFAULT_FETCH_COUNT; i++) {
@@ -71,8 +71,8 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
     public void shouldNoChangeTheOrderOfMessages() throws Exception {
         publishMessages(2);
 
-        List<Message> firstFetch = sut.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 1);
-        List<Message> secondFetch = sut.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 2);
+        List<Message> firstFetch = sut.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 1);
+        List<Message> secondFetch = sut.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 2);
 
         assertThat(firstFetch, hasSize(1));
         assertThat(secondFetch, hasSize(2));
@@ -82,7 +82,7 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
 
     @Test
     public void shouldReturnEmptyListIfNoMessageIsAvailable(){
-        List<Message> firstFetch = sut.getMessagesFromQueue(RabbitMqTestEnvironment.BROKER, QUEUE_NAME, 1);
+        List<Message> firstFetch = sut.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 1);
         
         assertThat(firstFetch, empty());
     }

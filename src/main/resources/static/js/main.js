@@ -1,24 +1,15 @@
 var module = angular.module('rmqmgmt', ['jsonFormatter']);
 module.controller('main', function($scope, $http, $location) {
 	
-	$scope.queuesFound = false;
-	
 	$scope.init = function(){
-	    $scope.brokerName = getParameterByName("selected");
-	    if(isEmptyString($scope.brokerName)){
+	    $scope.queueName = getParameterByName("qname");
+	    $scope.vhost = getParameterByName("vhost");
+	    if(isEmptyString($scope.vhost) || isEmptyString($scope.queueName)){
 	        window.location = "/";
 	    }
-		$http.get('/api/'+$scope.brokerName+'/queues').then(function(response) { 
-	    	if(response.data !== undefined && response.data.length > 0){
-	    		$scope.queues = response.data;
-	    		$scope.queuesFound = true;
-	    	}else{
-	    		$scope.queues = undefined;
-	    		$scope.queuesFound = false;
-	    	}
-	    });
+
+		$scope.loadMessages();
 	};
-	$scope.init();
 	
 	function getParameterByName(name) {
 	    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
@@ -29,21 +20,8 @@ module.controller('main', function($scope, $http, $location) {
 	    return str === undefined || str === null || str.trim().length === 0;
 	}
 	
-	$scope.isQueueSelected = function(q){
-	    return $scope.selectedQueue !== undefined && $scope.selectedQueue.name === q.name;
-	};
-	
-	$scope.selectQueue = function(q){
-	    $scope.selectedQueue = q;
-		if($scope.selectedQueue !== undefined){
-			$scope.loadMessages();
-		}else{
-			$scope.clearMessages();
-		}
-	};
-	
 	$scope.loadMessages = function(){
-		$http.get('/api/'+$scope.brokerName+'/queues/'+$scope.selectedQueue.name+"/messages").then(function(response) {
+		$http.get('/api/queues/' + encodeURIComponent($scope.vhost) + '/' + encodeURIComponent($scope.queueName) + "/messages").then(function(response) {
 	    	if(response.data !== undefined && response.data.length > 0){
 	    		$scope.renderMessages(response.data);
 	    	}else{
@@ -51,11 +29,11 @@ module.controller('main', function($scope, $http, $location) {
 	    	}
 	    });
 	};
-	
+
 	$scope.hasDlx = function(queue){
 	    return queue.arguments !== undefined && queue.arguments["x-dead-letter-exchange"] !== undefined;
 	};
-    
+
     $scope.hasDlk = function(queue){
         return queue.arguments !== undefined && queue.arguments["x-dead-letter-routing-key"] !== undefined;
     };
@@ -94,5 +72,6 @@ module.controller('main', function($scope, $http, $location) {
 		$scope.selectedMessage = m;
 		$("#deleteMessageModal > .modal").modal('show');
 	};
+	$scope.init();
     
 });

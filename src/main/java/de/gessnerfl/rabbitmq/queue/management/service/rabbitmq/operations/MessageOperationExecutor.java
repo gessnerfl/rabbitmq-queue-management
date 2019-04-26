@@ -23,8 +23,8 @@ public class MessageOperationExecutor {
         this.messageChecksum = messageChecksum;
     }
     
-    public void consumeMessageApplyFunctionAndAckknowlegeOnSuccess(String brokerName, String queueName, String expectedChecksum, MessageOperationFunction fn){
-        try (CloseableChannelWrapper wrapper = connector.connectAsClosable(brokerName)) {
+    public void consumeMessageApplyFunctionAndAckknowlegeOnSuccess(String vhost, String queueName, String expectedChecksum, MessageOperationFunction fn){
+        try (CloseableChannelWrapper wrapper = connector.connectAsClosable(vhost)) {
             Channel channel = wrapper.getChannel();
             GetResponse response = getFirstMessage(queueName, channel);
             String checksum = messageChecksum.createFor(response.getProps(), response.getBody());

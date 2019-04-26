@@ -7,8 +7,7 @@
 
 RabbitMQ does not provide tooling to re-queue or move messages out of the box. However this can by quite handy when working e.g. with dead letter queues/exchanges. This tool tries to close this gap. By offering the following features
 
-* Multi-Broker Support
-* List queues of broker
+* List queues of a RabbitMQ 
 * List messages of queues
 * Delete first message from queue
 * Move first message from queue
@@ -55,16 +54,15 @@ The configuration file application.properties can be placed next to the applicat
 
 The following paragraphs describe the application specific resp. pre-defined configuration parameters. If more configuration e.g. authentication is needed please check the Spring Boot Documentation for more detail.
 
-## Brokers
-The following snippet shows the configuration of a broker with its default values. You can configure different brokers by using different broker names.
+## RabbitMQ Connection setup
+The following snippet shows the configuration of a RabbitMQ connection with its default values.
 
-    de.gessnerfl.rabbitmq.brokers.<broker_name>.hostname=                   #The hostname of the broker
-    de.gessnerfl.rabbitmq.brokers.<broker_name>.port=5672                   #AMQP Port number
-    de.gessnerfl.rabbitmq.brokers.<broker_name>.managementPort=15672        #RabbitMQ management port number
-    de.gessnerfl.rabbitmq.brokers.<broker_name>.managemnetPortSecured=false #Indicator if the management interface is accessible via http (false) or https (true)
-    de.gessnerfl.rabbitmq.brokers.<broker_name>.vhost=/                     #Virtual host of the broker
-    de.gessnerfl.rabbitmq.brokers.<broker_name>.username=guest              #Username for connection to the broker
-    de.gessnerfl.rabbitmq.brokers.<broker_name>.password=guest              #Password for connection to the broker
+    de.gessnerfl.rabbitmq.hostname=                   #The hostname of the rabbitmq host
+    de.gessnerfl.rabbitmq.port=5672                   #AMQP Port number
+    de.gessnerfl.rabbitmq.managementPort=15672        #RabbitMQ management port number
+    de.gessnerfl.rabbitmq.managemnetPortSecured=false #Indicator if the management interface is accessible via http (false) or https (true)
+    de.gessnerfl.rabbitmq.username=guest              #Username for connection to rabbitmq host
+    de.gessnerfl.rabbitmq.password=guest              #Password for connection to rabbitmq host
 
 
 ## Web UI

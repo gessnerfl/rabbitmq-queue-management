@@ -10,8 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApi;
-import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApiUrlBuilder;
 import feign.Feign;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -27,16 +25,15 @@ public class ManagementApiFactoryTest {
 
     @Test
     public void shouldCreateNewInstance() {
-        String brokerName = "foo";
         String url = "bar";
-        when(managementApiUrlBuilder.buildForConfiguration(brokerName)).thenReturn(url);
+        when(managementApiUrlBuilder.buildForConfiguration()).thenReturn(url);
 
         ManagementApi api = mock(ManagementApi.class);
         Feign.Builder feignBuilder = mock(Feign.Builder.class);
         when(feignBuilder.target(ManagementApi.class, url)).thenReturn(api);
-        when(feignBuilderFactory.createFor(brokerName)).thenReturn(feignBuilder);
+        when(feignBuilderFactory.createFor()).thenReturn(feignBuilder);
 
-        ManagementApi result = sut.createFor(brokerName);
+        ManagementApi result = sut.createFor();
 
         assertSame(api, result);
     }

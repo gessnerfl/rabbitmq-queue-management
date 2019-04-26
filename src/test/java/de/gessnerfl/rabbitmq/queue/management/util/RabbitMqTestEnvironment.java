@@ -21,7 +21,7 @@ public class RabbitMqTestEnvironment {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(RabbitMqTestEnvironment.class);
 
-    public final static String BROKER = "local";
+    public final static String VHOST = "/";
     
     public final static boolean EXCHANGE_DURABLE = false;
     public final static boolean EXCHANGE_AUTO_DELETE = true;
@@ -51,7 +51,7 @@ public class RabbitMqTestEnvironment {
     }
 
     public void setup() {
-        try (CloseableChannelWrapper wrapper = connector.connectAsClosable(BROKER)) {
+        try (CloseableChannelWrapper wrapper = connector.connectAsClosable(VHOST)) {
             Channel channel = wrapper.getChannel();
             declareExchanges(channel);
             declareQueues(channel);
@@ -96,7 +96,7 @@ public class RabbitMqTestEnvironment {
     }
 
     public void cleanup() {
-        try (CloseableChannelWrapper wrapper = connector.connectAsClosable(BROKER)) {
+        try (CloseableChannelWrapper wrapper = connector.connectAsClosable(VHOST)) {
             Channel channel = wrapper.getChannel();
             deleteQueues(channel);
             deleteExchanges(channel);
@@ -131,7 +131,7 @@ public class RabbitMqTestEnvironment {
     }
     
     public void publishMessages(String exchange, String routingKey, int numberOfMessages) {
-        try (CloseableChannelWrapper wrapper = connector.connectAsClosable(BROKER)) {
+        try (CloseableChannelWrapper wrapper = connector.connectAsClosable(VHOST)) {
             Channel channel = wrapper.getChannel();
             for (int i = 0; i < numberOfMessages; i++) {
                 publishMessage(channel, exchange, routingKey, i);
@@ -140,7 +140,7 @@ public class RabbitMqTestEnvironment {
     }
     
     public void publishMessage(String exchange, String routingKey) {
-        try (CloseableChannelWrapper wrapper = connector.connectAsClosable(BROKER)) {
+        try (CloseableChannelWrapper wrapper = connector.connectAsClosable(VHOST)) {
             Channel channel = wrapper.getChannel();
             publishMessage(channel, exchange, routingKey, 1);
         }

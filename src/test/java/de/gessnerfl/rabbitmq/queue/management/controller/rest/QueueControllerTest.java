@@ -21,7 +21,7 @@ import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 @RunWith(MockitoJUnitRunner.class)
 public class QueueControllerTest {
     
-    private final static String BROKER = "broker";
+    private final static String VHOST = "vhost";
     
     private final static String QUEUE = "queue";
     private final static String CHECKSUM = "checksum";
@@ -39,37 +39,37 @@ public class QueueControllerTest {
         Queue queue = mock(Queue.class);
         List<Queue> queues = Arrays.asList(queue);
         
-        when(rabbitMqFacade.getQueues(BROKER)).thenReturn(queues);
+        when(rabbitMqFacade.getQueues(VHOST)).thenReturn(queues);
         
-        List<Queue> result = sut.getQueues(BROKER);
+        List<Queue> result = sut.getQueuesOfVirtualHost(VHOST);
         
         assertSame(queues, result);
-        verify(rabbitMqFacade).getQueues(BROKER);
+        verify(rabbitMqFacade).getQueues(VHOST);
     }
     
     @Test
     public void shouldDelegateCallToGetAllMessagesOfQueue(){
         Message message = mock(Message.class);
         List<Message> messages = Arrays.asList(message);
-        when(rabbitMqFacade.getMessagesOfQueue(BROKER, QUEUE, QueueController.DEFAULT_LIMIT)).thenReturn(messages);
+        when(rabbitMqFacade.getMessagesOfQueue(VHOST, QUEUE, QueueController.DEFAULT_LIMIT)).thenReturn(messages);
         
-        List<Message> result = sut.getQueueMessages(BROKER, QUEUE);
+        List<Message> result = sut.getQueueMessages(VHOST, QUEUE);
         
         assertSame(messages, result);
-        verify(rabbitMqFacade).getMessagesOfQueue(BROKER, QUEUE, QueueController.DEFAULT_LIMIT);
+        verify(rabbitMqFacade).getMessagesOfQueue(VHOST, QUEUE, QueueController.DEFAULT_LIMIT);
     }
 
     @Test
     public void shouldDelegateCallToDeleteMessage(){
-        sut.deleteFirstMessageInQueue(BROKER, QUEUE, CHECKSUM);
+        sut.deleteFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
         
-        verify(rabbitMqFacade).deleteFirstMessageInQueue(BROKER, QUEUE, CHECKSUM);
+        verify(rabbitMqFacade).deleteFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
     }
     
     @Test
     public void shouldDelegateCallToMoveMessage(){
-        sut.moveFirstMessageInQueue(BROKER, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
+        sut.moveFirstMessageInQueue(VHOST, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
         
-        verify(rabbitMqFacade).moveFirstMessageInQueue(BROKER, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
+        verify(rabbitMqFacade).moveFirstMessageInQueue(VHOST, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
     }
 }

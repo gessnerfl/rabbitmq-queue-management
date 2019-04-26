@@ -4,7 +4,7 @@ angular.module('rmqmgmt').directive('deleteMessageModal', function() {
         restrict : 'A',
         templateUrl : '/partials/deleteMessageModal.html',
         scope : {
-            broker : '=broker',
+            vhost : '=vhost',
             queue : '=queue',
             message : '=message',
             successCallback : '=successCallback'
@@ -32,7 +32,7 @@ angular.module('rmqmgmt').directive('deleteMessageModal', function() {
             };
 
             $scope.onConfirm = function() {
-                var url = '/api/' + $scope.broker + '/queues/' + $scope.queue.name + '/messages?checksum=' + window.encodeURIComponent($scope.message.checksum);
+                var url = '/api/queues/' + window.encodeURIComponent($scope.vhost) + '/' + window.encodeURIComponent($scope.queue.name) + '/messages?checksum=' + window.encodeURIComponent($scope.message.checksum);
                 modalRestExecutor('DELETE', url, $scope);
             };
 

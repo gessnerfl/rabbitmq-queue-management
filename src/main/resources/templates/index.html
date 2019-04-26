@@ -25,16 +25,26 @@
    		</div>
    		<div class="row">
     		<div class="col-12">
-    			<h1>Select Broker</h1>
-    			<div th:if="${#lists.isEmpty(brokers)}" class="alert alert-warning" role="alert">
-    				<strong>Warning!</strong> No brokers available. Check your configuration
+    			<h1>All Queues</h1>
+    			<div th:if="${#lists.isEmpty(queues)}" class="alert alert-warning" role="alert">
+    				<strong>Warning!</strong> No queues are available. Check your configuration
     			</div>
-    			<div th:if="${not #lists.isEmpty(brokers)}" class="list-group">
-					<a  th:each="broker : ${brokers}" th:href="${'/broker?selected=' + broker.name}" class="list-group-item">
-						<h4 class="list-group-item-heading" th:text="${broker.name}">Broker Name</h4>
-						<p class="list-group-item-text" th:text="${broker.displayName}">Broker Display Name</p>
-					</a>
-				</div>
+    			<table th:if="${not #lists.isEmpty(queues)}" class="table">
+					<thead>
+						<tr>
+							<th>Vhost</th>
+							<th>Name</th>
+							<th>Attribute</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="queue : ${queues}">
+							<td th:text="${queue.vhost}"></td>
+							<td><a th:href="@{/queue-management(qname=${queue.name},vhost=${queue.vhost})}" th:text="${queue.name}"></a></td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
     		</div>
    		</div>
     </div>

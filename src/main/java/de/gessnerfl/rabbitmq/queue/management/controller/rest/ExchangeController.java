@@ -21,14 +21,14 @@ public class ExchangeController {
         this.facade = facade;
     }
 
-    @GetMapping("/api/{broker}/exchanges")
-    public List<Exchange> getExchanges(@PathVariable String broker) {
-        return facade.getExchanges(broker);
+    @GetMapping("/api/{vhost}/exchanges")
+    public List<Exchange> getExchanges(@PathVariable String vhost) {
+        return facade.getExchanges(vhost);
     }
 
-    @GetMapping("/api/{broker}/exchanges/{exchange}/routingKeys")
-    public List<String> getSourceBindings(@PathVariable String broker, @PathVariable String exchange) {
-        return facade.getExchangeSourceBindings(broker, exchange)
+    @GetMapping("/api/exchanges/{vhost}/{exchange}/routingKeys")
+    public List<String> getSourceBindings(@PathVariable String vhost, @PathVariable String exchange) {
+        return facade.getExchangeSourceBindings(vhost, exchange)
                 .stream()
                 .map(b -> b.getRoutingKey())
                 .distinct()
