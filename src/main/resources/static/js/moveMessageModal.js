@@ -24,7 +24,7 @@ angular.module('rmqmgmt').directive('moveMessageModal', function() {
             
             $scope.loadExchanges = function(){
                 if($scope.vhost !== undefined){
-                    $http.get('/api/exchanges/' + window.encodeURIComponent($scope.vhost)).then(function(response) {
+                    $http.get('/api/exchanges?vhost=' + window.encodeURIComponent($scope.vhost)).then(function(response) {
                         if(response.data !== undefined && response.data.length > 0){
                             $scope.exchanges = response.data;
                         }
@@ -46,7 +46,7 @@ angular.module('rmqmgmt').directive('moveMessageModal', function() {
             
             $scope.onExchangeSelected = function(){
                 if($scope.targetExchange !== undefined){
-                    $http.get('/api/exchanges/' + window.encodeURIComponent($scope.vhost) + '/' + window.encodeURIComponent($scope.targetExchange.name) + "/routingKeys").then(function(response) {
+                    $http.get('/api/routingKeys?vhost=' + window.encodeURIComponent($scope.vhost) + '&exchange=' + window.encodeURIComponent($scope.targetExchange.name)).then(function(response) {
                         if(response.data !== undefined && response.data.length > 0){
                             $scope.routingKeys = response.data;
                         }
@@ -57,20 +57,6 @@ angular.module('rmqmgmt').directive('moveMessageModal', function() {
             $scope.isRoutingKeySelectionDisabled = function(){
                 return $scope.targetExchange === undefined || $scope.routingKeys === undefined || $scope.routingKeys.length == 0;
             };
-
-            $scope.getQueueName = function() {
-                if ($scope.queue !== undefined) {
-                    return $scope.queue.name;
-                }
-                return "<queue missing>"
-            };
-
-            $scope.getChecksum = function() {
-                if ($scope.message !== undefined) {
-                    return $scope.message.checksum;
-                }
-                return "<message missing>"
-            };
             
             $scope.isTargetDefined = function(){
                 return $scope.targetExchange === undefined || $scope.targetRoutingKey === undefined;
@@ -78,9 +64,9 @@ angular.module('rmqmgmt').directive('moveMessageModal', function() {
 
             $scope.move = function($event) {
                 if (!($($event.currentTarget).hasClass('disabled'))){
-                    var url = '/api/queues/' + window.encodeURIComponent($scope.vhost) +
-                                '/' + window.encodeURIComponent($scope.queue.name) +
-                                '/messages/move?checksum=' + window.encodeURIComponent($scope.message.checksum) +
+                    var url = '/api/messages/move?vhost=' + window.encodeURIComponent($scope.vhost) +
+                                '&queue=' + window.encodeURIComponent($scope.queue) +
+                                '&checksum=' + window.encodeURIComponent($scope.message.checksum) +
                                 '&targetExchange=' + window.encodeURIComponent($scope.targetExchange.name) +
                                 "&targetRoutingKey=" + window.encodeURIComponent($scope.targetRoutingKey);
                     modalRestExecutor('POST', url, $scope);

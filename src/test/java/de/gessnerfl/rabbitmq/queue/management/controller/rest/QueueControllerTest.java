@@ -33,15 +33,28 @@ public class QueueControllerTest {
     
     @InjectMocks
     private QueueController sut;
-    
+
     @Test
     public void shouldDelegateCallToGetAllQueues(){
+        Queue queue = mock(Queue.class);
+        List<Queue> queues = Arrays.asList(queue);
+
+        when(rabbitMqFacade.getQueues()).thenReturn(queues);
+
+        List<Queue> result = sut.getQueues("");
+
+        assertSame(queues, result);
+        verify(rabbitMqFacade).getQueues();
+    }
+    
+    @Test
+    public void shouldDelegateCallToGetAllQueuesOfVhost(){
         Queue queue = mock(Queue.class);
         List<Queue> queues = Arrays.asList(queue);
         
         when(rabbitMqFacade.getQueues(VHOST)).thenReturn(queues);
         
-        List<Queue> result = sut.getQueuesOfVirtualHost(VHOST);
+        List<Queue> result = sut.getQueues(VHOST);
         
         assertSame(queues, result);
         verify(rabbitMqFacade).getQueues(VHOST);

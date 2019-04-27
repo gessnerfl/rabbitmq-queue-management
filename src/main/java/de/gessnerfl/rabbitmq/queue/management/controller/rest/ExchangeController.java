@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
+
+import static de.gessnerfl.rabbitmq.queue.management.controller.rest.QueryParameters.*;
 
 @RestController
 public class ExchangeController {
@@ -21,13 +21,13 @@ public class ExchangeController {
         this.facade = facade;
     }
 
-    @GetMapping("/api/{vhost}/exchanges")
-    public List<Exchange> getExchanges(@PathVariable String vhost) {
+    @GetMapping("/api/exchanges")
+    public List<Exchange> getExchanges(@RequestParam(name = VHOST, required = true) String vhost) {
         return facade.getExchanges(vhost);
     }
 
-    @GetMapping("/api/exchanges/{vhost}/{exchange}/routingKeys")
-    public List<String> getSourceBindings(@PathVariable String vhost, @PathVariable String exchange) {
+    @GetMapping("/api/routingKeys")
+    public List<String> getSourceBindings(@RequestParam(name = VHOST, required = true) String vhost, @RequestParam(name = EXCHANGE, required = true) String exchange) {
         return facade.getExchangeSourceBindings(vhost, exchange)
                 .stream()
                 .map(b -> b.getRoutingKey())

@@ -7,8 +7,8 @@
       </div>
       <div class="modal-body">
       	<div ng-if="error" class="alert alert-danger" role="alert">{{ error }}</div>
-        <p>Move the first message of queue <b>{{ getQueueName() }}</b> with the checksum</p> 
-        <pre>{{ getChecksum() }}</pre>
+        <p>Move the first message of queue <b>{{ queue }}</b> with the checksum</p>
+        <pre>{{ message.checksum }}</pre>
         
         <p>
         	<b><span class="badge">1</span> Select Target Exchange:</b>

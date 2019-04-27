@@ -21,7 +21,7 @@ module.controller('main', function($scope, $http, $location) {
 	}
 	
 	$scope.loadMessages = function(){
-		$http.get('/api/queues/' + encodeURIComponent($scope.vhost) + '/' + encodeURIComponent($scope.queueName) + "/messages").then(function(response) {
+		$http.get('/api/messages?vhost=' + encodeURIComponent($scope.vhost) + '&queue=' + encodeURIComponent($scope.queueName)).then(function(response) {
 	    	if(response.data !== undefined && response.data.length > 0){
 	    		$scope.renderMessages(response.data);
 	    	}else{

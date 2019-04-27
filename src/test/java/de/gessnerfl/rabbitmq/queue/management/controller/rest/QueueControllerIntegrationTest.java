@@ -25,8 +25,10 @@ import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
 
+import static de.gessnerfl.rabbitmq.queue.management.controller.rest.QueryParameters.*;
+
 public class QueueControllerIntegrationTest extends AbstractControllerIntegrationTest {
-    private final static String VHOST = "%2F";
+    private final static String VHOST_NAME = "/";
     private final static String EXCHANGE_NAME = "test.ex";
     private final static String QUEUE_IN_NAME = "test.controller.in";
     private final static String QUEUE_OUT_NAME = "test.controller.out";
@@ -62,7 +64,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
     
     @Test
     public void shouldReturnAllQueues() throws Exception {
-        mockMvc.perform(get("/api/"+ VHOST +"/queues"))
+        mockMvc.perform(get("/api/queues"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(contentType))
             .andExpect(jsonPath(ALL_QUEUES_JSON_PATH_FILTER, hasSize(2)))
@@ -77,10 +79,28 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
             .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER+".autoDelete", contains(true)))
             .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER+".exclusive", contains(false)));
     }
+
+    @Test
+    public void shouldReturnAllQueuesOfVhost() throws Exception {
+        mockMvc.perform(get("/api/queues").param(VHOST, VHOST_NAME))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath(ALL_QUEUES_JSON_PATH_FILTER, hasSize(2)))
+                .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER+".name", contains(QUEUE_IN_NAME)))
+                .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER+".vhost", contains(VHOST_NAME)))
+                .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER+".durable", contains(false)))
+                .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER+".autoDelete", contains(true)))
+                .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER+".exclusive", contains(false)))
+                .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER+".name", contains(QUEUE_OUT_NAME)))
+                .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER+".vhost", contains(VHOST_NAME)))
+                .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER+".durable", contains(false)))
+                .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER+".autoDelete", contains(true)))
+                .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER+".exclusive", contains(false)));
+    }
     
     @Test
     public void shouldReturnEmptyListWhenQueueIsEmpty() throws Exception {
-        mockMvc.perform(get("/api/"+ VHOST +"/queues/"+QUEUE_IN_NAME+"/messages"))
+        mockMvc.perform(get("/api/messages").param(VHOST, VHOST_NAME).param(QUEUE, QUEUE_IN_NAME))
             .andExpect(status().isOk())
             .andExpect(content().contentType(contentType))
             .andExpect(jsonPath("$", empty()));
@@ -89,7 +109,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
     @Test
     public void shouldReturnMessagesOfQueue() throws Exception {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
-        mockMvc.perform(get("/api/"+ VHOST +"/queues/"+QUEUE_IN_NAME+"/messages"))
+        mockMvc.perform(get("/api/messages").param(VHOST, VHOST_NAME).param(QUEUE, QUEUE_IN_NAME))
             .andExpect(status().isOk())
             .andExpect(content().contentType(contentType))
             .andExpect(jsonPath("$", hasSize(1)));
@@ -99,32 +119,34 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
     public void shouldDeleteMessageFromQueue() throws Exception {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
         
-        List<Message> messages = facade.getMessagesOfQueue(VHOST, QUEUE_IN_NAME, 1);
+        List<Message> messages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, 1);
         assertThat(messages, hasSize(1));
         Message message = messages.get(0);
         
-        mockMvc.perform(delete("/api/"+ VHOST +"/queues/"+QUEUE_IN_NAME+"/messages").param("checksum", message.getChecksum()))
+        mockMvc.perform(delete("/api/messages").param(VHOST, VHOST_NAME).param(QUEUE, QUEUE_IN_NAME).param(CHECKSUM, message.getChecksum()))
             .andExpect(status().isOk());
         
-        assertThat(facade.getMessagesOfQueue(VHOST, QUEUE_IN_NAME, 1), empty());
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, 1), empty());
     }
     
     @Test
     public void shouldMoveMessageFromQueueInToQueueOut() throws Exception {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
         
-        List<Message> messages = facade.getMessagesOfQueue(VHOST, QUEUE_IN_NAME, 1);
+        List<Message> messages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, 1);
         assertThat(messages, hasSize(1));
-        assertThat(facade.getMessagesOfQueue(VHOST, QUEUE_OUT_NAME, 1), empty());
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_OUT_NAME, 1), empty());
         Message message = messages.get(0);
         
-        mockMvc.perform(post("/api/"+ VHOST +"/queues/"+QUEUE_IN_NAME+"/messages/move")
-                            .param("checksum", message.getChecksum())
+        mockMvc.perform(post("/api/messages/move")
+                            .param(VHOST, VHOST_NAME)
+                            .param(QUEUE, QUEUE_IN_NAME)
+                            .param(CHECKSUM, message.getChecksum())
                             .param("targetExchange", EXCHANGE_NAME)
                             .param("targetRoutingKey", QUEUE_OUT_NAME))
             .andExpect(status().isOk());
         
-        assertThat(facade.getMessagesOfQueue(VHOST, QUEUE_IN_NAME, 1), empty());
-        assertThat(facade.getMessagesOfQueue(VHOST, QUEUE_OUT_NAME, 1), hasSize(1));
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, 1), empty());
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_OUT_NAME, 1), hasSize(1));
     }
 }
