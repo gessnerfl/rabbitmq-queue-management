@@ -1,7 +1,10 @@
 buildscript {
   ext { springBootVersion = '2.1.4.RELEASE' }
   repositories { jcenter() }
-  dependencies { classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") }
+  dependencies { 
+    classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    classpath("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7")
+  }
 }
 
 plugins {
@@ -14,6 +17,8 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'jacoco'
+apply plugin: 'org.sonarqube'
 
 group = 'de.gessnerfl.rabbitmq'
 description = """RabbitMQ :: Queue Management :: List/Move/Delete dead messages from queues"""
@@ -64,4 +69,11 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
   archives sourcesJar
   archives javadocJar
+}
+
+sonarqube {
+  properties {
+    property "sonar.projectName", "RabbitMQ Queue Managment"
+    property "sonar.projectKey", "de.gessnerfl.rabbitmq-queue-management"
+  }
 }
