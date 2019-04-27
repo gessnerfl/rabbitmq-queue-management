@@ -2,10 +2,10 @@ package de.gessnerfl.rabbitmq.queue.management.controller.rest;
 
 public final class QueryParameters {
 
-    public final static String VHOST = "vhost";
-    public final static String EXCHANGE = "exchange";
-    public final static String QUEUE = "queue";
-    public final static String CHECKSUM = "checksum";
+    public static final String VHOST = "vhost";
+    public static final String EXCHANGE = "exchange";
+    public static final String QUEUE = "queue";
+    public static final String CHECKSUM = "checksum";
 
     private QueryParameters(){}
 }

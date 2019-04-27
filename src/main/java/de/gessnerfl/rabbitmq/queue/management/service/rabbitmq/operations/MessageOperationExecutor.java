@@ -35,10 +35,9 @@ public class MessageOperationExecutor {
                 channel.basicNack(response.getEnvelope().getDeliveryTag(), false, true);
                 throw new MessageOperationFailedException("Checksum does not match");
             }
+        } catch (MessageOperationFailedException e) {
+            throw e;
         } catch (Exception e) {
-            if(e instanceof MessageOperationFailedException){
-                throw (MessageOperationFailedException)e;
-            }
             throw new MessageOperationFailedException(e);
         }
     }

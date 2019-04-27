@@ -13,7 +13,7 @@ import com.rabbitmq.client.ConnectionFactory;
 public class ConnectionFactories {
     private final RabbitMqConfig configuration;
 
-    private ConcurrentMap<String, ConnectionFactory> connectionFactories = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, ConnectionFactory> connectionsByVirtualHost = new ConcurrentHashMap<>();
     
     @Autowired
     public ConnectionFactories(RabbitMqConfig configuration) {
@@ -21,7 +21,7 @@ public class ConnectionFactories {
     }
     
     public ConnectionFactory getOrCreate(String vhost){
-        return connectionFactories.computeIfAbsent(vhost, this::createFor);
+        return connectionsByVirtualHost.computeIfAbsent(vhost, this::createFor);
     }
     
     private ConnectionFactory createFor(String vhost){
