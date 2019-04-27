@@ -5,8 +5,8 @@ import java.util.Map;
 import com.google.gson.annotations.SerializedName;
 
 public class Queue {
-  public final static String DEAD_LETTER_EXCHANGE_ARGUMENT = "x-dead-letter-exchange";
-  public final static String DEAD_LETTER_ROUTINGKEY_ARGUMENT = "x-dead-letter-routing-key";
+  public static final String DEAD_LETTER_EXCHANGE_ARGUMENT = "x-dead-letter-exchange";
+  public static final String DEAD_LETTER_ROUTINGKEY_ARGUMENT = "x-dead-letter-routing-key";
   
   private String name;
   private String vhost;

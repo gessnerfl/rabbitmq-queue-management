@@ -10,7 +10,7 @@ import com.rabbitmq.client.Channel;
 
 public class CloseableChannelWrapper implements AutoCloseable {
 
-	private final static Logger LOGGER = LoggerFactory.getLogger(CloseableChannelWrapper.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CloseableChannelWrapper.class);
 	private final Channel delegate;
 
 	public CloseableChannelWrapper(Channel delegate) {

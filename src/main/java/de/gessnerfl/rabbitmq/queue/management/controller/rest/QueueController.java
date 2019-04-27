@@ -37,12 +37,12 @@ public class QueueController {
         return facade.getMessagesOfQueue(vhost, queue, DEFAULT_LIMIT);
     }
     
-    @RequestMapping(value = "/api/messages", method = RequestMethod.DELETE)
+    @DeleteMapping("/api/messages")
     public void deleteFirstMessageInQueue(@RequestParam(name = VHOST, required = true) String vhost, @RequestParam(name = QUEUE, required = true) String queue, @RequestParam(value=CHECKSUM, required=true) String checksum){
         facade.deleteFirstMessageInQueue(vhost, queue, checksum);
     }
     
-    @RequestMapping(value = "/api/messages/move", method = RequestMethod.POST)
+    @PostMapping("/api/messages/move")
     public void moveFirstMessageInQueue(@RequestParam(name = VHOST, required = true) String vhost,
                                         @RequestParam(name = QUEUE, required = true) String queue,
                                         @RequestParam(value="checksum", required=true) String checksum,

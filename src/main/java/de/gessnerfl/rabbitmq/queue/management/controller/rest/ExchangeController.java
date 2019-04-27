@@ -3,6 +3,7 @@ package de.gessnerfl.rabbitmq.queue.management.controller.rest;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Binding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class ExchangeController {
     public List<String> getSourceBindings(@RequestParam(name = VHOST, required = true) String vhost, @RequestParam(name = EXCHANGE, required = true) String exchange) {
         return facade.getExchangeSourceBindings(vhost, exchange)
                 .stream()
-                .map(b -> b.getRoutingKey())
+                .map(Binding::getRoutingKey)
                 .distinct()
                 .collect(Collectors.toList());
     }

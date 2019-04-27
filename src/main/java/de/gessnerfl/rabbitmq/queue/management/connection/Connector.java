@@ -18,7 +18,7 @@ import com.rabbitmq.client.ConnectionFactory;
 
 @Service
 public class Connector {
-    private final static Logger LOGGER = LoggerFactory.getLogger(Connector.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Connector.class);
 
     private final ConnectionFactories connectionFactories;
 
