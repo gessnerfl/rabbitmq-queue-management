@@ -64,8 +64,12 @@ public class Queue {
     this.arguments = arguments;
   }
 
-  public boolean isDeadLettered(){
+  public boolean isDeadLetterExchangeConfigured(){
     return arguments != null && arguments.containsKey(DEAD_LETTER_EXCHANGE_ARGUMENT);
+  }
+
+  public boolean isDeadLetterRoutingKeyConfigured(){
+    return arguments != null && arguments.containsKey(DEAD_LETTER_ROUTINGKEY_ARGUMENT);
   }
 
 }

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+	<link rel="stylesheet" th:href="@{/css/customization.css}"></link>
 	<link rel="stylesheet" th:href="@{/webjars/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css}"></link>
 	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.3.0/dist/css/bootstrap.min.css}"></link>
 
@@ -13,9 +14,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 
-<body>
+<body class="bg-light">
 	<div th:replace="fragments/navbar :: navbar"></div>
-	<div class="container" style="margin-top:60px">
+	<div class="container main">
    		<div class="row">
     		<div class="col-12">
     			<h1>All Queues</h1>
@@ -27,14 +28,18 @@
 						<tr>
 							<th>Vhost</th>
 							<th>Name</th>
-							<th>Attribute</th>
+							<th>Attributes</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr th:each="queue : ${queues}">
 							<td th:text="${queue.vhost}"></td>
 							<td><a th:href="@{/queue-management(qname=${queue.name},vhost=${queue.vhost})}" th:text="${queue.name}"></a></td>
-							<td></td>
+							<td>
+								<span th:if="${queue.durable}" class="badge badge-success">D</span>
+								<span th:if="${queue.isDeadLetterExchangeConfigured()}" class="badge badge-secondary">DLX</span>
+								<span th:if="${queue.isDeadLetterRoutingKeyConfigured()}" class="badge badge-secondary">DLK</span>
+							</td>
 						</tr>
 					</tbody>
 				</table>

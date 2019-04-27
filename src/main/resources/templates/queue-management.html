@@ -25,24 +25,24 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 
-<body ng-app="rmqmgmt">
+<body ng-app="rmqmgmt" class="bg-light">
 	<div th:replace="fragments/navbar :: navbar"></div>
-	<div class="container" style="margin-top:60px" ng-controller="main">
+	<div class="container main" ng-controller="main">
         <div class="row">
     		<div class="col-12">
 				<h1><span class="text-secondary">Queue</span>&nbsp;{{queueName}}&nbsp;<span class="text-secondary">| Virtual host</span>&nbsp;{{vhost}}:</h1>
 				<h2>Messages:</h2>
-				<ul class="list-group">
+				<div ng-if="!messages">
+					<div class="alert alert-info" role="alert">Queue is empty</div>
+				</div>
+				<ul class="list-group" ng-if="messages" >
 					<li class="list-group-item list-group-item-action" ng-repeat="m in messages">
 						<div class="d-flex w-100 border-bottom border-info mb-1">
 							<h5 class="mb-1">
 								<span>Message&nbsp;{{$index + 1}}</span>
 							</h5>
 						</div>
-						<div ng-if="!messages">
-							<div class="alert alert-info" role="alert">Queue is empty</div>
-						</div>
-						<div ng-if="messages" class="mb-1">
+						<div class="mb-1">
 							<div class="mb-1">
 								<div class="row">
 									<div class="col-4">Envelope:</div>

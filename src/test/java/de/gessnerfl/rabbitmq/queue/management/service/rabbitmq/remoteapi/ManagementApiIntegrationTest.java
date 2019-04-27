@@ -113,7 +113,8 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
                 assertEquals(RabbitMqTestEnvironment.QUEUE_AUTO_DELETE, q.isAutoDelete());
                 assertEquals(RabbitMqTestEnvironment.QUEUE_EXCLUSIVE, q.isExclusive());
 
-                assertEquals(isDeadLettered, q.isDeadLettered());
+                assertEquals(isDeadLettered, q.isDeadLetterExchangeConfigured());
+                assertEquals(isDeadLettered, q.isDeadLetterRoutingKeyConfigured());
                 assertEquals(isDeadLettered, q.getArguments().containsKey(Queue.DEAD_LETTER_EXCHANGE_ARGUMENT));
                 assertEquals(isDeadLettered, q.getArguments().containsKey(Queue.DEAD_LETTER_ROUTINGKEY_ARGUMENT));
 
