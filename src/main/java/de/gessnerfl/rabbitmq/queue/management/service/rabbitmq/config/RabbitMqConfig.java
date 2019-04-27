@@ -1,8 +1,14 @@
-package de.gessnerfl.rabbitmq.queue.management.model.remoteapi;
+package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.config;
 
-public class BrokerConfig {
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+
+@Component
+@ConfigurationProperties(prefix = "de.gessnerfl.rabbitmq")
+public class RabbitMqConfig {
+
     private String hostname;
-    private String vhost = "/";
     private int port = 5672;
     private int managementPort = 15672;
     private boolean managemnetPortSecured = false;
@@ -15,14 +21,6 @@ public class BrokerConfig {
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
-    }
-
-    public String getVhost() {
-        return vhost;
-    }
-
-    public void setVhost(String vhost) {
-        this.vhost = vhost;
     }
 
     public int getPort() {

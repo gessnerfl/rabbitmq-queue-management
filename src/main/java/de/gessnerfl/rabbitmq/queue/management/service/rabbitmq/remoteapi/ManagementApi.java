@@ -18,6 +18,9 @@ public interface ManagementApi {
     List<Binding> getExchangeSourceBindings(@Param("vhost") String vhost,
             @Param("exchange") String exchange);
 
+    @RequestLine(value = "GET /queues")
+    List<Queue> getQueues();
+
     @RequestLine(value = "GET /queues/{vhost}", decodeSlash = false)
     List<Queue> getQueues(@Param("vhost") String vhost);
 

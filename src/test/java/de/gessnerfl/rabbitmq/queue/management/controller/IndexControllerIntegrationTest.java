@@ -13,10 +13,10 @@ import org.junit.Test;
 public class IndexControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     @Test
-    public void shouldReturnListOfBrokerDescriptors() throws Exception {
+    public void shouldReturnListOfQueues() throws Exception {
         mockMvc.perform(get("/"))
             .andExpect(status().isOk())
-            .andExpect(model().attribute("brokers", hasSize(1)))
+            .andExpect(model().attribute("queues", hasSize(1)))
             .andExpect(view().name("index"));
     }
     

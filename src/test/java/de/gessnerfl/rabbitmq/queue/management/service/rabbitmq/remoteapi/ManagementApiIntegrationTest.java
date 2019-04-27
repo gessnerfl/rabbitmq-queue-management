@@ -24,8 +24,7 @@ import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilde
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
 
 public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
-    private final static String DEFAULT_BROKER = "local";
-    
+
     private final static String VHOST = "/";
     private final static String EXCHANGE_NAME = "test.direct";
     private final static String DEAD_LETTER_EXCHANGE_NAME = "test.direct.dlx";
@@ -45,7 +44,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
 
     @Before
     public void init() throws Exception {
-        sut = managementApiFactory.createFor(DEFAULT_BROKER);
+        sut = managementApiFactory.createFor();
         
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
@@ -114,7 +113,8 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
                 assertEquals(RabbitMqTestEnvironment.QUEUE_AUTO_DELETE, q.isAutoDelete());
                 assertEquals(RabbitMqTestEnvironment.QUEUE_EXCLUSIVE, q.isExclusive());
 
-                assertEquals(isDeadLettered, q.isDeadLettered());
+                assertEquals(isDeadLettered, q.isDeadLetterExchangeConfigured());
+                assertEquals(isDeadLettered, q.isDeadLetterRoutingKeyConfigured());
                 assertEquals(isDeadLettered, q.getArguments().containsKey(Queue.DEAD_LETTER_EXCHANGE_ARGUMENT));
                 assertEquals(isDeadLettered, q.getArguments().containsKey(Queue.DEAD_LETTER_ROUTINGKEY_ARGUMENT));
 

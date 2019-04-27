@@ -17,9 +17,9 @@ public class ManagementApiFactory {
         this.managementApiUrlBuilder = managementApiUrlBuilder;
     }
 
-    public ManagementApi createFor(String brokerName){
-        Feign.Builder feignBuilder = feignBuilderFactory.createFor(brokerName);
-        String url = managementApiUrlBuilder.buildForConfiguration(brokerName);;
+    public ManagementApi createFor(){
+        Feign.Builder feignBuilder = feignBuilderFactory.createFor();
+        String url = managementApiUrlBuilder.buildForConfiguration();
         return feignBuilder.target(ManagementApi.class, url);
     }
 }

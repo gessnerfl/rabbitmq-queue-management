@@ -1,3 +1,8 @@
+body .container.main {
+    padding-top: 40px;
+    background-color: #fff;
+}
+
 .amqp-message .amqp-message-content > .row > div {
     border-bottom: 1px solid #e0e0e0;
     padding: 5px 15px;
@@ -12,11 +17,8 @@
 }
 
 .amqp-message .json-formatter-dark.json-formatter-row, .json-formatter-row {
+    font-size: 0.9rem;
     font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-}
-
-.amqp-message .json-formatter-row,.json-formatter-row a,.json-formatter-row a:hover {
-    color : #fff;
 }
 
 .amqp-message .json-formatter-row .key {
@@ -35,5 +37,5 @@
     color: #f0ad4e;
 }
 .amqp-message .json-formatter-row .null {
-    color: #f0ad4e;
+    color: #666699;
 }

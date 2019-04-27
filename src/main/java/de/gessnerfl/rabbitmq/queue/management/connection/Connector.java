@@ -29,37 +29,37 @@ public class Connector {
         this.connectionFactories = connectionFactories;
     }
 
-    public CloseableChannelWrapper connectAsClosable(String brokerName) {
-        Channel channel = connect(brokerName);
+    public CloseableChannelWrapper connectAsClosable(String vhost) {
+        Channel channel = connect(vhost);
         return new CloseableChannelWrapper(channel);
     }
 
-    public Channel connect(String brokerName) {
+    public Channel connect(String vhost) {
         try {
-            Connection connection = getConnection(brokerName);
+            Connection connection = getConnection(vhost);
             return connection.createChannel();
         } catch (IOException e) {
             throw new ConnectionFailedException(e);
         }
     }
 
-    private synchronized Connection getConnection(String brokerName) {
-        if (connections.containsKey(brokerName)) {
-            Connection connection = connections.get(brokerName);
+    private synchronized Connection getConnection(String vhost) {
+        if (connections.containsKey(vhost)) {
+            Connection connection = connections.get(vhost);
             if (connection == null || !connection.isOpen()) {
-                return initializeNewConnection(brokerName);
+                return initializeNewConnection(vhost);
             }
             return connection;
         } else {
-            return initializeNewConnection(brokerName);
+            return initializeNewConnection(vhost);
         }
     }
 
-    private Connection initializeNewConnection(String brokerName) {
+    private Connection initializeNewConnection(String vhost) {
         try {
-            ConnectionFactory connectionFactory = connectionFactories.getOrCreate(brokerName);
+            ConnectionFactory connectionFactory = connectionFactories.getOrCreate(vhost);
             Connection connection = connectionFactory.newConnection();
-            connections.put(brokerName, connection);
+            connections.put(vhost, connection);
             return connection;
         } catch (IOException | TimeoutException e) {
             throw new ConnectionFailedException(e);

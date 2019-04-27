@@ -27,8 +27,8 @@ public class QueueListOperation {
         this.messageMapper = messageMapper;
     }
 
-    public List<Message> getMessagesFromQueue(String brokerName, String queueName, int maxNumberOfMessages) {
-        try (CloseableChannelWrapper wrapper = connector.connectAsClosable(brokerName)) {
+    public List<Message> getMessagesFromQueue(String vhost, String queueName, int maxNumberOfMessages) {
+        try (CloseableChannelWrapper wrapper = connector.connectAsClosable(vhost)) {
             List<Message> messages = new ArrayList<>();
             Channel channel = wrapper.getChannel();
             channel.basicQos(DEFAULT_FETCH_COUNT);

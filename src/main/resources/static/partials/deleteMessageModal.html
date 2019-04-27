@@ -7,9 +7,9 @@
       </div>
       <div class="modal-body">
       	<div ng-if="error" class="alert alert-danger" role="alert">{{ error }}</div>
-        <p>Do you really want to delete the first message in queue <b>{{ getQueueName() }}</b>?</p> 
+        <p>Do you really want to delete the first message in queue <b>{{ queue }}</b>?</p>
         <p><b>Checksum:</b></p>
-        <pre>{{ getChecksum() }}</pre>
+        <pre>{{ message.checksum }}</pre>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal"><span class="oi oi-x" aria-hidden="true"></span>&nbsp;No</button>

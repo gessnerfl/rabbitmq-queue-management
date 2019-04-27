@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Binding;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
@@ -23,7 +23,7 @@ import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 @RunWith(MockitoJUnitRunner.class)
 public class ExchangeControllerTest {
     
-    private final static String DEFAULT_BROKER = "defaultBroker";
+    private final static String DEFAULT_VHOST = "vhost";
 
     @Mock
     private RabbitMqFacade rabbitMqFacade;
@@ -36,24 +36,24 @@ public class ExchangeControllerTest {
         Exchange exchange = mock(Exchange.class);
         List<Exchange> exchanges = Arrays.asList(exchange);
         
-        when(rabbitMqFacade.getExchanges(DEFAULT_BROKER)).thenReturn(exchanges);
+        when(rabbitMqFacade.getExchanges(DEFAULT_VHOST)).thenReturn(exchanges);
         
-        List<Exchange> result = sut.getExchanges(DEFAULT_BROKER);
+        List<Exchange> result = sut.getExchanges(DEFAULT_VHOST);
         
         assertSame(exchanges, result);
-        verify(rabbitMqFacade).getExchanges(DEFAULT_BROKER);
+        verify(rabbitMqFacade).getExchanges(DEFAULT_VHOST);
     }
     
     @Test
     public void shouldReturnListOfDistinctRoutingKeys(){
         String exchangeName = "exchange";
         List<Binding> bindings = Arrays.asList(mockBinding("a"), mockBinding("b"), mockBinding("a"));
-        when(rabbitMqFacade.getExchangeSourceBindings(DEFAULT_BROKER, exchangeName)).thenReturn(bindings);
+        when(rabbitMqFacade.getExchangeSourceBindings(DEFAULT_VHOST, exchangeName)).thenReturn(bindings);
         
-        List<String> result = sut.getSourceBindings(DEFAULT_BROKER, exchangeName);
+        List<String> result = sut.getSourceBindings(DEFAULT_VHOST, exchangeName);
         
         assertThat(result, containsInAnyOrder("a", "b"));
-        verify(rabbitMqFacade).getExchangeSourceBindings(DEFAULT_BROKER, exchangeName);
+        verify(rabbitMqFacade).getExchangeSourceBindings(DEFAULT_VHOST, exchangeName);
     }
     
     private Binding mockBinding(String routingKey){

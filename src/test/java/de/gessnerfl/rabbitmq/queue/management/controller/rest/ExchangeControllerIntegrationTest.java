@@ -18,8 +18,10 @@ import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
 
+import static de.gessnerfl.rabbitmq.queue.management.controller.rest.QueryParameters.*;
+
 public class ExchangeControllerIntegrationTest extends AbstractControllerIntegrationTest {
-    private final static String BROKER_NAME = "local";
+    private final static String VHOST_NAME = "/";
     private final static String EXCHANGE_NAME = "test.ex";
     private final static String QUEUE_NAME = "test.q";
     private final static String EXCHANGE_JSON_PATH_FILTER = "$[?(@.name == '"+EXCHANGE_NAME+"')]";
@@ -46,7 +48,7 @@ public class ExchangeControllerIntegrationTest extends AbstractControllerIntegra
     
     @Test
     public void shouldReturnExchanges() throws Exception {
-        mockMvc.perform(get("/api/"+BROKER_NAME+"/exchanges"))
+        mockMvc.perform(get("/api/exchanges").param(VHOST, VHOST_NAME))
             .andExpect(status().isOk())
             .andExpect(content().contentType(contentType))
             .andExpect(jsonPath(EXCHANGE_JSON_PATH_FILTER, hasSize(1)))
@@ -60,7 +62,7 @@ public class ExchangeControllerIntegrationTest extends AbstractControllerIntegra
     
     @Test
     public void shouldReturnRoutingKeysOfExchange() throws Exception {
-        mockMvc.perform(get("/api/"+BROKER_NAME+"/exchanges/"+EXCHANGE_NAME+"/routingKeys"))
+        mockMvc.perform(get("/api/routingKeys").param(VHOST, VHOST_NAME).param(EXCHANGE, EXCHANGE_NAME))
         .andExpect(status().isOk())
         .andExpect(content().contentType(contentType))
         .andExpect(jsonPath("$.length()", is(1)))
