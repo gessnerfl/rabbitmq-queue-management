@@ -5,11 +5,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class QueueManagementController {
+public class MessagesController {
 
-    @GetMapping({"/queue-management"})
+    @GetMapping({"/messages"})
     public String index(Model model) {
-        return "queue-management";
+        return "messages";
     }
     
 }

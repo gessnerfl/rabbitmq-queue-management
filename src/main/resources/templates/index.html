@@ -34,7 +34,7 @@
 					<tbody>
 						<tr th:each="queue : ${queues}">
 							<td th:text="${queue.vhost}"></td>
-							<td><a th:href="@{/queue-management(qname=${queue.name},vhost=${queue.vhost})}" th:text="${queue.name}"></a></td>
+							<td><a th:href="@{/messages(qname=${queue.name},vhost=${queue.vhost})}" th:text="${queue.name}"></a></td>
 							<td>
 								<span th:if="${queue.durable}" class="badge badge-success">D</span>
 								<span th:if="${queue.isDeadLetterExchangeConfigured()}" class="badge badge-secondary">DLX</span>
