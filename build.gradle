@@ -35,7 +35,6 @@ repositories { jcenter() }
 dependencies {
   compile 'org.springframework.boot:spring-boot-starter-actuator'
   compile 'org.springframework.boot:spring-boot-starter-web'
-  compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
   compile 'org.springframework.boot:spring-boot-devtools'
   compile 'io.github.openfeign:feign-core:10.2.0'
   compile 'io.github.openfeign:feign-gson:10.2.0'
@@ -44,8 +43,9 @@ dependencies {
   compile 'commons-codec:commons-codec:1.12'
 
   compile 'org.webjars.bower:jquery:3.4.0'
-  compile 'org.webjars.bower:angularjs:1.7.5'
-  compile 'org.webjars.bower:angular-resource:1.7.5'
+  compile 'org.webjars.bower:angular:1.7.7'
+  compile 'org.webjars.bower:angular-resource:1.7.7'
+  compile 'org.webjars.bower:angular-route:1.7.7'
   compile 'org.webjars.bower:bootstrap:4.3.0'
   compile 'org.webjars.bower:open-iconic:1.1.1'
   compile 'org.webjars.bower:json-formatter:0.6.0'

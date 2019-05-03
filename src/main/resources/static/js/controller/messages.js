@@ -1,27 +1,21 @@
-var module = angular.module('rmqmgmt', ['jsonFormatter']);
-module.controller('main', function($scope, $http, $location) {
-	
+module.controller('messages', function($scope, $http, $location, $route) {
 	$scope.init = function(){
-	    $scope.queueName = getParameterByName("qname");
-	    $scope.vhost = getParameterByName("vhost");
-	    if(isEmptyString($scope.vhost) || isEmptyString($scope.queueName)){
+	    var params = $route.current.params;
+	    $scope.queue = params.queue;
+	    $scope.vhost = params.vhost;
+	    if(isEmptyString($scope.vhost) || isEmptyString($scope.queue)){
 	        window.location = "/";
 	    }
 
 		$scope.loadMessages();
 	};
 	
-	function getParameterByName(name) {
-	    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
-	    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-	}
-	
 	function isEmptyString(str){
 	    return str === undefined || str === null || str.trim().length === 0;
 	}
 	
 	$scope.loadMessages = function(){
-		$http.get('/api/messages?vhost=' + encodeURIComponent($scope.vhost) + '&queue=' + encodeURIComponent($scope.queueName)).then(function(response) {
+		$http.get('/api/messages?vhost=' + encodeURIComponent($scope.vhost) + '&queue=' + encodeURIComponent($scope.queue)).then(function(response) {
 	    	if(response.data !== undefined && response.data.length > 0){
 	    		$scope.renderMessages(response.data);
 	    	}else{
@@ -29,14 +23,6 @@ module.controller('main', function($scope, $http, $location) {
 	    	}
 	    });
 	};
-
-	$scope.hasDlx = function(queue){
-	    return queue.arguments !== undefined && queue.arguments["x-dead-letter-exchange"] !== undefined;
-	};
-
-    $scope.hasDlk = function(queue){
-        return queue.arguments !== undefined && queue.arguments["x-dead-letter-routing-key"] !== undefined;
-    };
 	
 	$scope.renderMessages = function(messages){
 		$scope.messages = messages;
