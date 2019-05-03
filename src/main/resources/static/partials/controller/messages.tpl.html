@@ -1,0 +1,45 @@
+<div class="row">
+    <div class="col-12">
+        <h1><span class="text-secondary">Queue</span>&nbsp;{{queue}}&nbsp;<span class="text-secondary">| Virtual host</span>&nbsp;{{vhost}}:</h1>
+        <h2>Messages:</h2>
+        <div class="message-panel"/>
+        <div ng-if="!messages">
+            <div class="alert alert-info" role="alert">Queue is empty</div>
+        </div>
+        <ul class="list-group" ng-if="messages" >
+            <li class="list-group-item list-group-item-action" ng-repeat="m in messages">
+                <div class="d-flex w-100 border-bottom border-info mb-1">
+                    <h5 class="mb-1">
+                        <span>Message&nbsp;{{$index + 1}}</span>
+                    </h5>
+                </div>
+                <div class="mb-1">
+                    <div class="mb-1">
+                        <div class="row">
+                            <div class="col-4">Envelope:</div>
+                            <div class="col-8"><json-formatter json="m.envelope"></json-formatter></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">Properties:</div>
+                            <div class="col-8"><json-formatter json="m.properties"></json-formatter></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">Checksum:</div>
+                            <div class="col-8">{{m.checksum}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">Body:</div>
+                            <div class="col-8"><pre class="mb-0"><code>{{ renderBody(m) }}</code></pre></div>
+                        </div>
+                    </div>
+                    <div class="btn-group float-right" role="group" ng-if="$first">
+                        <button type="button" class="btn btn-sm btn-primary" ng-click="openMoveModal(m)"><span class="oi oi-share" aria-hidden="true"></span>&nbsp;Move</button>
+                        <button type="button" class="btn btn-sm btn-danger" ng-click="openDeleteModal(m)"><span class="oi oi-trash" aria-hidden="true"></span>&nbsp;Delete</button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div id="moveMessageModal" move-message-modal="move-message-modal" vhost="vhost" queue="queue" message="selectedMessage" success-callback="loadMessages"></div>
+    <div id="deleteMessageModal" delete-message-modal="delete-message-modal" vhost="vhost" queue="queue" message="selectedMessage" success-callback="loadMessages"></div>
+</div>

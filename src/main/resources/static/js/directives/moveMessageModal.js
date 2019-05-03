@@ -2,7 +2,7 @@ angular.module('rmqmgmt').directive('moveMessageModal', function() {
     return {
         replace : false,
         restrict : 'A',
-        templateUrl : '/partials/moveMessageModal.html',
+        templateUrl : '/partials/directives/moveMessageModal.tpl.html',
         scope : {
             vhost : '=vhost',
             queue : '=queue',

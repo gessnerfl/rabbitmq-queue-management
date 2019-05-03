@@ -1,0 +1,29 @@
+<div class="row">
+    <div class="col-12">
+        <h1>All Queues</h1>
+        <div class="message-panel"/>
+        <div ng-if="!queues" class="alert alert-warning" role="alert">
+            <strong>Warning!</strong> No queues are available. Check your configuration
+        </div>
+        <table ng-if="queues" class="table">
+            <thead>
+            <tr>
+                <th>Vhost</th>
+                <th>Name</th>
+                <th>Attributes</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="queue in queues">
+                <td>{{queue.vhost}}</td>
+                <td><a ng-href="/messages?queue={{queue.name}}&vhost={{queue.vhost}}">{{queue.name}}</a></td>
+                <td>
+                    <span ng-if="queue.durable" class="badge badge-success">D</span>
+                    <span ng-if="isDeadLetterExchangeConfigured(queue)" class="badge badge-secondary">DLX</span>
+                    <span ng-if="isDeadLetterRoutingKeyConfigured(queue)" class="badge badge-secondary">DLK</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

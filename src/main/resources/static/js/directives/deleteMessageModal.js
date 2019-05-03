@@ -2,7 +2,7 @@ angular.module('rmqmgmt').directive('deleteMessageModal', function() {
     return {
         replace : false,
         restrict : 'A',
-        templateUrl : '/partials/deleteMessageModal.html',
+        templateUrl : '/partials/directives/deleteMessageModal.tpl.html',
         scope : {
             vhost : '=vhost',
             queue : '=queue',
