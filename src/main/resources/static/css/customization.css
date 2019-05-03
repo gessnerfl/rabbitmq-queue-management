@@ -39,3 +39,7 @@ body .container.main {
 .amqp-message .json-formatter-row .null {
     color: #666699;
 }
+
+.amqp-message .json-formatter-row .toggler:after {
+    content: ">"
+}

@@ -6,7 +6,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       </div>
       <div class="modal-body">
-      	<div ng-if="error" class="alert alert-danger" role="alert">{{ error }}</div>
+        <div class="message-panel"/>
         <p>Move the first message of queue <b>{{ queue }}</b> with the checksum</p>
         <pre>{{ message.checksum }}</pre>
         

@@ -1,8 +1,11 @@
 var module = angular.module('rmqmgmt', ['ngRoute', 'jsonFormatter']);
-module.config(['$routeProvider', '$locationProvider',
-  function($routeProvider, $locationProvider){
+
+module.config(['$routeProvider', '$locationProvider', '$httpProvider',
+  function($routeProvider, $locationProvider, $httpProvider){
     $locationProvider.html5Mode(true);
     $locationProvider.hashPrefix('!');
+
+    $httpProvider.interceptors.push('ajaxInterceptor');
 
     $routeProvider
       .when('/queues', {
