@@ -1,4 +1,4 @@
-module.controller('messages', function($scope, $http, $location, $route) {
+module.controller('messages', function($scope, $http, $location, $route, errorHandler) {
 	$scope.init = function(){
 	    var params = $route.current.params;
 	    $scope.queue = params.queue;
@@ -50,11 +50,13 @@ module.controller('messages', function($scope, $http, $location, $route) {
 	}
 	
 	$scope.openMoveModal = function(m){
+	    errorHandler.clear();
 		$scope.selectedMessage = m;
 		$("#moveMessageModal > .modal").modal('show');
 	};
 	
 	$scope.openDeleteModal = function(m){
+	    errorHandler.clear();
 		$scope.selectedMessage = m;
 		$("#deleteMessageModal > .modal").modal('show');
 	};
