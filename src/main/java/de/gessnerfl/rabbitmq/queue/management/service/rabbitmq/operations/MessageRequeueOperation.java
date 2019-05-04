@@ -1,14 +1,11 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
-import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.LongString;
-import com.rabbitmq.client.ReturnListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +25,7 @@ public class MessageRequeueOperation {
     
     public void requeueFirstMessage(String vhost, String queueName, String checksum){
         messageOperationExecutor.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(vhost, queueName, checksum, (channel,response) -> {
-            StateKeepingReturnListener returnListener = new StateKeepingReturnListener();
+            StateKeepingReturnListener returnListener = new StateKeepingReturnListener("requeue", LOGGER);
             channel.addReturnListener(returnListener);
             channel.confirmSelect();
 
@@ -65,17 +62,4 @@ public class MessageRequeueOperation {
         });
     }
 
-    private class StateKeepingReturnListener implements ReturnListener {
-        private boolean received;
-
-        @Override
-        public void handleReturn(int replyCode, String replyText, String exchange, String routingKey, BasicProperties properties, byte[] body) throws IOException {
-            LOGGER.error("basic.return received for requeue operation: exchange={}, routingKey={}, replyCode={}, replyText={}", exchange, routingKey, replyCode, replyText);
-            received = true;
-        }
-
-        public boolean isReceived(){
-            return received;
-        }
-    }
 }
