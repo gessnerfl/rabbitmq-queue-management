@@ -1,0 +1,231 @@
+package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
+
+import com.rabbitmq.client.impl.LongStringHelper;
+import de.gessnerfl.rabbitmq.queue.management.model.Message;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("integrationtest")
+public class MessageRequeueOperationIntegrationTest {
+    private final static String EXCHANGE_NAME = "test.direct";
+    private final static String QUEUE_NAME = "test.requeue.target";
+    private final static String DLX_QUEUE_NAME = "test.requeue.target.dlx";
+    private static final int MESSAGE_TTL_OF_QUEUE = 100;
+
+    @Autowired
+    private QueueListOperation queueListOperation;
+    @Autowired
+    private RabbitMqTestEnvironmentBuilderFactory testEnvironmentBuilderFactor;
+
+    @Autowired
+    private MessageRequeueOperation sut;
+
+    private RabbitMqTestEnvironment testEnvironment;
+
+    @Before
+    public void init() throws Exception {
+        RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
+        builder = builder.withExchange(EXCHANGE_NAME);
+
+        builder.withQueue(DLX_QUEUE_NAME).exchange(EXCHANGE_NAME).build();
+        builder.withQueue(QUEUE_NAME).ttl(MESSAGE_TTL_OF_QUEUE).deadLetterExchange(EXCHANGE_NAME).deadLetterRoutingKey(DLX_QUEUE_NAME).exchange(EXCHANGE_NAME).build();
+
+        testEnvironment = builder.build();
+        testEnvironment.setup();
+    }
+
+    @After
+    public void cleanup() {
+        testEnvironment.cleanup();
+    }
+
+    @Test
+    public void shouldRequeueMessageWhenMessageWasDeadLettered() throws Exception {
+        //publish message to
+        testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_NAME);
+
+        //wait until message is dead lettered
+        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+
+        List<Message> queueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 10);
+        List<Message> dlxQueueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(queueMessagesFirstFetch, empty());
+        assertThat(dlxQueueMessagesFirstFetch, hasSize(1));
+
+        sut.requeueFirstMessage(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, dlxQueueMessagesFirstFetch.get(0).getChecksum());
+
+        List<Message> queueMessagesSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 10);
+        List<Message> dlxQueueMessagesSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(queueMessagesSecondFetch, hasSize(1));
+        assertThat(dlxQueueMessagesSecondFetch, empty());
+
+        //wait until message is again dead lettered
+        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+
+        List<Message> queueMessagesThirdFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 10);
+        List<Message> dlxQueueMessagesThirdFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(queueMessagesThirdFetch, empty());
+        assertThat(dlxQueueMessagesThirdFetch, hasSize(1));
+    }
+
+    @Test
+    public void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndHeaderIsNotAvailable(){
+        testEnvironment.publishMessage(EXCHANGE_NAME, DLX_QUEUE_NAME);
+
+        List<Message> dlxQueueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(dlxQueueMessagesFirstFetch, hasSize(1));
+
+        try {
+            sut.requeueFirstMessage(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, dlxQueueMessagesFirstFetch.get(0).getChecksum());
+            fail();
+        }catch(MessageOperationFailedException e){
+            assertThat(e.getMessage(), containsString("x-death header missing"));
+        }
+
+        List<Message> dlxQueueMessagesSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(dlxQueueMessagesSecondFetch, hasSize(1));
+    }
+
+    @Test
+    public void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderIsNotAvailable(){
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put("test", "test");
+        testEnvironment.publishMessage(EXCHANGE_NAME, DLX_QUEUE_NAME, headers);
+
+        List<Message> dlxQueueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(dlxQueueMessagesFirstFetch, hasSize(1));
+
+        try {
+            sut.requeueFirstMessage(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, dlxQueueMessagesFirstFetch.get(0).getChecksum());
+            fail();
+        }catch(MessageOperationFailedException e){
+            assertThat(e.getMessage(), containsString("x-death header missing"));
+        }
+
+        List<Message> dlxQueueMessagesSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(dlxQueueMessagesSecondFetch, hasSize(1));
+    }
+
+    @Test
+    public void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderDoesNotContainEntry(){
+        List<Map<String,Object>> xdeath = Collections.emptyList();
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put(MessageRequeueOperation.X_DEATH_HEADER_KEY_NAME, xdeath);
+        testEnvironment.publishMessage(EXCHANGE_NAME, DLX_QUEUE_NAME, headers);
+
+        List<Message> dlxQueueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(dlxQueueMessagesFirstFetch, hasSize(1));
+
+        try {
+            sut.requeueFirstMessage(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, dlxQueueMessagesFirstFetch.get(0).getChecksum());
+            fail();
+        }catch(MessageOperationFailedException e){
+            assertThat(e.getMessage(), containsString("x-death header missing"));
+        }
+
+        List<Message> dlxQueueMessagesSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(dlxQueueMessagesSecondFetch, hasSize(1));
+    }
+
+    @Test
+    public void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderDoesNotContainExchangeName(){
+        List<Map<String,Object>> xdeath = Collections.singletonList(new HashMap<>());
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put(MessageRequeueOperation.X_DEATH_HEADER_KEY_NAME, xdeath);
+        testEnvironment.publishMessage(EXCHANGE_NAME, DLX_QUEUE_NAME, headers);
+
+        List<Message> dlxQueueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(dlxQueueMessagesFirstFetch, hasSize(1));
+
+        try {
+            sut.requeueFirstMessage(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, dlxQueueMessagesFirstFetch.get(0).getChecksum());
+            fail();
+        }catch(MessageOperationFailedException e){
+            assertThat(e.getMessage(), containsString("exchange is missing"));
+        }
+
+        List<Message> dlxQueueMessagesSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(dlxQueueMessagesSecondFetch, hasSize(1));
+    }
+
+    @Test
+    public void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderDoesNotContainRoutingKey(){
+        HashMap<String, Object> xdeathEntry = new HashMap<>();
+        xdeathEntry.put(MessageRequeueOperation.X_DEATH_EXCHANGE_KEY_NAME, LongStringHelper.asLongString("test"));
+        List<Map<String,Object>> xdeath = Collections.singletonList(xdeathEntry);
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put(MessageRequeueOperation.X_DEATH_HEADER_KEY_NAME, xdeath);
+        testEnvironment.publishMessage(EXCHANGE_NAME, DLX_QUEUE_NAME, headers);
+
+        List<Message> dlxQueueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(dlxQueueMessagesFirstFetch, hasSize(1));
+
+        try {
+            sut.requeueFirstMessage(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, dlxQueueMessagesFirstFetch.get(0).getChecksum());
+            fail();
+        }catch(MessageOperationFailedException e){
+            assertThat(e.getMessage(), containsString("routing keys are missing"));
+        }
+
+        List<Message> dlxQueueMessagesSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(dlxQueueMessagesSecondFetch, hasSize(1));
+    }
+
+    @Test
+    public void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderRoutingKeysAreEmpty(){
+        HashMap<String, Object> xdeathEntry = new HashMap<>();
+        xdeathEntry.put(MessageRequeueOperation.X_DEATH_EXCHANGE_KEY_NAME, LongStringHelper.asLongString("test"));
+        xdeathEntry.put(MessageRequeueOperation.X_DEATH_ROUTING_KEYS_KEY_NAME, Collections.emptyList());
+        List<Map<String,Object>> xdeath = Collections.singletonList(xdeathEntry);
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put(MessageRequeueOperation.X_DEATH_HEADER_KEY_NAME, xdeath);
+        testEnvironment.publishMessage(EXCHANGE_NAME, DLX_QUEUE_NAME, headers);
+
+        List<Message> dlxQueueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(dlxQueueMessagesFirstFetch, hasSize(1));
+
+        try {
+            sut.requeueFirstMessage(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, dlxQueueMessagesFirstFetch.get(0).getChecksum());
+            fail();
+        }catch(MessageOperationFailedException e){
+            assertThat(e.getMessage(), containsString("routing keys are missing"));
+        }
+
+        List<Message> dlxQueueMessagesSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(dlxQueueMessagesSecondFetch, hasSize(1));
+    }
+
+}

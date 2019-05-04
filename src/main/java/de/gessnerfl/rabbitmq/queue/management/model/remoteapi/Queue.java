@@ -9,7 +9,8 @@ import lombok.Data;
 public class Queue {
   public static final String DEAD_LETTER_EXCHANGE_ARGUMENT = "x-dead-letter-exchange";
   public static final String DEAD_LETTER_ROUTINGKEY_ARGUMENT = "x-dead-letter-routing-key";
-  
+  public static final String TTL_ARGUMENT = "x-message-ttl";
+
   private String name;
   private String vhost;
   private boolean durable;

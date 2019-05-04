@@ -33,6 +33,7 @@
                         </div>
                     </div>
                     <div class="btn-group float-right" role="group" ng-if="$first">
+                        <button ng-if="m.requeueAllowed" type="button" class="btn btn-sm btn-primary" ng-click="openRequeueModal(m)"><span class="oi oi-loop-square" aria-hidden="true"></span>&nbsp;Requeue</button>
                         <button type="button" class="btn btn-sm btn-primary" ng-click="openMoveModal(m)"><span class="oi oi-share" aria-hidden="true"></span>&nbsp;Move</button>
                         <button type="button" class="btn btn-sm btn-danger" ng-click="openDeleteModal(m)"><span class="oi oi-trash" aria-hidden="true"></span>&nbsp;Delete</button>
                     </div>
@@ -40,6 +41,7 @@
             </li>
         </ul>
     </div>
+    <div id="requeueMessageModal" requeue-message-modal="requeue-message-modal" vhost="vhost" queue="queue" message="selectedMessage" success-callback="loadMessages"></div>
     <div id="moveMessageModal" move-message-modal="move-message-modal" vhost="vhost" queue="queue" message="selectedMessage" success-callback="loadMessages"></div>
     <div id="deleteMessageModal" delete-message-modal="delete-message-modal" vhost="vhost" queue="queue" message="selectedMessage" success-callback="loadMessages"></div>
 </div>

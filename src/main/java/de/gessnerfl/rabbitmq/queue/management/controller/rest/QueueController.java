@@ -50,4 +50,11 @@ public class QueueController {
                                         @RequestParam(value="targetRoutingKey", required=true) String targetRoutingKey){
         facade.moveFirstMessageInQueue(vhost, queue, checksum, targetExchange, targetRoutingKey);
     }
+
+    @PostMapping("/api/messages/requeue")
+    public void requeueFirstMessageInQueue(@RequestParam(name = VHOST, required = true) String vhost,
+                                        @RequestParam(name = QUEUE, required = true) String queue,
+                                        @RequestParam(value="checksum", required=true) String checksum){
+        facade.requeueFirstMessageInQueue(vhost, queue, checksum);
+    }
 }

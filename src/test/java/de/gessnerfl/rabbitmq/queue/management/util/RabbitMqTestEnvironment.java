@@ -2,11 +2,9 @@ package de.gessnerfl.rabbitmq.queue.management.util;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.rabbitmq.client.AMQP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,6 +86,8 @@ public class RabbitMqTestEnvironment {
                 p.routingKey.ifPresent((routingKey) -> arguments.put(Queue.DEAD_LETTER_ROUTINGKEY_ARGUMENT, routingKey));
             });
 
+            parameter.ttl.ifPresent(t -> arguments.put(Queue.TTL_ARGUMENT, t));
+
             channel.queueDeclare(parameter.queueName, QUEUE_DURABLE, QUEUE_EXCLUSIVE, QUEUE_AUTO_DELETE, arguments);
             channel.queueBind(parameter.queueName, parameter.exchangeName, parameter.routingKey);
         } catch (IOException e) {
@@ -131,25 +131,34 @@ public class RabbitMqTestEnvironment {
     }
     
     public void publishMessages(String exchange, String routingKey, int numberOfMessages) {
+        publishMessages(exchange, routingKey, null, numberOfMessages);
+    }
+
+    public void publishMessages(String exchange, String routingKey, Map<String,Object> headers, int numberOfMessages) {
         try (CloseableChannelWrapper wrapper = connector.connectAsClosable(VHOST)) {
             Channel channel = wrapper.getChannel();
             for (int i = 0; i < numberOfMessages; i++) {
-                publishMessage(channel, exchange, routingKey, i);
+                publishMessage(channel, exchange, routingKey, headers, i);
             }
         }
     }
     
     public void publishMessage(String exchange, String routingKey) {
+        publishMessage(exchange, routingKey, null);
+    }
+
+    public void publishMessage(String exchange, String routingKey, Map<String,Object> headers) {
         try (CloseableChannelWrapper wrapper = connector.connectAsClosable(VHOST)) {
             Channel channel = wrapper.getChannel();
-            publishMessage(channel, exchange, routingKey, 1);
+            publishMessage(channel, exchange, routingKey, headers, 1);
         }
     }
 
-    private void publishMessage(Channel channel, String exchange, String routingKey, int id) {
+    private void publishMessage(Channel channel, String exchange, String routingKey, Map<String,Object> headers, int id) {
         try {
             byte[] body = buildMessage(id);
-            channel.basicPublish(exchange, routingKey, MessageProperties.TEXT_PLAIN, body);
+            AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().contentType("text/plain").headers(headers).deliveryMode(1).priority(0).build();
+            channel.basicPublish(exchange, routingKey, properties, body);
         } catch (IOException e) {
             throw new RabbitMqEnvironmentException("Failed to publish message", e);
         }

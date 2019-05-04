@@ -120,4 +120,11 @@ public class RabbitMqFacadeTest {
         
         verify(operations).moveFirstMessageInQueue(VHOST, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
     }
+
+    @Test
+    public void shouldDelegateCallToRequeueFirstMessageInQueue() {
+        sut.requeueFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
+
+        verify(operations).requeueFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
+    }
 }

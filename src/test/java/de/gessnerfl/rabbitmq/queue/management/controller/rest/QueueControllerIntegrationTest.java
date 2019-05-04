@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,9 +33,12 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
     private final static String EXCHANGE_NAME = "test.ex";
     private final static String QUEUE_IN_NAME = "test.controller.in";
     private final static String QUEUE_OUT_NAME = "test.controller.out";
+    private final static String QUEUE2_NAME = "test.controller.q2";
+    private final static String QUEUE2_DLX_NAME = "test.controller.q2.dlx";
     private final static String ALL_QUEUES_JSON_PATH_FILTER = "$[?(@.name in ['"+QUEUE_IN_NAME+"','"+QUEUE_OUT_NAME+"'])]";
     private final static String IN_QUEUE_JSON_PATH_FILTER = "$[?(@.name == '"+QUEUE_IN_NAME+"')]";
     private final static String OUT_QUEUE_JSON_PATH_FILTER = "$[?(@.name == '"+QUEUE_OUT_NAME+"')]";
+    private static final int MESSAGE_TTL_OF_QUEUE2 = 100;
     
     @Autowired
     private RabbitMqTestEnvironmentBuilderFactory testEnvironmentBuilderFactor;
@@ -52,6 +56,15 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
                                 .build()
                             .withQueue(QUEUE_OUT_NAME)
                                 .exchange(EXCHANGE_NAME)
+                                .build()
+                            .withQueue(QUEUE2_DLX_NAME)
+                                .exchange(EXCHANGE_NAME)
+                                .build()
+                            .withQueue(QUEUE2_NAME)
+                                .exchange(EXCHANGE_NAME)
+                                .ttl(MESSAGE_TTL_OF_QUEUE2)
+                                .deadLetterExchange(EXCHANGE_NAME)
+                                .deadLetterRoutingKey(QUEUE2_DLX_NAME)
                                 .build()
                             .build();
         testEnvironment.setup();
@@ -148,5 +161,32 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
         
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, 1), empty());
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_OUT_NAME, 1), hasSize(1));
+    }
+
+    @Test
+    public void shouldRequeueMessage() throws Exception {
+        testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE2_NAME);
+
+        //wait until message is dead lettered
+        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE2+10);
+
+        List<Message> queueMessagesFirstFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_NAME, 10);
+        List<Message> dlxQueueMessagesFirstFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_DLX_NAME, 10);
+
+        assertThat(queueMessagesFirstFetch, empty());
+        assertThat(dlxQueueMessagesFirstFetch, hasSize(1));
+        Message message = dlxQueueMessagesFirstFetch.get(0);
+
+        mockMvc.perform(post("/api/messages/requeue")
+                .param(VHOST, VHOST_NAME)
+                .param(QUEUE, QUEUE2_DLX_NAME)
+                .param(CHECKSUM, message.getChecksum()))
+                .andExpect(status().isOk());
+
+        List<Message> queueMessagesSecondFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_NAME, 10);
+        List<Message> dlxQueueMessagesSecondFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_DLX_NAME, 10);
+
+        assertThat(queueMessagesSecondFetch, hasSize(1));
+        assertThat(dlxQueueMessagesSecondFetch, empty());
     }
 }

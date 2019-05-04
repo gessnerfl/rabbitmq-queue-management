@@ -14,7 +14,8 @@ import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 
 public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegrationTest {
-    protected final static String TARGET_QUEUE_NAME = "test.requeue.target";
+    private final static String TARGET_QUEUE_NAME = "test.move.target";
+
     @Autowired
     private QueueListOperation queueListOperation;
 

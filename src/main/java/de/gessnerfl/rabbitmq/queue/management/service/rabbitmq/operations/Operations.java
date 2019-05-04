@@ -11,14 +11,17 @@ import de.gessnerfl.rabbitmq.queue.management.model.Message;
 public class Operations {
     private final QueueListOperation queueListOperation;
     private final MessageMoveOperation messageMoveOperation;
+    private final MessageRequeueOperation messageRequeueOperation;
     private final MessageDeleteOperation messageDeleteOperation;
 
     @Autowired
     public Operations(QueueListOperation queueListOperation,
-            MessageMoveOperation messageMoveOperation,
-            MessageDeleteOperation messageDeleteOperation) {
+                      MessageMoveOperation messageMoveOperation,
+                      MessageRequeueOperation messageRequeueOperation,
+                      MessageDeleteOperation messageDeleteOperation) {
         this.queueListOperation = queueListOperation;
         this.messageMoveOperation = messageMoveOperation;
+        this.messageRequeueOperation = messageRequeueOperation;
         this.messageDeleteOperation = messageDeleteOperation;
     }
 
@@ -32,6 +35,10 @@ public class Operations {
     
     public void moveFirstMessageInQueue(String vhost, String queueName, String messageChecksum, String targetExchange, String targetRoutingKey){
         messageMoveOperation.moveFirstMessage(vhost, queueName, messageChecksum, targetExchange, targetRoutingKey);
+    }
+
+    public void requeueFirstMessageInQueue(String vhost, String queueName, String messageChecksum){
+        messageRequeueOperation.requeueFirstMessage(vhost, queueName, messageChecksum);
     }
     
 }
