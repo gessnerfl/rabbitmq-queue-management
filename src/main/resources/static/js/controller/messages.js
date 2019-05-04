@@ -40,7 +40,7 @@ module.controller('messages', function($scope, $http, $location, $route, errorHa
 	};
 
 	$scope.formatBody = function(message){
-	    var body = btoa(message.body);
+	    var body = atob(message.body);
 	    try {
            var json = JSON.parse(body.replace(/\s/g, ""));
            message.formattedBody = JSON.stringify(json, null , 2);
