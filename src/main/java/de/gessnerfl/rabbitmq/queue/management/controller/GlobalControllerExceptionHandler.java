@@ -15,7 +15,7 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public ResponseEntity<?> handleErrors(Exception ex) {
+    public ResponseEntity<ErrorResponse> handleErrors(Exception ex) {
         LOGGER.error("Failed to process request", ex);
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
