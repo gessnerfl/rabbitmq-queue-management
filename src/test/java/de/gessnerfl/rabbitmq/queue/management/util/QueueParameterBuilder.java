@@ -8,6 +8,7 @@ public class QueueParameterBuilder {
     private String queueName;
     private String exchangeName;
     private String routingKey;
+    private Integer ttl;
     private String deadLetterExchangeName;
     private String deadLetterRoutingKey;
     
@@ -30,6 +31,11 @@ public class QueueParameterBuilder {
         return this;
     }
     
+    public QueueParameterBuilder ttl(int ttl){
+        this.ttl = ttl;
+        return this;
+    }
+
     public QueueParameterBuilder deadLetterExchange(String deadLetterExchangeName){
         this.deadLetterExchangeName = deadLetterExchangeName;
         return this;
@@ -44,7 +50,7 @@ public class QueueParameterBuilder {
         enrich();
         validate();
         DeadLetterParameter deadLetterParameter = deadLetterExchangeName != null ? new DeadLetterParameter(deadLetterExchangeName, Optional.ofNullable(deadLetterRoutingKey)) : null;
-        QueueParameter parameter = new QueueParameter(exchangeName, routingKey, queueName, Optional.ofNullable(deadLetterParameter));
+        QueueParameter parameter = new QueueParameter(exchangeName, routingKey, queueName, Optional.ofNullable(deadLetterParameter), Optional.ofNullable(ttl));
         return rabbitMqTestEnvironmentBuilder.withQueue(parameter);
     }
 

@@ -25,8 +25,27 @@ module.controller('messages', function($scope, $http, $location, $route, errorHa
 	};
 	
 	$scope.renderMessages = function(messages){
+	    $scope.enrichFirstMessageWithRequeueDetails(messages[0])
 		$scope.messages = messages;
 	};
+
+	$scope.enrichFirstMessageWithRequeueDetails = function(message){
+	    if(message.properties.headers["x-death"] !== undefined){
+	        var xdeath = message.properties.headers["x-death"][0];
+	        var exchange = xdeath.exchange;
+	        var routingKey = xdeath["routing-keys"] !== undefined && xdeath["routing-keys"].length > 0 ? xdeath["routing-keys"][0] : null;
+
+	        if(!isEmptyString(exchange) && !isEmptyString(routingKey)){
+	            message.requeueAllowed = true;
+	            message.requeueExchange = exchange;
+	            message.requeueRoutingKey = routingKey;
+	        } else {
+	            message.requeueAllowed = false;
+	        }
+	    } else {
+            message.requeueAllowed = false;
+        }
+	}
 	
 	$scope.clearMessages = function(){
 		$scope.messages = undefined;
@@ -49,6 +68,12 @@ module.controller('messages', function($scope, $http, $location, $route, errorHa
         }
 	}
 	
+	$scope.openRequeueModal = function(m){
+	    errorHandler.clear();
+		$scope.selectedMessage = m;
+		$("#requeueMessageModal > .modal").modal('show');
+	};
+
 	$scope.openMoveModal = function(m){
 	    errorHandler.clear();
 		$scope.selectedMessage = m;

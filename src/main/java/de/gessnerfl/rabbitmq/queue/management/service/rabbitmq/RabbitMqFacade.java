@@ -61,4 +61,7 @@ public class RabbitMqFacade {
         return managementApiFactory.createFor();
     }
 
+    public void requeueFirstMessageInQueue(String vhost, String queue, String checksum) {
+        operations.requeueFirstMessageInQueue(vhost, queue, checksum);
+    }
 }

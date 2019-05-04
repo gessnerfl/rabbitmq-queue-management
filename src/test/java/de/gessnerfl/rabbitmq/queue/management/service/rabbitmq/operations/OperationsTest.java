@@ -30,8 +30,10 @@ public class OperationsTest {
     @Mock
     private MessageMoveOperation messageMoveOperation;
     @Mock
+    private MessageRequeueOperation messageRequeueOperation;
+    @Mock
     private MessageDeleteOperation messageDeleteOperation;
-    
+
     @InjectMocks
     private Operations sut;
     
@@ -60,5 +62,12 @@ public class OperationsTest {
         sut.moveFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
         
         verify(messageMoveOperation).moveFirstMessage(VHOST, QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
+    }
+
+    @Test
+    public void shouldDelegateRequeueOperation(){
+        sut.requeueFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM);
+
+        verify(messageRequeueOperation).requeueFirstMessage(VHOST, QUEUE_NAME, CHECKSUM);
     }
 }
