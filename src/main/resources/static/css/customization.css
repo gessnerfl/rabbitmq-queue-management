@@ -22,24 +22,26 @@ body .container.main {
 }
 
 .amqp-message .json-formatter-row .key {
-    color: #0288d1;
+    color: #d35400;
 }
 
 .amqp-message .json-formatter-row .string {
-    color: #5cb85c;
+    color: #196F3D;
 }
 
 .amqp-message .json-formatter-row .number {
-    color: #5bc0de;
+    color: #3498DB;
 }
 
 .amqp-message .json-formatter-row .boolean {
-    color: #f0ad4e;
+    color: #6C3483;
 }
 .amqp-message .json-formatter-row .null {
-    color: #666699;
+    color: #6C3483;
 }
 
 .amqp-message .json-formatter-row .toggler:after {
-    content: ">"
+    content: ">";
+    color: #007bff;
+    font-weight: 900;
 }
