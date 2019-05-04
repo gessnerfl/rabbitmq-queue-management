@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +58,7 @@ public class MessageRequeueOperation {
             channel.basicPublish(targetExchange, targetRoutingKeys.get(0).toString(), true, response.getProps(), response.getBody());
             channel.waitForConfirmsOrDie(MAX_WAIT_FOR_CONFIRM);
             if(returnListener.isReceived()){
-                throw new MessageOperationFailedException("Move failed, basic.return received");
+                throw new MessageOperationFailedException("requeue failed, basic.return received");
             }
 
             channel.removeReturnListener(returnListener);
@@ -71,7 +70,7 @@ public class MessageRequeueOperation {
 
         @Override
         public void handleReturn(int replyCode, String replyText, String exchange, String routingKey, BasicProperties properties, byte[] body) throws IOException {
-            LOGGER.error("basic.return received: exchange={}, routingKey={}, replyCode={}, replyText={}", exchange, routingKey, replyCode, replyText);
+            LOGGER.error("basic.return received for requeue operation: exchange={}, routingKey={}, replyCode={}, replyText={}", exchange, routingKey, replyCode, replyText);
             received = true;
         }
 
