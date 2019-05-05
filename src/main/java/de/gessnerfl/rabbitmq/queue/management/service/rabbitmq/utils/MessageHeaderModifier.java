@@ -25,7 +25,7 @@ public class MessageHeaderModifier {
 
     private Map<String, Object> copyHeader(Map<String, Object> headers) {
         Map<String,Object> copy = new HashMap<>();
-        headers.forEach((k,v) -> copy.put(k,v));
+        headers.forEach(copy::put);
         return copy;
     }
 
