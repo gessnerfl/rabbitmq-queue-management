@@ -1,5 +1,6 @@
 # RabbitMQ Queue Management
 [![Build Status](https://travis-ci.org/gessnerfl/rabbitmq-queue-management.svg?branch=master)](https://travis-ci.org/gessnerfl/rabbitmq-queue-management)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=de.gessnerfl.rabbitmq-queue-management&metric=alert_status)](https://sonarcloud.io/dashboard?id=de.gessnerfl.rabbitmq-queue-management)
 
 *Application to list, delete and re-queue messages of queues.*
 
@@ -11,6 +12,7 @@ RabbitMQ does not provide tooling to re-queue or move messages out of the box. H
 * List messages of queues
 * Delete first message from queue
 * Move first message from queue
+* Requeue first message from queue
 * Web UI
 
 As messages must not have a unique identifier in RabbitMQ this tools creates a checksum of the message and compares the checksum before applying move or delete operations on messages to avoid unintended changes.
@@ -40,11 +42,29 @@ The following steps are applied to move a message from one queue to another exch
 - Ensure checksum matches
 - Activate Publisher Acknowledgement (https://www.rabbitmq.com/confirms.html)
 - Register return listener to ensure that the message can be delivered to the target queue
+- Append header to count requeue operations (x-rmqmgmt-move-count)
 - Publish message with its body and properties as mandatory to the given exchange name and routing key
 - Wait for confirmation
 - Ensure no basic.return was received by return listener
 
 In case of any error send nack with re-queuing or simply close the channel so that the message remains in the queue.
+
+### Requeue operation
+
+Requeue is only available for dead lettered messages. It is based on the x-death header with provides information about
+the exchange name and routing key which was used to publish the message initially.
+
+The following steps are applied to requeue a message
+
+- Receive the first message of a queue
+- Ensure checksum matches
+- Ensure x-death header with exchange name and routing key is available
+- Activate Publisher Acknowledgement (https://www.rabbitmq.com/confirms.html)
+- Register return listener to ensure that the message can be delivered to the target queue
+- Append header to count requeue operations (x-rmqmgmt-requeue-count)
+- Publish message with its body and properties as mandatory to the exchange name and routing key from x-death header
+- Wait for confirmation
+- Ensure no basic.return was received by return listener
 
 # Configuration
 
