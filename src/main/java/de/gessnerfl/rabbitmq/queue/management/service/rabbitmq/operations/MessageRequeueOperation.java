@@ -1,6 +1,8 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.LongString;
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.utils.MessageHeaderModifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +18,15 @@ public class MessageRequeueOperation {
     public static final String X_DEATH_HEADER_KEY_NAME = "x-death";
     public static final String X_DEATH_EXCHANGE_KEY_NAME = "exchange";
     public static final String X_DEATH_ROUTING_KEYS_KEY_NAME = "routing-keys";
+    static final String REQUEUE_COUNT_HEADER = "x-rmqmgmt-requeue-count";
+
     private final MessageOperationExecutor messageOperationExecutor;
+    private final MessageHeaderModifier messageHeaderModifier;
 
     @Autowired
-    public MessageRequeueOperation(MessageOperationExecutor messageOperationExecutor) {
+    public MessageRequeueOperation(MessageOperationExecutor messageOperationExecutor, MessageHeaderModifier messageHeaderModifier) {
         this.messageOperationExecutor = messageOperationExecutor;
+        this.messageHeaderModifier = messageHeaderModifier;
     }
     
     public void requeueFirstMessage(String vhost, String queueName, String checksum){
@@ -52,7 +58,8 @@ public class MessageRequeueOperation {
                 throw new MessageOperationFailedException("Requeue operation not available; routing keys are missing");
             }
 
-            channel.basicPublish(targetExchange, targetRoutingKeys.get(0).toString(), true, response.getProps(), response.getBody());
+            AMQP.BasicProperties props = messageHeaderModifier.incrementCounter(response.getProps(), REQUEUE_COUNT_HEADER);
+            channel.basicPublish(targetExchange, targetRoutingKeys.get(0).toString(), true, props, response.getBody());
             channel.waitForConfirmsOrDie(MAX_WAIT_FOR_CONFIRM);
             if(returnListener.isReceived()){
                 throw new MessageOperationFailedException("requeue failed, basic.return received");

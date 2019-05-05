@@ -9,9 +9,13 @@
         <ul class="list-group" ng-if="messages" >
             <li class="list-group-item list-group-item-action" ng-repeat="m in messages">
                 <div class="d-flex w-100 border-bottom border-info mb-1">
-                    <h5 class="mb-1">
+                    <h5 class="mb-1 flex-grow-1">
                         <span>Message&nbsp;{{$index + 1}}</span>
                     </h5>
+                    <span>
+                        <span class="badge badge-light" ng-if="wasMoved(m)"><span class="badge badge-pill badge-light border border-secondary">{{getMoveCount(m)}}x</span>&nbsp;moved</span>
+                        <span class="badge badge-light" ng-if="wasRequeued(m)"><span class="badge badge-pill badge-light border border-secondary">{{getRequeueCount(m)}}x</span>&nbsp;re-queued</span>
+                    </span>
                 </div>
                 <div class="mb-1">
                     <div class="mb-1 amqp-message">
