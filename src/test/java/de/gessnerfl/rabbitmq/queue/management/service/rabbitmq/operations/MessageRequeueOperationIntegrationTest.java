@@ -18,8 +18,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -226,6 +225,39 @@ public class MessageRequeueOperationIntegrationTest {
         List<Message> dlxQueueMessagesSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
 
         assertThat(dlxQueueMessagesSecondFetch, hasSize(1));
+    }
+
+    @Test
+    public void shouldIncrementRequeueCounterWithEveryExecution() throws Exception {
+        //publish message to
+        testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_NAME);
+
+        //wait until message is dead lettered
+        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+
+        List<Message> dlxQueueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+        assertThat(dlxQueueMessagesFirstFetch, hasSize(1));
+
+        //First Requeue
+        sut.requeueFirstMessage(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, dlxQueueMessagesFirstFetch.get(0).getChecksum());
+
+        //wait until message is again dead lettered
+        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+
+        List<Message> dlxQueueMessagesSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+        assertThat(dlxQueueMessagesSecondFetch, hasSize(1));
+        assertEquals(1, dlxQueueMessagesSecondFetch.get(0).getProperties().getHeaders().get(MessageRequeueOperation.REQUEUE_COUNT_HEADER));
+
+        //Second Requeue
+        sut.requeueFirstMessage(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, dlxQueueMessagesSecondFetch.get(0).getChecksum());
+
+        //wait until message is again dead lettered
+        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+
+        List<Message> dlxQueueMessagesThirdFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+        assertThat(dlxQueueMessagesThirdFetch, hasSize(1));
+        assertEquals(2, dlxQueueMessagesThirdFetch.get(0).getProperties().getHeaders().get(MessageRequeueOperation.REQUEUE_COUNT_HEADER));
+
     }
 
 }

@@ -30,7 +30,7 @@ module.controller('messages', function($scope, $http, $location, $route, errorHa
 	};
 
 	$scope.enrichFirstMessageWithRequeueDetails = function(message){
-	    if(message.properties.headers["x-death"] !== undefined){
+	    if(message.properties.headers !== undefined && message.properties.headers["x-death"] !== undefined){
 	        var xdeath = message.properties.headers["x-death"][0];
 	        var exchange = xdeath.exchange;
 	        var routingKey = xdeath["routing-keys"] !== undefined && xdeath["routing-keys"].length > 0 ? xdeath["routing-keys"][0] : null;
@@ -68,6 +68,22 @@ module.controller('messages', function($scope, $http, $location, $route, errorHa
         }
 	}
 	
+	$scope.wasRequeued = function(m){
+	    return m.properties.headers !== undefined && m.properties.headers["x-rmqmgmt-requeue-count"] > 0;
+	}
+
+	$scope.getRequeueCount = function(m){
+	    return m.properties.headers["x-rmqmgmt-requeue-count"];
+	}
+
+	$scope.wasMoved = function(m){
+	    return m.properties.headers !== undefined && m.properties.headers["x-rmqmgmt-move-count"] > 0;
+	}
+
+	$scope.getMoveCount = function(m){
+	    return m.properties.headers["x-rmqmgmt-move-count"];
+	}
+
 	$scope.openRequeueModal = function(m){
 	    errorHandler.clear();
 		$scope.selectedMessage = m;
