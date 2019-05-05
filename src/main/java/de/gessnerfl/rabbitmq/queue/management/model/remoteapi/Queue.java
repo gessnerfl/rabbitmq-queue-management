@@ -19,6 +19,16 @@ public class Queue {
   private boolean exclusive;
   private Map<String, Object> arguments;
 
+  private int consumers;
+
+  private int messages;
+  @SerializedName("messages_ready")
+  private int messagesReady;
+  @SerializedName("messages_unacknowledged")
+  private int messagesUnacknowledged;
+
+  private String state;
+
   public boolean isDeadLetterExchangeConfigured(){
     return arguments != null && arguments.containsKey(DEAD_LETTER_EXCHANGE_ARGUMENT);
   }

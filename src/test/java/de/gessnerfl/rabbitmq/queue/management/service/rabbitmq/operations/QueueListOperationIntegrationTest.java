@@ -68,7 +68,7 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
     }
 
     @Test
-    public void shouldNoChangeTheOrderOfMessages() throws Exception {
+    public void shouldNotChangeTheOrderOfMessages() throws Exception {
         publishMessages(2);
 
         List<Message> firstFetch = sut.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 1);
