@@ -1,8 +1,6 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -10,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import de.gessnerfl.rabbitmq.queue.management.hamcrest.InitializedQueueStateMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +42,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
     private ManagementApi sut;
 
     @Before
-    public void init() throws Exception {
+    public void init() {
         sut = managementApiFactory.createFor();
         
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
@@ -122,6 +121,12 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
                     assertEquals(DEAD_LETTER_EXCHANGE_NAME, q.getArguments().get(Queue.DEAD_LETTER_EXCHANGE_ARGUMENT));
                     assertEquals(DEAD_LETTER_ROUTING_KEY, q.getArguments().get(Queue.DEAD_LETTER_ROUTINGKEY_ARGUMENT));
                 }
+
+                assertEquals(0, q.getConsumers());
+                assertEquals(0, q.getMessages());
+                assertEquals(0, q.getMessagesReady());
+                assertEquals(0, q.getMessagesUnacknowledged());
+                assertThat(q.getState(), new InitializedQueueStateMatcher());
             }
         }
         assertTrue(found);
@@ -142,7 +147,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void shouldGetBindingsOfQueue() throws Exception {
+    public void shouldGetBindingsOfQueue() {
         List<Binding> bindings = sut.getQueueBindings(VHOST, QUEUE_NAME);
 
         assertThat(bindings, hasSize(2));

@@ -5,18 +5,31 @@
         <div ng-if="!queues" class="alert alert-warning" role="alert">
             <strong>Warning!</strong> No queues are available. Check your configuration
         </div>
-        <table ng-if="queues" class="table">
-            <thead>
+        <table ng-if="queues" class="table table-bordered table-sm mt-4">
+            <thead class="thead-light">
             <tr>
-                <th>Vhost</th>
-                <th>Name</th>
-                <th>Attributes</th>
+                <th rowspan="2">Vhost</th>
+                <th rowspan="2">Name</th>
+                <th rowspan="2">State</th>
+                <th rowspan="2">Consumers</th>
+                <th colspan="3">Messages</th>
+                <th rowspan="2">Attributes</th>
+            </tr>
+            <tr>
+                <th>Total</th>
+                <th>Ready</th>
+                <th>Unacknowledged</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="queue in queues">
                 <td>{{queue.vhost}}</td>
                 <td><a ng-href="/messages?queue={{queue.name}}&vhost={{queue.vhost}}">{{queue.name}}</a></td>
+                <td>{{queue.state}}</td>
+                <td>{{queue.consumers}}</td>
+                <td>{{queue.messages}}</td>
+                <td>{{queue.messagesReady}}</td>
+                <td>{{queue.messagesUnacknowledged}}</td>
                 <td>
                     <span ng-if="queue.durable" class="badge badge-success">D</span>
                     <span ng-if="isDeadLetterExchangeConfigured(queue)" class="badge badge-secondary">DLX</span>
