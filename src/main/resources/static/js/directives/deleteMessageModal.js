@@ -17,7 +17,7 @@ angular.module('rmqmgmt').directive('deleteMessageModal', function() {
         },
         controller : [ '$scope', 'modalRestExecutor', function($scope, modalRestExecutor) {
             $scope.onConfirm = function() {
-                var url = '/api/messages?vhost=' + window.encodeURIComponent($scope.vhost) + '&queue=' + window.encodeURIComponent($scope.queue) + '&checksum=' + window.encodeURIComponent($scope.message.checksum);
+                var url = '/api/messages/' + $scope.message.checksum + '?vhost=' + window.encodeURIComponent($scope.vhost) + '&queue=' + window.encodeURIComponent($scope.queue);
                 modalRestExecutor('DELETE', url, $scope);
             };
 

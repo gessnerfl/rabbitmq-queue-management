@@ -64,9 +64,8 @@ angular.module('rmqmgmt').directive('moveMessageModal', function() {
 
             $scope.move = function($event) {
                 if (!($($event.currentTarget).hasClass('disabled'))){
-                    var url = '/api/messages/move?vhost=' + window.encodeURIComponent($scope.vhost) +
+                    var url = '/api/messages/' + $scope.message.checksum + '/move?vhost=' + window.encodeURIComponent($scope.vhost) +
                                 '&queue=' + window.encodeURIComponent($scope.queue) +
-                                '&checksum=' + window.encodeURIComponent($scope.message.checksum) +
                                 '&targetExchange=' + window.encodeURIComponent($scope.targetExchange.name) +
                                 "&targetRoutingKey=" + window.encodeURIComponent($scope.targetRoutingKey);
                     modalRestExecutor('POST', url, $scope);

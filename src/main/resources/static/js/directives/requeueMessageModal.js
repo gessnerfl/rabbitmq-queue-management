@@ -19,9 +19,8 @@ angular.module('rmqmgmt').directive('requeueMessageModal', function() {
 
             $scope.requeue = function($event) {
                 if (!($($event.currentTarget).hasClass('disabled'))){
-                    var url = '/api/messages/requeue?vhost=' + window.encodeURIComponent($scope.vhost) +
-                                '&queue=' + window.encodeURIComponent($scope.queue) +
-                                '&checksum=' + window.encodeURIComponent($scope.message.checksum);
+                    var url = '/api/messages/' + $scope.message.checksum + '/requeue?vhost=' + window.encodeURIComponent($scope.vhost) +
+                                '&queue=' + window.encodeURIComponent($scope.queue);
                     modalRestExecutor('POST', url, $scope);
                 }
             };
