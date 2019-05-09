@@ -15,11 +15,11 @@ public class MessageMoveOperation {
     }
     
     public void moveAllMessages(String vhost, String queueName, String targetExchange, String targetRoutingKey){
-        messageOperationExecutor.routeAllMessagesAndAcknowledgeOnSuccess(vhost, queueName, (m) -> new RoutingDetails(targetExchange, targetRoutingKey, MOVE_COUNT_HEADER));
+        messageOperationExecutor.routeAllMessagesAndAcknowledgeOnSuccess(vhost, queueName, m -> new RoutingDetails(targetExchange, targetRoutingKey, MOVE_COUNT_HEADER));
     }
 
     public void moveFirstMessage(String vhost, String queueName, String checksum, String targetExchange, String targetRoutingKey){
-        messageOperationExecutor.routeFirstMessageAndAcknowledgeOnSuccess(vhost, queueName, checksum, (m) -> new RoutingDetails(targetExchange, targetRoutingKey, MOVE_COUNT_HEADER));
+        messageOperationExecutor.routeFirstMessageAndAcknowledgeOnSuccess(vhost, queueName, checksum, m -> new RoutingDetails(targetExchange, targetRoutingKey, MOVE_COUNT_HEADER));
     }
 
 
