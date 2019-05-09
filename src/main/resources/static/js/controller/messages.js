@@ -101,6 +101,22 @@ module.controller('messages', function($scope, $http, $location, $route, errorHa
 		$scope.selectedMessage = m;
 		$("#deleteMessageModal > .modal").modal('show');
 	};
+
+	$scope.openRequeueAllModal = function(m){
+	    errorHandler.clear();
+		$scope.selectedMessage = m;
+		$("#requeueAllMessagesModal > .modal").modal('show');
+	};
+
+	$scope.openMoveAllModal = function(){
+	    errorHandler.clear();
+		$("#moveAllMessagesModal > .modal").modal('show');
+	};
+
+	$scope.openDeleteAllModal = function(){
+	    errorHandler.clear();
+		$("#deleteAllMessagesModal > .modal").modal('show');
+	};
 	$scope.init();
     
 });

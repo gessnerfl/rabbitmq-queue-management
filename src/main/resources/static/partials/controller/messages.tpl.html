@@ -1,11 +1,22 @@
 <div class="row">
-    <div class="col-12">
+    <div class="col-12 mb-4">
         <h1><span class="text-secondary">Queue</span>&nbsp;{{queue}}&nbsp;<span class="text-secondary">| Virtual host</span>&nbsp;{{vhost}}:</h1>
         <h2>Messages:</h2>
         <div class="message-panel"/>
         <div ng-if="!messages">
             <div class="alert alert-info" role="alert">Queue is empty</div>
         </div>
+
+        <div class="btn-toolbar mt-2 mb-2" ng-if="messages">
+            <div class="btn-group mr-2" role="group">
+                <button ng-if="messages[0].requeueAllowed" type="button" class="btn btn-sm btn-primary" ng-click="openRequeueAllModal(messages[0])"><span class="oi oi-loop-square" aria-hidden="true"></span>&nbsp;Requeue All</button>
+                <button type="button" class="btn btn-sm btn-primary" ng-click="openMoveAllModal()"><span class="oi oi-share" aria-hidden="true"></span>&nbsp;Move All</button>
+            </div>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-sm btn-danger" ng-click="openDeleteAllModal()"><span class="oi oi-trash" aria-hidden="true"></span>&nbsp;Delete All</button>
+            </div>
+        </div>
+
         <ul class="list-group" ng-if="messages" >
             <li class="list-group-item list-group-item-action" ng-repeat="m in messages">
                 <div class="d-flex w-100 border-bottom border-info mb-1">
@@ -45,6 +56,10 @@
             </li>
         </ul>
     </div>
+    <div id="requeueAllMessagesModal" requeue-all-messages-modal="requeue-all-messages-modal" vhost="vhost" queue="queue" message="selectedMessage" success-callback="loadMessages"></div>
+    <div id="moveAllMessagesModal" move-all-messages-modal="move-all-messages-modal" vhost="vhost" queue="queue" success-callback="loadMessages"></div>
+    <div id="deleteAllMessagesModal" delete-all-messages-modal="delete-all-messages-modal" vhost="vhost" queue="queue" success-callback="loadMessages"></div>
+
     <div id="requeueMessageModal" requeue-message-modal="requeue-message-modal" vhost="vhost" queue="queue" message="selectedMessage" success-callback="loadMessages"></div>
     <div id="moveMessageModal" move-message-modal="move-message-modal" vhost="vhost" queue="queue" message="selectedMessage" success-callback="loadMessages"></div>
     <div id="deleteMessageModal" delete-message-modal="delete-message-modal" vhost="vhost" queue="queue" message="selectedMessage" success-callback="loadMessages"></div>

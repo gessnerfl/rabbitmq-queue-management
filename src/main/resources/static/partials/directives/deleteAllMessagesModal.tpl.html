@@ -1,0 +1,18 @@
+<div class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-show="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete All Messages</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="message-panel"/>
+        <p>Do you really want to delete all messages in queue <b>{{ queue }}</b>?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal"><span class="oi oi-x" aria-hidden="true"></span>&nbsp;No</button>
+        <button type="button" class="btn btn-danger" ng-click="onConfirm()"><span class="oi oi-check" aria-hidden="true"></span>&nbsp;Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
