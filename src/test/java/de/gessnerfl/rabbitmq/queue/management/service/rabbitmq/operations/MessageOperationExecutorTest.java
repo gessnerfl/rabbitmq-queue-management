@@ -1,46 +1,47 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
+import com.rabbitmq.client.*;
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.utils.RoutingMessageHeaderModifier;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.GetResponse;
 
 import de.gessnerfl.rabbitmq.queue.management.connection.CloseableChannelWrapper;
 import de.gessnerfl.rabbitmq.queue.management.connection.ConnectionFailedException;
 import de.gessnerfl.rabbitmq.queue.management.connection.Connector;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.utils.MessageChecksum;
+import org.slf4j.Logger;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MessageOperationExecutorTest {
-    private final static String DEFAULT_VHOST_NAME = "defaultVhost";
-    private final static String DEFAULT_QUEUE_NAME = "defaultQueue";
-    private final static Envelope DEFAULT_ENVELOPE = mock(Envelope.class);
-    private final static Long DEFAULT_DELIVERY_TAG = 123L;
-    private final static AMQP.BasicProperties DEFAULT_BASIC_PROPERTIES =
-            mock(AMQP.BasicProperties.class);
-    private final static byte[] DEFAULT_PAYLOAD = "defaultPayload".getBytes(StandardCharsets.UTF_8);
-    private final static String DEFAULT_CHECKSUM = "defaultChecksum";
+    private static final String DEFAULT_VHOST_NAME = "defaultVhost";
+    private static final String DEFAULT_QUEUE_NAME = "defaultQueue";
+    private static final Envelope DEFAULT_ENVELOPE = mock(Envelope.class);
+    private static final Long DEFAULT_DELIVERY_TAG = 123L;
+    private static final AMQP.BasicProperties DEFAULT_BASIC_PROPERTIES = mock(AMQP.BasicProperties.class);
+    private static final byte[] DEFAULT_PAYLOAD = "defaultPayload".getBytes(StandardCharsets.UTF_8);
+    private static final String DEFAULT_CHECKSUM = "defaultChecksum";
+    private static final String DEFAULT_ROUTING_TARGET_EXCHANGE = "targetExchange";
+    private static final String DEFAULT_ROUTING_TARGET_ROUTING_KEY = "targetRoutingKey";
+    private static final String DEFAULT_ROUTING_COUNT_HEADER = "countHeader";
+    private static final OperationId DEFAULT_OPERATION_ID = new OperationId();
 
     @Mock
     private Connector connector;
@@ -49,9 +50,20 @@ public class MessageOperationExecutorTest {
     @Mock
     private CloseableChannelWrapper closeableChannelWrapper;
     @Mock
+    private OperationIdGenerator operationIdGenerator;
+    @Mock
+    private RoutingMessageHeaderModifier routingMessageHeaderModifier;
+    @Mock
+    private StateKeepingReturnListenerFactory stateKeepingReturnListenerFactory;
+
+    @Mock
     private Channel channel;
     @Mock
-    private MessageOperationFunction function;
+    private MessageOperationFunction basicFunction;
+    @Mock
+    private RouteResolvingFunction routeResolvingFunction;
+    @Mock
+    private StateKeepingReturnListener stateKeepingReturnListener;
 
     @InjectMocks
     private MessageOperationExecutor sut;
@@ -63,6 +75,9 @@ public class MessageOperationExecutorTest {
         when(DEFAULT_ENVELOPE.getDeliveryTag()).thenReturn(DEFAULT_DELIVERY_TAG);
         when(messageChecksum.createFor(DEFAULT_BASIC_PROPERTIES, DEFAULT_PAYLOAD))
                 .thenReturn(DEFAULT_CHECKSUM);
+
+        when(operationIdGenerator.generate()).thenReturn(DEFAULT_OPERATION_ID);
+        when(stateKeepingReturnListenerFactory.createFor(eq(DEFAULT_OPERATION_ID), any(Logger.class))).thenReturn(stateKeepingReturnListener);
     }
 
     @Test
@@ -71,9 +86,9 @@ public class MessageOperationExecutorTest {
         GetResponse response = mockDefaultGetResponse();
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(response);
 
-        sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
+        sut.consumeMessageAndApplyFunctionAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, basicFunction);
 
-        verify(function).apply(channel, response);
+        verify(basicFunction).apply(DEFAULT_OPERATION_ID, channel, response);
         verify(channel).basicAck(DEFAULT_DELIVERY_TAG, false);
     }
 
@@ -84,13 +99,13 @@ public class MessageOperationExecutorTest {
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(response);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, "invalidChecksum", function);
+            sut.consumeMessageAndApplyFunctionAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, "invalidChecksum", basicFunction);
             fail();
         } catch (MessageOperationFailedException e) {
         }
 
         verify(channel).basicNack(DEFAULT_DELIVERY_TAG, false, true);
-        verify(function, never()).apply(any(Channel.class), any(GetResponse.class));
+        verify(basicFunction, never()).apply(any(OperationId.class), any(Channel.class), any(GetResponse.class));
     }
 
     @Test
@@ -98,27 +113,27 @@ public class MessageOperationExecutorTest {
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(null);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, "anyChecksum", function);
+            sut.consumeMessageAndApplyFunctionAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, "anyChecksum", basicFunction);
             fail();
         } catch (MessageOperationFailedException e) {
         }
 
         verify(channel, never()).basicNack(any(Long.class), anyBoolean(), anyBoolean());
-        verify(function, never()).apply(any(Channel.class), any(GetResponse.class));
+        verify(basicFunction, never()).apply(any(OperationId.class), any(Channel.class), any(GetResponse.class));
     }
 
     @Test
-    public void shouldThrowExcpetionWhenConnectionCannotBeEstablished() throws Exception {
+    public void shouldThrowExceptionWhenConnectionCannotBeEstablished() throws Exception {
         ConnectionFailedException expectedException = new ConnectionFailedException(null);
         when(connector.connectAsClosable(DEFAULT_VHOST_NAME)).thenThrow(expectedException);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
+            sut.consumeMessageAndApplyFunctionAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, basicFunction);
         } catch (MessageOperationFailedException e) {
             assertSame(expectedException, e.getCause());
         }
 
-        verify(function, never()).apply(any(Channel.class), any(GetResponse.class));
+        verify(basicFunction, never()).apply(any(OperationId.class), any(Channel.class), any(GetResponse.class));
     }
 
     @Test
@@ -127,14 +142,14 @@ public class MessageOperationExecutorTest {
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenThrow(expectedException);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
+            sut.consumeMessageAndApplyFunctionAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, basicFunction);
         } catch (MessageOperationFailedException e) {
             assertSame(expectedException, e.getCause());
         }
 
         verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
         verifyNoMoreInteractions(channel);
-        verify(function, never()).apply(any(Channel.class), any(GetResponse.class));
+        verify(basicFunction, never()).apply(any(OperationId.class), any(Channel.class), any(GetResponse.class));
     }
 
     @Test
@@ -145,17 +160,18 @@ public class MessageOperationExecutorTest {
         when(messageChecksum.createFor(DEFAULT_BASIC_PROPERTIES, DEFAULT_PAYLOAD))
                 .thenReturn(DEFAULT_CHECKSUM);
         IOException expectedException = new IOException();
-        doThrow(expectedException).when(function).apply(channel, getResponse);
+        doThrow(expectedException).when(basicFunction).apply(DEFAULT_OPERATION_ID, channel, getResponse);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
+            sut.consumeMessageAndApplyFunctionAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, basicFunction);
         } catch (MessageOperationFailedException e) {
             assertSame(expectedException, e.getCause());
         }
 
         verify(messageChecksum).createFor(DEFAULT_BASIC_PROPERTIES, DEFAULT_PAYLOAD);
         verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
-        verify(function).apply(channel, getResponse);
+        verify(basicFunction).apply(DEFAULT_OPERATION_ID, channel, getResponse);
+        verify(channel).basicNack(DEFAULT_DELIVERY_TAG, false, true);
         verifyNoMoreInteractions(channel);
     }
     
@@ -169,15 +185,16 @@ public class MessageOperationExecutorTest {
         doThrow(expectedException).when(channel).basicAck(DEFAULT_DELIVERY_TAG, false);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, function);
+            sut.consumeMessageAndApplyFunctionAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, basicFunction);
         } catch (MessageOperationFailedException e) {
             assertSame(expectedException, e.getCause());
         }
 
         verify(messageChecksum).createFor(DEFAULT_BASIC_PROPERTIES, DEFAULT_PAYLOAD);
         verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
-        verify(function).apply(channel, getResponse);
+        verify(basicFunction).apply(DEFAULT_OPERATION_ID, channel, getResponse);
         verify(channel).basicAck(DEFAULT_DELIVERY_TAG, false);
+        verify(channel).basicNack(DEFAULT_DELIVERY_TAG, false, true);
         verifyNoMoreInteractions(channel);
     }
 
@@ -192,7 +209,7 @@ public class MessageOperationExecutorTest {
         doThrow(expectedException).when(channel).basicNack(DEFAULT_DELIVERY_TAG, false, true);
 
         try {
-            sut.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, "invalidMessage", function);
+            sut.consumeMessageAndApplyFunctionAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, "invalidMessage", basicFunction);
         } catch (MessageOperationFailedException e) {
             assertSame(expectedException, e.getCause());
         }
@@ -201,7 +218,231 @@ public class MessageOperationExecutorTest {
         verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
         verify(channel).basicNack(DEFAULT_DELIVERY_TAG, false, true);
         verifyNoMoreInteractions(channel);
-        verify(function, never()).apply(any(Channel.class), any(GetResponse.class));
+        verify(basicFunction, never()).apply(any(OperationId.class), any(Channel.class), any(GetResponse.class));
+    }
+
+    @Test
+    public void shouldPerformMassOperationUntilAllMessagesAreConsumedAndMessagesDoNotContainAnyBasicProperty() throws Exception {
+        GetResponse getResponse = mock(GetResponse.class);
+        when(getResponse.getEnvelope()).thenReturn(DEFAULT_ENVELOPE);
+
+        testSuccessfulMassOperationForMessage(getResponse);
+    }
+
+    @Test
+    public void shouldPerformMassOperationUntilAllMessagesAreConsumedAndMessagesDoNotContainAnyHeader() throws Exception {
+        AMQP.BasicProperties basicProperties = mock(AMQP.BasicProperties.class);
+        when(basicProperties.getHeaders()).thenReturn(null);
+        GetResponse getResponse = mock(GetResponse.class);
+        when(getResponse.getEnvelope()).thenReturn(DEFAULT_ENVELOPE);
+        when(getResponse.getProps()).thenReturn(basicProperties);
+
+        testSuccessfulMassOperationForMessage(getResponse);
+    }
+
+    @Test
+    public void shouldPerformMassOperationUntilAllMessagesAreConsumedAndOperationIdIsNotTheSame() throws Exception {
+        AMQP.BasicProperties basicProperties = mock(AMQP.BasicProperties.class);
+        when(basicProperties.getHeaders()).thenReturn(new HashMap<>());
+        GetResponse getResponse = mock(GetResponse.class);
+        when(getResponse.getEnvelope()).thenReturn(DEFAULT_ENVELOPE);
+        when(getResponse.getProps()).thenReturn(basicProperties);
+
+        testSuccessfulMassOperationForMessage(getResponse);
+    }
+
+    private void testSuccessfulMassOperationForMessage(GetResponse getResponse) throws Exception {
+        when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse,getResponse, null);
+
+        sut.consumeAllMessageAndApplyFunctionAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, basicFunction);
+
+        InOrder io = Mockito.inOrder(channel, basicFunction);
+        io.verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
+        io.verify(basicFunction).apply(DEFAULT_OPERATION_ID, channel, getResponse);
+        io.verify(channel).basicAck(DEFAULT_DELIVERY_TAG, false);
+        io.verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
+        io.verify(basicFunction).apply(DEFAULT_OPERATION_ID, channel, getResponse);
+        io.verify(channel).basicAck(DEFAULT_DELIVERY_TAG, false);
+        io.verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
+    }
+
+    @Test
+    public void shouldStopToPerformMassOperationWhenSameOperationIdAppearsInHeader() throws Exception {
+        final Map<String, Object> headers = mock(Map.class);
+        AMQP.BasicProperties basicProperties = mock(AMQP.BasicProperties.class);
+        when(basicProperties.getHeaders()).thenReturn(headers);
+        GetResponse getResponse = mock(GetResponse.class);
+        when(getResponse.getEnvelope()).thenReturn(DEFAULT_ENVELOPE);
+        when(getResponse.getProps()).thenReturn(basicProperties);
+
+        when(headers.getOrDefault(eq(OperationId.HEADER_NAME), anyString())).thenReturn("otherHeader", "otherHeader", DEFAULT_OPERATION_ID.getValue());
+        when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse,getResponse, getResponse);
+
+        sut.consumeAllMessageAndApplyFunctionAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, basicFunction);
+
+        InOrder io = Mockito.inOrder(channel, basicFunction);
+        io.verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
+        io.verify(basicFunction).apply(DEFAULT_OPERATION_ID, channel, getResponse);
+        io.verify(channel).basicAck(DEFAULT_DELIVERY_TAG, false);
+        io.verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
+        io.verify(basicFunction).apply(DEFAULT_OPERATION_ID, channel, getResponse);
+        io.verify(channel).basicAck(DEFAULT_DELIVERY_TAG, false);
+        io.verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
+        io.verify(channel).basicNack(DEFAULT_DELIVERY_TAG, false, true);
+    }
+
+    @Test
+    public void shouldFailToRunMassOperationWhenMessagesCannotBeConsumed() throws Exception {
+        IOException expectedException = new IOException();
+        when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenThrow(expectedException);
+
+        try {
+            sut.consumeAllMessageAndApplyFunctionAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, basicFunction);
+            fail();
+        }catch (MessageOperationFailedException e) {
+            assertEquals(expectedException, e.getCause());
+        }
+
+        verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
+        verifyNoMoreInteractions(channel);
+    }
+
+    @Test
+    public void shouldFailToRunMassOperationWhenFunctionThrowsAnException() throws Exception {
+        GetResponse getResponse = mockDefaultGetResponse();
+
+        when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse);
+        MessageOperationFailedException expectedException = mock(MessageOperationFailedException.class);
+        doThrow(expectedException).when(basicFunction).apply(DEFAULT_OPERATION_ID, channel, getResponse);
+
+        try {
+            sut.consumeAllMessageAndApplyFunctionAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, basicFunction);
+            fail();
+        }catch (MessageOperationFailedException e) {
+            assertEquals(expectedException, e);
+        }
+
+        verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
+        verify(basicFunction).apply(DEFAULT_OPERATION_ID, channel, getResponse);
+        verify(channel).basicNack(DEFAULT_DELIVERY_TAG, false, true);
+        verifyNoMoreInteractions(channel);
+    }
+
+    @Test
+    public void shouldRouteFirstMessage() throws Exception{
+        GetResponse getResponse = mockDefaultGetResponse();
+        RoutingDetails routingDetails = mockDefaultRoutingDetails();
+        AMQP.BasicProperties mappedBasicProperties = mock(AMQP.BasicProperties.class);
+
+        when(routeResolvingFunction.resolve(getResponse)).thenReturn(routingDetails);
+        when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse);
+        when(routingMessageHeaderModifier.modifyHeaders(DEFAULT_BASIC_PROPERTIES, DEFAULT_OPERATION_ID, DEFAULT_ROUTING_COUNT_HEADER)).thenReturn(mappedBasicProperties);
+
+        sut.routeFirstMessageAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, routeResolvingFunction);
+
+        InOrder io = Mockito.inOrder(channel, routeResolvingFunction, routingMessageHeaderModifier);
+        verifyMessageRouted(getResponse, mappedBasicProperties, io);
+        io.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void shouldFailToRouteFirstMessageWhenReturnListenerWasTriggered() throws Exception{
+        GetResponse getResponse = mockDefaultGetResponse();
+        RoutingDetails routingDetails = mockDefaultRoutingDetails();
+        AMQP.BasicProperties mappedBasicProperties = mock(AMQP.BasicProperties.class);
+
+        when(routeResolvingFunction.resolve(getResponse)).thenReturn(routingDetails);
+        when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse);
+        when(routingMessageHeaderModifier.modifyHeaders(DEFAULT_BASIC_PROPERTIES, DEFAULT_OPERATION_ID, DEFAULT_ROUTING_COUNT_HEADER)).thenReturn(mappedBasicProperties);
+        when(stateKeepingReturnListener.isReceived()).thenReturn(true);
+
+        try{
+            sut.routeFirstMessageAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_CHECKSUM, routeResolvingFunction);
+            fail();
+        }catch (MessageOperationFailedException e){
+            assertThat(e.getMessage(), containsString("basic.return received"));
+        }
+
+        InOrder io = Mockito.inOrder(channel, routeResolvingFunction, routingMessageHeaderModifier);
+        io.verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
+        io.verify(routeResolvingFunction).resolve(getResponse);
+        io.verify(channel).addReturnListener(stateKeepingReturnListener);
+        io.verify(channel).confirmSelect();
+        io.verify(routingMessageHeaderModifier).modifyHeaders(DEFAULT_BASIC_PROPERTIES, DEFAULT_OPERATION_ID, DEFAULT_ROUTING_COUNT_HEADER);
+        io.verify(channel).basicPublish(DEFAULT_ROUTING_TARGET_EXCHANGE, DEFAULT_ROUTING_TARGET_ROUTING_KEY, true, mappedBasicProperties, DEFAULT_PAYLOAD);
+        io.verify(channel).waitForConfirmsOrDie(MessageOperationExecutor.MAX_WAIT_FOR_CONFIRM);
+        io.verify(channel).basicNack(DEFAULT_DELIVERY_TAG, false, true);
+        io.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void shouldRouteAllMessage() throws Exception{
+        GetResponse getResponse = mockDefaultGetResponse();
+        RoutingDetails routingDetails = mockDefaultRoutingDetails();
+        AMQP.BasicProperties mappedBasicProperties = mock(AMQP.BasicProperties.class);
+
+        when(routeResolvingFunction.resolve(getResponse)).thenReturn(routingDetails);
+        when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse, getResponse, null);
+        when(routingMessageHeaderModifier.modifyHeaders(DEFAULT_BASIC_PROPERTIES, DEFAULT_OPERATION_ID, DEFAULT_ROUTING_COUNT_HEADER)).thenReturn(mappedBasicProperties);
+
+        sut.routeAllMessagesAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, routeResolvingFunction);
+
+        InOrder io = Mockito.inOrder(channel, routeResolvingFunction, routingMessageHeaderModifier);
+        verifyMessageRouted(getResponse, mappedBasicProperties, io);
+        verifyMessageRouted(getResponse, mappedBasicProperties, io);
+        io.verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
+        io.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void shouldFailToRouteAllMessageWhenReturnListenerWasTriggered() throws Exception{
+        GetResponse getResponse = mockDefaultGetResponse();
+        RoutingDetails routingDetails = mockDefaultRoutingDetails();
+        AMQP.BasicProperties mappedBasicProperties = mock(AMQP.BasicProperties.class);
+
+        when(routeResolvingFunction.resolve(getResponse)).thenReturn(routingDetails);
+        when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse, getResponse, null);
+        when(routingMessageHeaderModifier.modifyHeaders(DEFAULT_BASIC_PROPERTIES, DEFAULT_OPERATION_ID, DEFAULT_ROUTING_COUNT_HEADER)).thenReturn(mappedBasicProperties);
+        when(stateKeepingReturnListener.isReceived()).thenReturn(false, true);
+
+        try{
+            sut.routeAllMessagesAndAcknowledgeOnSuccess(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, routeResolvingFunction);
+            fail();
+        }catch (MessageOperationFailedException e){
+            assertThat(e.getMessage(), containsString("basic.return received"));
+        }
+
+        InOrder io = Mockito.inOrder(channel, routeResolvingFunction, routingMessageHeaderModifier);
+        verifyMessageRouted(getResponse, mappedBasicProperties, io);
+        io.verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
+        io.verify(routeResolvingFunction).resolve(getResponse);
+        io.verify(channel).addReturnListener(stateKeepingReturnListener);
+        io.verify(channel).confirmSelect();
+        io.verify(routingMessageHeaderModifier).modifyHeaders(DEFAULT_BASIC_PROPERTIES, DEFAULT_OPERATION_ID, DEFAULT_ROUTING_COUNT_HEADER);
+        io.verify(channel).basicPublish(DEFAULT_ROUTING_TARGET_EXCHANGE, DEFAULT_ROUTING_TARGET_ROUTING_KEY, true, mappedBasicProperties, DEFAULT_PAYLOAD);
+        io.verify(channel).waitForConfirmsOrDie(MessageOperationExecutor.MAX_WAIT_FOR_CONFIRM);
+        io.verify(channel).basicNack(DEFAULT_DELIVERY_TAG, false, true);
+        io.verifyNoMoreInteractions();
+    }
+
+    private void verifyMessageRouted(GetResponse getResponse, AMQP.BasicProperties mappedBasicProperties, InOrder io) throws IOException, InterruptedException, TimeoutException {
+        io.verify(channel).basicGet(DEFAULT_QUEUE_NAME, false);
+        io.verify(routeResolvingFunction).resolve(getResponse);
+        io.verify(channel).addReturnListener(stateKeepingReturnListener);
+        io.verify(channel).confirmSelect();
+        io.verify(routingMessageHeaderModifier).modifyHeaders(DEFAULT_BASIC_PROPERTIES, DEFAULT_OPERATION_ID, DEFAULT_ROUTING_COUNT_HEADER);
+        io.verify(channel).basicPublish(DEFAULT_ROUTING_TARGET_EXCHANGE, DEFAULT_ROUTING_TARGET_ROUTING_KEY, true, mappedBasicProperties, DEFAULT_PAYLOAD);
+        io.verify(channel).waitForConfirmsOrDie(MessageOperationExecutor.MAX_WAIT_FOR_CONFIRM);
+        io.verify(channel).removeReturnListener(stateKeepingReturnListener);
+        io.verify(channel).basicAck(DEFAULT_DELIVERY_TAG, false);
+    }
+
+    private RoutingDetails mockDefaultRoutingDetails() {
+        RoutingDetails routingDetails = mock(RoutingDetails.class);
+        when(routingDetails.getCountHeaderName()).thenReturn(DEFAULT_ROUTING_COUNT_HEADER);
+        when(routingDetails.getExchange()).thenReturn(DEFAULT_ROUTING_TARGET_EXCHANGE);
+        when(routingDetails.getRoutingKey()).thenReturn(DEFAULT_ROUTING_TARGET_ROUTING_KEY);
+        return routingDetails;
     }
 
     private GetResponse mockDefaultGetResponse() {

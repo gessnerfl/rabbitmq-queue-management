@@ -122,4 +122,23 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
         assertEquals(2, sourceThirdFetch.get(0).getProperties().getHeaders().get(MessageMoveOperation.MOVE_COUNT_HEADER));
     }
 
+    @Test
+    public void shouldMoveAllMessages() throws Exception {
+        publishMessages(2);
+
+        List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 5);
+        List<Message> targetFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, TARGET_QUEUE_NAME, 5);
+
+        assertThat(sourceFirstFetch, hasSize(2));
+        assertThat(targetFirstFetch, empty());
+
+        sut.moveAllMessages(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, EXCHANGE_NAME, TARGET_QUEUE_NAME);
+
+        List<Message> sourceSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 5);
+        List<Message> targetSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, TARGET_QUEUE_NAME, 5);
+
+        assertThat(sourceSecondFetch, empty());
+        assertThat(targetSecondFetch, hasSize(2));
+    }
+
 }

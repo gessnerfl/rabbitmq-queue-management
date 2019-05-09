@@ -11,38 +11,37 @@ import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.Operations;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApi;
-import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApiFactory;
 
 @Service
 public class RabbitMqFacade {
     
-    private final ManagementApiFactory managementApiFactory;
+    private final ManagementApi managementApi;
     private final Operations operations;
     
     @Autowired
-    public RabbitMqFacade(ManagementApiFactory managementApiFactory, Operations operations){
-        this.managementApiFactory = managementApiFactory;
+    public RabbitMqFacade(ManagementApi managementApi, Operations operations){
+        this.managementApi = managementApi;
         this.operations = operations;
     }
 
     public List<Exchange> getExchanges(String vhost){
-        return getManagementApi().getExchanges(vhost);
+        return managementApi.getExchanges(vhost);
     }
 
     public List<Queue> getQueues(){
-        return getManagementApi().getQueues();
+        return managementApi.getQueues();
     }
     
     public List<Queue> getQueues(String vhost){
-        return getManagementApi().getQueues(vhost);
+        return managementApi.getQueues(vhost);
     }
     
     public List<Binding> getExchangeSourceBindings(String vhost, String exchange){
-        return getManagementApi().getExchangeSourceBindings(vhost, exchange);
+        return managementApi.getExchangeSourceBindings(vhost, exchange);
     }
     
     public List<Binding> getQueueBindings(String vhost, String queueName){
-        return getManagementApi().getQueueBindings(vhost, queueName);
+        return managementApi.getQueueBindings(vhost, queueName);
     }
     
     public List<Message> getMessagesOfQueue(String vhost, String queueName, int limit){
@@ -55,10 +54,6 @@ public class RabbitMqFacade {
     
     public void moveFirstMessageInQueue(String vhost, String queueName, String messageChecksum, String targetExchange, String targetRoutingKey){
         operations.moveFirstMessageInQueue(vhost, queueName, messageChecksum, targetExchange, targetRoutingKey);
-    }
-    
-    private ManagementApi getManagementApi(){
-        return managementApiFactory.createFor();
     }
 
     public void requeueFirstMessageInQueue(String vhost, String queue, String checksum) {

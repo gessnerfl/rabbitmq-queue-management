@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -21,7 +20,6 @@ import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.Operations;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApi;
-import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApiFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RabbitMqFacadeTest {
@@ -33,19 +31,12 @@ public class RabbitMqFacadeTest {
     private final static String ROUTING_KEY = "routingKey";
 
     @Mock
-    private ManagementApiFactory managementApiFactory;
-    @Mock
     private ManagementApi managementApi;
     @Mock
     private Operations operations;
 
     @InjectMocks
     private RabbitMqFacade sut;
-    
-    @Before
-    public void init(){
-        when(managementApiFactory.createFor()).thenReturn(managementApi);
-    }
 
     @Test
     public void shouldDelegateCallToGetExchanges() {

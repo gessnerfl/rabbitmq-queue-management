@@ -9,6 +9,6 @@ import com.rabbitmq.client.GetResponse;
 @FunctionalInterface
 public interface MessageOperationFunction {
 
-    void apply(Channel channel, GetResponse message) throws IOException, TimeoutException, InterruptedException;
+    void apply(OperationId operationId, Channel channel, GetResponse message) throws IOException, TimeoutException, InterruptedException;
     
 }

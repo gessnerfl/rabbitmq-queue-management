@@ -24,6 +24,9 @@ public interface ManagementApi {
     @RequestLine(value = "GET /queues/{vhost}", decodeSlash = false)
     List<Queue> getQueues(@Param("vhost") String vhost);
 
+    @RequestLine(value = "DELETE /queues/{vhost}/{queue}/contents", decodeSlash = false)
+    List<Queue> purgeQueue(@Param("vhost") String vhost, @Param("queue") String queue);
+
     @RequestLine(value = "GET /queues/{vhost}/{queue}/bindings", decodeSlash = false)
     List<Binding> getQueueBindings(@Param("vhost") String vhost, @Param("queue") String queue);
 }

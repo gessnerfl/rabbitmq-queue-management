@@ -1,7 +1,6 @@
 package de.gessnerfl.rabbitmq.queue.management.controller.rest;
 
 import de.gessnerfl.rabbitmq.queue.management.controller.AbstractControllerIntegrationTest;
-import de.gessnerfl.rabbitmq.queue.management.hamcrest.InitializedQueueStateMatcher;
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
@@ -16,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static de.gessnerfl.rabbitmq.queue.management.controller.rest.QueryParameters.*;
+import static de.gessnerfl.rabbitmq.queue.management.hamcrest.CustomMatchers.matchesInitialQueueStateNullOrRunning;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -85,7 +85,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
                 .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER + ".messages", contains(0)))
                 .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER + ".messagesReady", contains(0)))
                 .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER + ".messagesUnacknowledged", contains(0)))
-                .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER + ".state", contains(new InitializedQueueStateMatcher())))
+                .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER + ".state", contains(matchesInitialQueueStateNullOrRunning())))
                 .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".name", contains(QUEUE_OUT_NAME)))
                 .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".vhost", contains("/")))
                 .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".durable", contains(false)))
@@ -95,7 +95,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
                 .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".messages", contains(0)))
                 .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".messagesReady", contains(0)))
                 .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".messagesUnacknowledged", contains(0)))
-                .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".state", contains(new InitializedQueueStateMatcher())))
+                .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".state", contains(matchesInitialQueueStateNullOrRunning())))
                 .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".name", contains(QUEUE2_DLX_NAME)))
                 .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".vhost", contains("/")))
                 .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".durable", contains(false)))
@@ -105,7 +105,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
                 .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".messages", contains(0)))
                 .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".messagesReady", contains(0)))
                 .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".messagesUnacknowledged", contains(0)))
-                .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".state", contains(new InitializedQueueStateMatcher())))
+                .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".state", contains(matchesInitialQueueStateNullOrRunning())))
                 .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".name", contains(QUEUE2_NAME)))
                 .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".vhost", contains("/")))
                 .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".durable", contains(false)))
@@ -115,7 +115,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
                 .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".messages", contains(0)))
                 .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".messagesReady", contains(0)))
                 .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".messagesUnacknowledged", contains(0)))
-                .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".state", contains(new InitializedQueueStateMatcher())));
+                .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".state", contains(matchesInitialQueueStateNullOrRunning())));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
                 .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER + ".messages", contains(0)))
                 .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER + ".messagesReady", contains(0)))
                 .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER + ".messagesUnacknowledged", contains(0)))
-                .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER + ".state", contains(new InitializedQueueStateMatcher())))
+                .andExpect(jsonPath(IN_QUEUE_JSON_PATH_FILTER + ".state", contains(matchesInitialQueueStateNullOrRunning())))
                 .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".name", contains(QUEUE_OUT_NAME)))
                 .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".vhost", contains(VHOST_NAME)))
                 .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".durable", contains(false)))
@@ -143,7 +143,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
                 .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".messages", contains(0)))
                 .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".messagesReady", contains(0)))
                 .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".messagesUnacknowledged", contains(0)))
-                .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".state", contains(new InitializedQueueStateMatcher())))
+                .andExpect(jsonPath(OUT_QUEUE_JSON_PATH_FILTER + ".state", contains(matchesInitialQueueStateNullOrRunning())))
                 .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".name", contains(QUEUE2_DLX_NAME)))
                 .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".vhost", contains("/")))
                 .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".durable", contains(false)))
@@ -153,7 +153,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
                 .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".messages", contains(0)))
                 .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".messagesReady", contains(0)))
                 .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".messagesUnacknowledged", contains(0)))
-                .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".state", contains(new InitializedQueueStateMatcher())))
+                .andExpect(jsonPath(QUEUE2_DLX_JSON_PATH_FILTER + ".state", contains(matchesInitialQueueStateNullOrRunning())))
                 .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".name", contains(QUEUE2_NAME)))
                 .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".vhost", contains("/")))
                 .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".durable", contains(false)))
@@ -163,7 +163,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
                 .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".messages", contains(0)))
                 .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".messagesReady", contains(0)))
                 .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".messagesUnacknowledged", contains(0)))
-                .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".state", contains(new InitializedQueueStateMatcher())));
+                .andExpect(jsonPath(QUEUE2_JSON_PATH_FILTER + ".state", contains(matchesInitialQueueStateNullOrRunning())));
     }
 
     @Test

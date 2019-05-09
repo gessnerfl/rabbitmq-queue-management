@@ -260,4 +260,37 @@ public class MessageRequeueOperationIntegrationTest {
 
     }
 
+    @Test
+    public void shouldRequeueAllMessagesWhenMessageWasDeadLettered() throws Exception {
+        //publish message to
+        testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_NAME);
+        testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_NAME);
+
+        //wait until message is dead lettered
+        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+
+        List<Message> queueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 10);
+        List<Message> dlxQueueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(queueMessagesFirstFetch, empty());
+        assertThat(dlxQueueMessagesFirstFetch, hasSize(2));
+
+        sut.requeueAllMessages(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME);
+
+        List<Message> queueMessagesSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 10);
+        List<Message> dlxQueueMessagesSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(queueMessagesSecondFetch, hasSize(2));
+        assertThat(dlxQueueMessagesSecondFetch, empty());
+
+        //wait until message is again dead lettered
+        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+
+        List<Message> queueMessagesThirdFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 10);
+        List<Message> dlxQueueMessagesThirdFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
+
+        assertThat(queueMessagesThirdFetch, empty());
+        assertThat(dlxQueueMessagesThirdFetch, hasSize(2));
+    }
+
 }

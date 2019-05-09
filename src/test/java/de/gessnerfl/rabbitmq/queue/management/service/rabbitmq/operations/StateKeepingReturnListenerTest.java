@@ -17,7 +17,7 @@ public class StateKeepingReturnListenerTest {
     @Test
     public void shouldSetStateToReceivedAndLogInfoWhenHandleReturnIsExecuted() throws Exception {
         final Logger logger = mock(Logger.class);
-        final String operation = "operation";
+        final OperationId operation = mock(OperationId.class);
         final int replyCode = 1;
         final String replyText = "replyText";
         final String exchange = "exchange";

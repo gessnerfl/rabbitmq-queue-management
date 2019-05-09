@@ -1,5 +1,6 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi;
 
+import static de.gessnerfl.rabbitmq.queue.management.hamcrest.CustomMatchers.matchesInitialQueueStateNullOrRunning;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,7 +9,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import de.gessnerfl.rabbitmq.queue.management.hamcrest.InitializedQueueStateMatcher;
+import de.gessnerfl.rabbitmq.queue.management.model.Message;
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,17 +36,16 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private RabbitMqTestEnvironmentBuilderFactory testEnvironmentBuilderFactor;
+    @Autowired
+    private RabbitMqFacade rabbitMqFacade;
+
     private RabbitMqTestEnvironment testEnvironment;
     
     @Autowired
-    private ManagementApiFactory managementApiFactory;
-    
     private ManagementApi sut;
 
     @Before
     public void init() {
-        sut = managementApiFactory.createFor();
-        
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
                             .withExchange(DEAD_LETTER_EXCHANGE_NAME)
@@ -126,7 +127,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
                 assertEquals(0, q.getMessages());
                 assertEquals(0, q.getMessagesReady());
                 assertEquals(0, q.getMessagesUnacknowledged());
-                assertThat(q.getState(), new InitializedQueueStateMatcher());
+                assertThat(q.getState(), matchesInitialQueueStateNullOrRunning());
             }
         }
         assertTrue(found);
@@ -167,6 +168,20 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
         assertEquals("queue", routing.getDestinationType());
         assertEquals(ROUTING_KEY, routing.getRoutingKey());
         assertEquals(VHOST, routing.getVhost());
+    }
+
+    @Test
+    public void shouldPurgeQueueContent(){
+        testEnvironment.publishMessage(EXCHANGE_NAME, ROUTING_KEY);
+        testEnvironment.publishMessage(EXCHANGE_NAME, ROUTING_KEY);
+
+        List<Message> messages = rabbitMqFacade.getMessagesOfQueue(VHOST, QUEUE_NAME, 10);
+        assertThat(messages, hasSize(2));
+
+        sut.purgeQueue(VHOST, QUEUE_NAME);
+
+        messages = rabbitMqFacade.getMessagesOfQueue(VHOST, QUEUE_NAME, 10);
+        assertThat(messages, empty());
     }
 
 }
