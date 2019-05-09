@@ -1,9 +1,7 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
 import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,6 +46,7 @@ public class OperationsTest {
         
         assertSame(messages, result);
         verify(queueListOperation).getMessagesFromQueue(VHOST, QUEUE_NAME, MAX_NUMBER_MESSAGE);
+        verifyNoMoreInteractions(queueListOperation, messageMoveOperation, messageDeleteOperation, messageRequeueOperation);
     }
     
     @Test
@@ -55,19 +54,38 @@ public class OperationsTest {
         sut.deleteFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM);
         
         verify(messageDeleteOperation).deleteFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM);
+        verifyNoMoreInteractions(queueListOperation, messageMoveOperation, messageDeleteOperation, messageRequeueOperation);
     }
     
     @Test
-    public void shouldDelegateMoveOperation(){
-        sut.moveFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
+    public void shouldDelegateMoveAllMessagesOperation(){
+        sut.moveAllMessagesInQueue(VHOST, QUEUE_NAME, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
         
-        verify(messageMoveOperation).moveFirstMessage(VHOST, QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
+        verify(messageMoveOperation).moveAllMessages(VHOST, QUEUE_NAME, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
+        verifyNoMoreInteractions(queueListOperation, messageMoveOperation, messageDeleteOperation, messageRequeueOperation);
     }
 
     @Test
-    public void shouldDelegateRequeueOperation(){
+    public void shouldDelegateMoveSingleMessageOperation(){
+        sut.moveFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
+
+        verify(messageMoveOperation).moveFirstMessage(VHOST, QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
+        verifyNoMoreInteractions(queueListOperation, messageMoveOperation, messageDeleteOperation, messageRequeueOperation);
+    }
+
+    @Test
+    public void shouldDelegateRequeueAllMessagesOperation(){
+        sut.requeueAllMessagesInQueue(VHOST, QUEUE_NAME);
+
+        verify(messageRequeueOperation).requeueAllMessages(VHOST, QUEUE_NAME);
+        verifyNoMoreInteractions(queueListOperation, messageMoveOperation, messageDeleteOperation, messageRequeueOperation);
+    }
+
+    @Test
+    public void shouldDelegateRequeueSingleMessageOperation(){
         sut.requeueFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM);
 
         verify(messageRequeueOperation).requeueFirstMessage(VHOST, QUEUE_NAME, CHECKSUM);
+        verifyNoMoreInteractions(queueListOperation, messageMoveOperation, messageDeleteOperation, messageRequeueOperation);
     }
 }

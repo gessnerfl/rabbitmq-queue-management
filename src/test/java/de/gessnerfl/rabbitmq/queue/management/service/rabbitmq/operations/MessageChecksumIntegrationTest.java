@@ -25,7 +25,7 @@ public class MessageChecksumIntegrationTest extends AbstractIntegrationTest {
     
     String checksum = sut.createFor(properties, data);
     
-    assertEquals("{sha256}ec8459f97f78dd23565e946826c18c6e8fff707f62623c0ec84221eb2362bfdc", checksum);
+    assertEquals("ec8459f97f78dd23565e946826c18c6e8fff707f62623c0ec84221eb2362bfdc", checksum);
   }
   
 }

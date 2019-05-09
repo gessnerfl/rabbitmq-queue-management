@@ -34,6 +34,7 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
     private static final String QUEUE2_DLX_JSON_PATH_FILTER = "$[?(@.name == '" + QUEUE2_DLX_NAME + "')]";
     private static final String QUEUE2_JSON_PATH_FILTER = "$[?(@.name == '" + QUEUE2_NAME + "')]";
     private static final int MESSAGE_TTL_OF_QUEUE2 = 100;
+    public static final int GET_MESSAGE_LIMIT = 10;
 
     @Autowired
     private RabbitMqTestEnvironmentBuilderFactory testEnvironmentBuilderFactor;
@@ -184,62 +185,121 @@ public class QueueControllerIntegrationTest extends AbstractControllerIntegratio
     }
 
     @Test
-    public void shouldDeleteMessageFromQueue() throws Exception {
+    public void shouldDeleteAllMessagesFromQueue() throws Exception {
+        testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
 
-        List<Message> messages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, 1);
-        assertThat(messages, hasSize(1));
+        List<Message> messages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, GET_MESSAGE_LIMIT);
+        assertThat(messages, hasSize(2));
         Message message = messages.get(0);
 
-        mockMvc.perform(delete("/api/messages").param(VHOST, VHOST_NAME).param(QUEUE, QUEUE_IN_NAME).param(CHECKSUM, message.getChecksum()))
+        mockMvc.perform(delete("/api/messages/").param(VHOST, VHOST_NAME).param(QUEUE, QUEUE_IN_NAME))
                 .andExpect(status().isOk());
 
-        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, 1), empty());
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, GET_MESSAGE_LIMIT), empty());
     }
 
     @Test
-    public void shouldMoveMessageFromQueueInToQueueOut() throws Exception {
+    public void shouldDeleteFirstMessageFromQueue() throws Exception {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
 
-        List<Message> messages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, 1);
+        List<Message> messages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, GET_MESSAGE_LIMIT);
         assertThat(messages, hasSize(1));
-        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_OUT_NAME, 1), empty());
         Message message = messages.get(0);
+
+        mockMvc.perform(delete("/api/messages/" + message.getChecksum()).param(VHOST, VHOST_NAME).param(QUEUE, QUEUE_IN_NAME))
+                .andExpect(status().isOk());
+
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, GET_MESSAGE_LIMIT), empty());
+    }
+
+    @Test
+    public void shouldMoveAllMessagesFromQueueInToQueueOut() throws Exception {
+        testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
+        testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
+
+        List<Message> messages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, GET_MESSAGE_LIMIT);
+        assertThat(messages, hasSize(2));
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_OUT_NAME, GET_MESSAGE_LIMIT), empty());
 
         mockMvc.perform(post("/api/messages/move")
                 .param(VHOST, VHOST_NAME)
                 .param(QUEUE, QUEUE_IN_NAME)
-                .param(CHECKSUM, message.getChecksum())
                 .param("targetExchange", EXCHANGE_NAME)
                 .param("targetRoutingKey", QUEUE_OUT_NAME))
                 .andExpect(status().isOk());
 
-        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, 1), empty());
-        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_OUT_NAME, 1), hasSize(1));
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, GET_MESSAGE_LIMIT), empty());
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_OUT_NAME, GET_MESSAGE_LIMIT), hasSize(2));
     }
 
     @Test
-    public void shouldRequeueMessage() throws Exception {
+    public void shouldMoveFirstMessageFromQueueInToQueueOut() throws Exception {
+        testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_IN_NAME);
+
+        List<Message> messages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, GET_MESSAGE_LIMIT);
+        assertThat(messages, hasSize(1));
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_OUT_NAME, GET_MESSAGE_LIMIT), empty());
+        Message message = messages.get(0);
+
+        mockMvc.perform(post("/api/messages/" + message.getChecksum() + "/move")
+                .param(VHOST, VHOST_NAME)
+                .param(QUEUE, QUEUE_IN_NAME)
+                .param("targetExchange", EXCHANGE_NAME)
+                .param("targetRoutingKey", QUEUE_OUT_NAME))
+                .andExpect(status().isOk());
+
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_IN_NAME, GET_MESSAGE_LIMIT), empty());
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_OUT_NAME, GET_MESSAGE_LIMIT), hasSize(1));
+    }
+
+    @Test
+    public void shouldRequeueAllMessagesInQueue() throws Exception {
+        testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE2_NAME);
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE2_NAME);
 
         //wait until message is dead lettered
-        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE2 + 10);
+        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE2 + GET_MESSAGE_LIMIT);
 
-        List<Message> queueMessagesFirstFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_NAME, 10);
-        List<Message> dlxQueueMessagesFirstFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_DLX_NAME, 10);
+        List<Message> queueMessagesFirstFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_NAME, GET_MESSAGE_LIMIT);
+        List<Message> dlxQueueMessagesFirstFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_DLX_NAME, GET_MESSAGE_LIMIT);
+
+        assertThat(queueMessagesFirstFetch, empty());
+        assertThat(dlxQueueMessagesFirstFetch, hasSize(2));
+
+        mockMvc.perform(post("/api/messages/requeue")
+                .param(VHOST, VHOST_NAME)
+                .param(QUEUE, QUEUE2_DLX_NAME))
+                .andExpect(status().isOk());
+
+        List<Message> queueMessagesSecondFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_NAME, GET_MESSAGE_LIMIT);
+        List<Message> dlxQueueMessagesSecondFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_DLX_NAME, GET_MESSAGE_LIMIT);
+
+        assertThat(queueMessagesSecondFetch, hasSize(2));
+        assertThat(dlxQueueMessagesSecondFetch, empty());
+    }
+
+    @Test
+    public void shouldRequeueFirstMessageInQueue() throws Exception {
+        testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE2_NAME);
+
+        //wait until message is dead lettered
+        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE2 + GET_MESSAGE_LIMIT);
+
+        List<Message> queueMessagesFirstFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_NAME, GET_MESSAGE_LIMIT);
+        List<Message> dlxQueueMessagesFirstFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_DLX_NAME, GET_MESSAGE_LIMIT);
 
         assertThat(queueMessagesFirstFetch, empty());
         assertThat(dlxQueueMessagesFirstFetch, hasSize(1));
         Message message = dlxQueueMessagesFirstFetch.get(0);
 
-        mockMvc.perform(post("/api/messages/requeue")
+        mockMvc.perform(post("/api/messages/" + message.getChecksum() + "/requeue")
                 .param(VHOST, VHOST_NAME)
-                .param(QUEUE, QUEUE2_DLX_NAME)
-                .param(CHECKSUM, message.getChecksum()))
+                .param(QUEUE, QUEUE2_DLX_NAME))
                 .andExpect(status().isOk());
 
-        List<Message> queueMessagesSecondFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_NAME, 10);
-        List<Message> dlxQueueMessagesSecondFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_DLX_NAME, 10);
+        List<Message> queueMessagesSecondFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_NAME, GET_MESSAGE_LIMIT);
+        List<Message> dlxQueueMessagesSecondFetch = facade.getMessagesOfQueue(VHOST_NAME, QUEUE2_DLX_NAME, GET_MESSAGE_LIMIT);
 
         assertThat(queueMessagesSecondFetch, hasSize(1));
         assertThat(dlxQueueMessagesSecondFetch, empty());

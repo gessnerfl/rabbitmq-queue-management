@@ -47,13 +47,25 @@ public class RabbitMqFacade {
     public List<Message> getMessagesOfQueue(String vhost, String queueName, int limit){
         return operations.getMessagesOfQueue(vhost, queueName, limit);
     }
+
+    public void purgeQueue(String vhost, String queueName){
+        managementApi.purgeQueue(vhost, queueName);
+    }
     
     public void deleteFirstMessageInQueue(String vhost, String queueName, String messageChecksum){
         operations.deleteFirstMessageInQueue(vhost, queueName, messageChecksum);
     }
     
+    public void moveAllMessagesInQueue(String vhost, String queueName, String targetExchange, String targetRoutingKey){
+        operations.moveAllMessagesInQueue(vhost, queueName, targetExchange, targetRoutingKey);
+    }
+
     public void moveFirstMessageInQueue(String vhost, String queueName, String messageChecksum, String targetExchange, String targetRoutingKey){
         operations.moveFirstMessageInQueue(vhost, queueName, messageChecksum, targetExchange, targetRoutingKey);
+    }
+
+    public void requeueAllMessagesInQueue(String vhost, String queue) {
+        operations.requeueAllMessagesInQueue(vhost, queue);
     }
 
     public void requeueFirstMessageInQueue(String vhost, String queue, String checksum) {

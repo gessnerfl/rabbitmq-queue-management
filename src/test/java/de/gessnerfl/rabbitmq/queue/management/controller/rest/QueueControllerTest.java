@@ -1,9 +1,7 @@
 package de.gessnerfl.rabbitmq.queue.management.controller.rest;
 
 import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +43,7 @@ public class QueueControllerTest {
 
         assertSame(queues, result);
         verify(rabbitMqFacade).getQueues();
+        verifyNoMoreInteractions(rabbitMqFacade);
     }
     
     @Test
@@ -58,6 +57,7 @@ public class QueueControllerTest {
         
         assertSame(queues, result);
         verify(rabbitMqFacade).getQueues(VHOST);
+        verifyNoMoreInteractions(rabbitMqFacade);
     }
     
     @Test
@@ -70,19 +70,54 @@ public class QueueControllerTest {
         
         assertSame(messages, result);
         verify(rabbitMqFacade).getMessagesOfQueue(VHOST, QUEUE, QueueController.DEFAULT_LIMIT);
+        verifyNoMoreInteractions(rabbitMqFacade);
     }
 
     @Test
-    public void shouldDelegateCallToDeleteMessage(){
-        sut.deleteFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
+    public void shouldDelegateCallToDeleteAllMessagesInQueue(){
+        sut.deleteAllMessageInQueue(VHOST, QUEUE);
         
+        verify(rabbitMqFacade).purgeQueue(VHOST, QUEUE);
+        verifyNoMoreInteractions(rabbitMqFacade);
+    }
+
+    @Test
+    public void shouldDelegateCallToDeleteFirstMessageInQueue(){
+        sut.deleteFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
+
         verify(rabbitMqFacade).deleteFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
+        verifyNoMoreInteractions(rabbitMqFacade);
     }
     
     @Test
-    public void shouldDelegateCallToMoveMessage(){
-        sut.moveFirstMessageInQueue(VHOST, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
+    public void shouldDelegateCallToMoveAllMessagesInQueue(){
+        sut.moveAllMessageInQueue(VHOST, QUEUE, EXCHANGE, ROUTING_KEY);
         
+        verify(rabbitMqFacade).moveAllMessagesInQueue(VHOST, QUEUE, EXCHANGE, ROUTING_KEY);
+        verifyNoMoreInteractions(rabbitMqFacade);
+    }
+
+    @Test
+    public void shouldDelegateCallToMoveFirstMessageInQueue(){
+        sut.moveFirstMessageInQueue(VHOST, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
+
         verify(rabbitMqFacade).moveFirstMessageInQueue(VHOST, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
+        verifyNoMoreInteractions(rabbitMqFacade);
+    }
+
+    @Test
+    public void shouldDelegateCallToRequeueAllMessagesInQueue(){
+        sut.requeueAllMessageInQueue(VHOST, QUEUE);
+
+        verify(rabbitMqFacade).requeueAllMessagesInQueue(VHOST, QUEUE);
+        verifyNoMoreInteractions(rabbitMqFacade);
+    }
+
+    @Test
+    public void shouldDelegateCallToRequeueFirstMessageInQueue(){
+        sut.requeueFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
+
+        verify(rabbitMqFacade).requeueFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
+        verifyNoMoreInteractions(rabbitMqFacade);
     }
 }
