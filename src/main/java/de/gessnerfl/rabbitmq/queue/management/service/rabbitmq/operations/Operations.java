@@ -33,12 +33,20 @@ public class Operations {
         messageDeleteOperation.deleteFirstMessageInQueue(vhost, queueName, messageChecksum);
     }
     
+    public void moveAllMessagesInQueue(String vhost, String queueName, String targetExchange, String targetRoutingKey){
+        messageMoveOperation.moveAllMessages(vhost, queueName, targetExchange, targetRoutingKey);
+    }
+
     public void moveFirstMessageInQueue(String vhost, String queueName, String messageChecksum, String targetExchange, String targetRoutingKey){
         messageMoveOperation.moveFirstMessage(vhost, queueName, messageChecksum, targetExchange, targetRoutingKey);
+    }
+
+    public void requeueAllMessagesInQueue(String vhost, String queueName){
+        messageRequeueOperation.requeueAllMessages(vhost, queueName);
     }
 
     public void requeueFirstMessageInQueue(String vhost, String queueName, String messageChecksum){
         messageRequeueOperation.requeueFirstMessage(vhost, queueName, messageChecksum);
     }
-    
+
 }

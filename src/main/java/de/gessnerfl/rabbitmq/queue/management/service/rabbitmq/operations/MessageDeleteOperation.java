@@ -13,6 +13,6 @@ public class MessageDeleteOperation {
     }
 
     public void deleteFirstMessageInQueue(String vhost, String queueName, String messageChecksum) {
-        messageOperationExecutor.consumeMessageApplyFunctionAndAckknowlegeOnSuccess(vhost, queueName, messageChecksum, (c, r) -> {});
+        messageOperationExecutor.consumeMessageAndApplyFunctionAndAcknowledgeOnSuccess(vhost, queueName, messageChecksum, (i, c, r) -> {});
     }
 }

@@ -1,12 +1,11 @@
-angular.module('rmqmgmt').directive('deleteMessageModal', function() {
+angular.module('rmqmgmt').directive('deleteAllMessagesModal', function() {
     return {
         replace : false,
         restrict : 'A',
-        templateUrl : '/partials/directives/deleteMessageModal.tpl.html',
+        templateUrl : '/partials/directives/deleteAllMessagesModal.tpl.html',
         scope : {
             vhost : '=vhost',
             queue : '=queue',
-            message : '=message',
             successCallback : '=successCallback'
         },
         link : function(scope, element, attr) {
@@ -17,7 +16,7 @@ angular.module('rmqmgmt').directive('deleteMessageModal', function() {
         },
         controller : [ '$scope', 'modalRestExecutor', function($scope, modalRestExecutor) {
             $scope.onConfirm = function() {
-                var url = '/api/messages/' + $scope.message.checksum + '?vhost=' + window.encodeURIComponent($scope.vhost) + '&queue=' + window.encodeURIComponent($scope.queue);
+                var url = '/api/messages?vhost=' + window.encodeURIComponent($scope.vhost) + '&queue=' + window.encodeURIComponent($scope.queue);
                 modalRestExecutor('DELETE', url, $scope);
             };
 

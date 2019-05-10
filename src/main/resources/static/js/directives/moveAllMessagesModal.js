@@ -1,12 +1,11 @@
-angular.module('rmqmgmt').directive('moveMessageModal', function() {
+angular.module('rmqmgmt').directive('moveAllMessagesModal', function() {
     return {
         replace : false,
         restrict : 'A',
-        templateUrl : '/partials/directives/moveMessageModal.tpl.html',
+        templateUrl : '/partials/directives/moveAllMessagesModal.tpl.html',
         scope : {
             vhost : '=vhost',
             queue : '=queue',
-            message : '=message',
             successCallback : '=successCallback'
         },
         link : function(scope, element, attr) {
@@ -64,7 +63,7 @@ angular.module('rmqmgmt').directive('moveMessageModal', function() {
 
             $scope.move = function($event) {
                 if (!($($event.currentTarget).hasClass('disabled'))){
-                    var url = '/api/messages/' + $scope.message.checksum + '/move?vhost=' + window.encodeURIComponent($scope.vhost) +
+                    var url = '/api/messages/move?vhost=' + window.encodeURIComponent($scope.vhost) +
                                 '&queue=' + window.encodeURIComponent($scope.queue) +
                                 '&targetExchange=' + window.encodeURIComponent($scope.targetExchange.name) +
                                 "&targetRoutingKey=" + window.encodeURIComponent($scope.targetRoutingKey);

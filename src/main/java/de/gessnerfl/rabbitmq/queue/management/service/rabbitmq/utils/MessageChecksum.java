@@ -17,8 +17,7 @@ public class MessageChecksum {
   
   static final String BODY_KEY = "body";
   static final String PROPERTIES_KEY = "properties";
-  static final String ALGORITHM = "{sha256}";
-  
+
   private final JsonSerializer jsonSerializer;
   
   @Autowired
@@ -28,7 +27,7 @@ public class MessageChecksum {
 
   public String createFor(BasicProperties props, byte[] body) {
     String json = toJson(props, body);
-    return ALGORITHM+DigestUtils.sha256Hex(json);
+    return DigestUtils.sha256Hex(json);
   }
 
   String toJson(BasicProperties props, byte[] body) {

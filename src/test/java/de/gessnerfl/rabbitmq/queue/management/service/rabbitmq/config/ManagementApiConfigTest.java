@@ -1,9 +1,13 @@
-package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi;
+package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.config;
 
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.config.ManagementApiConfig;
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.FeignBuilderFactory;
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApi;
+import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApiUrlBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -13,7 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import feign.Feign;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ManagementApiFactoryTest {
+public class ManagementApiConfigTest {
 
     @Mock
     private ManagementApiUrlBuilder managementApiUrlBuilder;
@@ -21,7 +25,7 @@ public class ManagementApiFactoryTest {
     private FeignBuilderFactory feignBuilderFactory;
 
     @InjectMocks
-    private ManagementApiFactory sut;
+    private ManagementApiConfig sut;
 
     @Test
     public void shouldCreateNewInstance() {
@@ -33,7 +37,7 @@ public class ManagementApiFactoryTest {
         when(feignBuilder.target(ManagementApi.class, url)).thenReturn(api);
         when(feignBuilderFactory.createFor()).thenReturn(feignBuilder);
 
-        ManagementApi result = sut.createFor();
+        ManagementApi result = sut.managementApi();
 
         assertSame(api, result);
     }

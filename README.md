@@ -6,20 +6,22 @@
 
 ## Introduction
 
-RabbitMQ does not provide tooling to re-queue or move messages out of the box. However this can by quite handy when working e.g. with dead letter queues/exchanges. This tool tries to close this gap. By offering the following features
+RabbitMQ does not provide tooling to re-queue or move messages out of the box. However this can by quite handy when 
+working e.g. with dead letter queues/exchanges. This tool tries to close this gap. By offering the following features
 
 * List queues of a RabbitMQ 
 * List messages of queues
-* Delete first message from queue
-* Move first message from queue
-* Requeue first message from queue
-* Web UI
+* Delete first or all message(s)
+* Move first or all message(s)
+* Re-queue first or all message(s)
 
-As messages must not have a unique identifier in RabbitMQ this tools creates a checksum of the message and compares the checksum before applying move or delete operations on messages to avoid unintended changes.
+As messages must not have a unique identifier in RabbitMQ this tools creates a checksum of the message and compares the 
+checksum before applying move or delete operations on messages to avoid unintended changes.
 
 To use the application the **RabbitMQ Management Plugin** has to be activated.
 
-The application is based on Spring Boot. For more details please also consult the Spring Boot Documentation (http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle).
+The application is based on Spring Boot. For more details please also consult the Spring Boot Documentation 
+(http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle).
 
 ## Operations
 The following paragraphs describe the different implementations in more details.
@@ -33,6 +35,9 @@ The delete operations applies the following steps:
 - Confirm message
 
 In case of any error send nack with re-queuing or simply close the channel so that the message remains in the queue.
+
+In case of deleting all messages of the queue the purge operation of the HTTP API of RabbitMQ will be used instead of
+processing the messages
 
 ### Move operations
 
@@ -48,6 +53,9 @@ The following steps are applied to move a message from one queue to another exch
 - Ensure no basic.return was received by return listener
 
 In case of any error send nack with re-queuing or simply close the channel so that the message remains in the queue.
+
+In case of moving all messages in the queue will stop when an error occurs or the message was already processed in the 
+same execution to prevent an endless loop.
 
 ### Requeue operation
 
@@ -66,13 +74,22 @@ The following steps are applied to requeue a message
 - Wait for confirmation
 - Ensure no basic.return was received by return listener
 
+In case of any error send nack with re-queuing or simply close the channel so that the message remains in the queue.
+
+In case of re-queueing all messages in the queue will stop when an error occurs, a message does not contain an x-death 
+header with a exchange and routing key or the message was already processed in the same execution to prevent an endless 
+loop.
+
 # Configuration
 
-As the application is based on Spring Boot the same rules applies to the configuration as described in the Spring Boot Documentation (http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-external-config).
+As the application is based on Spring Boot the same rules applies to the configuration as described in the Spring Boot 
+Documentation (http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-external-config).
 
-The configuration file application.properties can be placed next to the application jar, in a sub-directory config or in any other location when specifying the location with the parameter `-Dspring.config.location=<path to config file>`.
+The configuration file application.properties can be placed next to the application jar, in a sub-directory config or in 
+any other location when specifying the location with the parameter `-Dspring.config.location=<path to config file>`.
 
-The following paragraphs describe the application specific resp. pre-defined configuration parameters. If more configuration e.g. authentication is needed please check the Spring Boot Documentation for more detail.
+The following paragraphs describe the application specific resp. pre-defined configuration parameters. If more 
+configuration e.g. authentication is needed please check the Spring Boot Documentation for more detail.
 
 ## RabbitMQ Connection setup
 The following snippet shows the configuration of a RabbitMQ connection with its default values.

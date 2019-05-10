@@ -47,7 +47,7 @@ public class MessageChecksumTest {
     
     String result = sut.createFor(props, body);
    
-    assertEquals(MessageChecksum.ALGORITHM+expectedChecksum, result);
+    assertEquals(expectedChecksum, result);
     
     ArgumentCaptor<Object> argumentCaptor = ArgumentCaptor.forClass(Object.class);
     verify(jsonSerializer).toJson(argumentCaptor.capture());

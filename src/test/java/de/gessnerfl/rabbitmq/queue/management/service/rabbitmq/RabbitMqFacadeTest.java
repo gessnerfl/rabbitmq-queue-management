@@ -1,14 +1,11 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq;
 
 import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -21,7 +18,6 @@ import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.Operations;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApi;
-import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApiFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RabbitMqFacadeTest {
@@ -33,19 +29,12 @@ public class RabbitMqFacadeTest {
     private final static String ROUTING_KEY = "routingKey";
 
     @Mock
-    private ManagementApiFactory managementApiFactory;
-    @Mock
     private ManagementApi managementApi;
     @Mock
     private Operations operations;
 
     @InjectMocks
     private RabbitMqFacade sut;
-    
-    @Before
-    public void init(){
-        when(managementApiFactory.createFor()).thenReturn(managementApi);
-    }
 
     @Test
     public void shouldDelegateCallToGetExchanges() {
@@ -108,17 +97,43 @@ public class RabbitMqFacadeTest {
     }
 
     @Test
+    public void shouldDelegateCallToPurgeQueue(){
+        sut.purgeQueue(VHOST, QUEUE);
+
+        verify(managementApi).purgeQueue(VHOST, QUEUE);
+        verifyZeroInteractions(managementApi, operations);
+    }
+
+    @Test
     public void shouldDelegateCallToDeleteFirstMessageInQueue() {
         sut.deleteFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
         
         verify(operations).deleteFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
+        verifyZeroInteractions(managementApi, operations);
+    }
+
+    @Test
+    public void shouldDelegateCallToMoveAllMessagesInQueue() {
+        sut.moveAllMessagesInQueue(VHOST, QUEUE, EXCHANGE, ROUTING_KEY);
+        
+        verify(operations).moveAllMessagesInQueue(VHOST, QUEUE, EXCHANGE, ROUTING_KEY);
+        verifyZeroInteractions(managementApi, operations);
     }
 
     @Test
     public void shouldDelegateCallToMoveFirstMessageInQueue() {
         sut.moveFirstMessageInQueue(VHOST, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
-        
+
         verify(operations).moveFirstMessageInQueue(VHOST, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
+        verifyZeroInteractions(managementApi, operations);
+    }
+
+    @Test
+    public void shouldDelegateCallToRequeueAllMessagesInQueue() {
+        sut.requeueAllMessagesInQueue(VHOST, QUEUE);
+
+        verify(operations).requeueAllMessagesInQueue(VHOST, QUEUE);
+        verifyZeroInteractions(managementApi, operations);
     }
 
     @Test
@@ -126,5 +141,6 @@ public class RabbitMqFacadeTest {
         sut.requeueFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
 
         verify(operations).requeueFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
+        verifyZeroInteractions(managementApi, operations);
     }
 }
