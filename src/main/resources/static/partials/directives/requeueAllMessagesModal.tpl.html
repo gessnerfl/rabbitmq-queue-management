@@ -10,8 +10,12 @@
         <p>Requeue all message of queue <b>{{ queue }}</b>
 
         <h6>Target Routing based on First Message</h6>
-        <p>Target Exchange <b>{{message.requeueExchange}}</b></p>
-        <p>Target Routing Key <b>{{message.requeueRoutingKey}}</b></p>
+        <dl class="row">
+          <dt class="col-sm-6">Target Exchange</dt>
+          <dd class="col-sm-6">{{message.requeueExchange}}</dd>
+          <dt class="col-sm-6">Target Routing Key</dt>
+          <dd class="col-sm-6">{{message.requeueRoutingKey}}</dd>
+        </dl>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal"><span class="oi oi-x" aria-hidden="true"></span>&nbsp;No</button>
