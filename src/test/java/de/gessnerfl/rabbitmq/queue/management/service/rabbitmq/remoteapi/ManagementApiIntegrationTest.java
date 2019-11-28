@@ -1,30 +1,26 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi;
 
-import static de.gessnerfl.rabbitmq.queue.management.hamcrest.CustomMatchers.matchesInitialQueueStateNullOrRunning;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
+import de.gessnerfl.rabbitmq.queue.management.AbstractIntegrationTestWithRabbitMqContainer;
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
+import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Binding;
+import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
+import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.gessnerfl.rabbitmq.queue.management.AbstractIntegrationTest;
-import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Binding;
-import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
-import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
-import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
-import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
-import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
+import java.util.List;
 
-public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
+import static de.gessnerfl.rabbitmq.queue.management.hamcrest.CustomMatchers.matchesInitialQueueStateNullOrRunning;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
+public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRabbitMqContainer {
 
     private final static String VHOST = "/";
     private final static String EXCHANGE_NAME = "test.direct";
@@ -40,7 +36,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
     private RabbitMqFacade rabbitMqFacade;
 
     private RabbitMqTestEnvironment testEnvironment;
-    
+
     @Autowired
     private ManagementApi sut;
 
@@ -48,18 +44,18 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
     public void init() {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
-                            .withExchange(DEAD_LETTER_EXCHANGE_NAME)
-                            .withQueue(QUEUE_NAME)
-                                .exchange(EXCHANGE_NAME)
-                                .routingKey(ROUTING_KEY)
-                                .build()
-                            .withQueue(DEAD_LETTERED_QUEUE_NAME)
-                                .exchange(DEAD_LETTER_EXCHANGE_NAME)
-                                .routingKey(ROUTING_KEY)
-                                .deadLetterExchange(DEAD_LETTER_EXCHANGE_NAME)
-                                .deadLetterRoutingKey(DEAD_LETTER_ROUTING_KEY)
-                                .build()
-                            .build();
+                .withExchange(DEAD_LETTER_EXCHANGE_NAME)
+                .withQueue(QUEUE_NAME)
+                .exchange(EXCHANGE_NAME)
+                .routingKey(ROUTING_KEY)
+                .build()
+                .withQueue(DEAD_LETTERED_QUEUE_NAME)
+                .exchange(DEAD_LETTER_EXCHANGE_NAME)
+                .routingKey(ROUTING_KEY)
+                .deadLetterExchange(DEAD_LETTER_EXCHANGE_NAME)
+                .deadLetterRoutingKey(DEAD_LETTER_ROUTING_KEY)
+                .build()
+                .build();
         testEnvironment.setup();
     }
 
@@ -132,13 +128,13 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
         }
         assertTrue(found);
     }
-    
+
     @Test
-    public void shouldGetBindingsOfExchanged(){
+    public void shouldGetBindingsOfExchanged() {
         List<Binding> bindings = sut.getExchangeSourceBindings(VHOST, EXCHANGE_NAME);
-        
+
         assertThat(bindings, hasSize(1));
-        
+
         Binding routing = bindings.get(0);
         assertEquals(EXCHANGE_NAME, routing.getSource());
         assertEquals(QUEUE_NAME, routing.getDestination());
@@ -171,7 +167,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void shouldPurgeQueueContent(){
+    public void shouldPurgeQueueContent() {
         testEnvironment.publishMessage(EXCHANGE_NAME, ROUTING_KEY);
         testEnvironment.publishMessage(EXCHANGE_NAME, ROUTING_KEY);
 

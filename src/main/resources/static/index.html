@@ -4,13 +4,13 @@
 	<link rel="stylesheet" href="/webjars/json-formatter/0.6.0/dist/json-formatter.min.css"/>
 
 	<link rel="stylesheet" href="/css/customization.css"/>
-	<link rel="stylesheet" href="/webjars/bootstrap/4.3.0/dist/css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="/webjars/bootstrap/4.3.1/dist/css/bootstrap.min.css"/>
 
-	<script type="text/javascript" src="/webjars/jquery/3.4.0/dist/jquery.min.js"></script>
+	<script type="text/javascript" src="/webjars/jquery/3.4.1/dist/jquery.min.js"></script>
 	<script type="text/javascript" src="/webjars/angular/1.7.7/angular.min.js"></script>
 	<script type="text/javascript" src="/webjars/angular-resource/1.7.7/angular-resource.min.js"></script>
 	<script type="text/javascript" src="/webjars/angular-route/1.7.7/angular-route.min.js"></script>
-	<script type="text/javascript" src="/webjars/bootstrap/4.3.0/dist/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/webjars/bootstrap/4.3.1/dist/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/webjars/json-formatter/0.6.0/dist/json-formatter.min.js"></script>
 
 	<script type="text/javascript" src="/js/app.js"></script>
@@ -34,23 +34,23 @@
 </head>
 
 <body class="bg-light" ng-app="rmqmgmt">
-	<nav class="navbar navbar-default navbar-expand-lg navbar-expand-m navbar-fixed-top navbar-dark bg-dark">
-		<span class="navbar-brand"><img alt="RabbitMQ Icon" src="/gfx/rmq.png" width="24px" height="24px" style="display: inline-block"/>&nbsp;RabbitMQ :: Queue Management</span>
+<nav class="navbar navbar-default navbar-expand-lg navbar-expand-m navbar-fixed-top navbar-dark bg-dark">
+	<span class="navbar-brand"><img alt="RabbitMQ Icon" src="/gfx/rmq.png" width="24px" height="24px" style="display: inline-block"/>&nbsp;RabbitMQ :: Queue Management</span>
 
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
 
-		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<ul class="navbar-nav mr-auto">
-				<li class="nav-item">
-					<a class="nav-link" href="/queues"><i class="oi oi-random" aria-hidden="true"></i>&nbsp;Queues</a>
-				</li>
-			</ul>
-		</div>
-	</nav>
-	<div class="container main">
-   		<div ng-view="ng-view"></div>
-    </div>
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link" href="/queues"><i class="oi oi-random" aria-hidden="true"></i>&nbsp;Queues</a>
+			</li>
+		</ul>
+	</div>
+</nav>
+<div class="container main">
+	<div ng-view="ng-view"></div>
+</div>
 </body>
 </html>

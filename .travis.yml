@@ -1,12 +1,12 @@
 language: java
 
 jdk:
-- oraclejdk8
+- openjdk8
 
 sudo: false
 
 services:
-- rabbitmq
+- docker
 
 before_install:
 - chmod +x gradlew
