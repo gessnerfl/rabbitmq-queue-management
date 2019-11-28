@@ -68,6 +68,12 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
   from javadoc.destinationDir
 }
 
+bootJar {
+    manifest {
+        attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
+    }
+}
+
 artifacts {
   archives sourcesJar
   archives javadocJar
