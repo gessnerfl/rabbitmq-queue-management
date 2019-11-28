@@ -56,6 +56,7 @@ dependencies {
 
   testCompile 'org.springframework.boot:spring-boot-starter-test'
   testCompile 'org.hamcrest:hamcrest-core:2.2'
+  testCompile "org.testcontainers:testcontainers:1.12.3"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

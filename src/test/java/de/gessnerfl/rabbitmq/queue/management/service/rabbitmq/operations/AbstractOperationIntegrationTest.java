@@ -1,21 +1,20 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
+import de.gessnerfl.rabbitmq.queue.management.AbstractIntegrationTestWithRabbitMqContainer;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.gessnerfl.rabbitmq.queue.management.AbstractIntegrationTest;
-import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
-import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
-import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
-public abstract class AbstractOperationIntegrationTest extends AbstractIntegrationTest {
+public abstract class AbstractOperationIntegrationTest extends AbstractIntegrationTestWithRabbitMqContainer {
     protected final static String EXCHANGE_NAME = "test.direct";
     protected final static String QUEUE_NAME = "test.queue";
 
