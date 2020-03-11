@@ -1,16 +1,16 @@
 buildscript {
-  ext { springBootVersion = '2.2.1.RELEASE' }
+  ext { springBootVersion = '2.2.5.RELEASE' }
   repositories { jcenter() }
   dependencies { 
     classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    classpath("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7")
+    classpath("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.8")
   }
 }
 
 plugins {
   id "com.cinnober.gradle.semver-git" version "2.4.0"
-  id 'org.springframework.boot' version '2.2.1.RELEASE'
-  id "io.freefair.lombok" version "4.1.5"
+  id 'org.springframework.boot' version '2.2.5.RELEASE'
+  id "io.freefair.lombok" version "4.1.6"
 }
 
 //apply plugin: 'java-library'
@@ -37,26 +37,26 @@ dependencies {
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-devtools'
 
-  compile 'io.github.openfeign:feign-core:10.7.0'
-  compile 'io.github.openfeign:feign-gson:10.7.0'
-  compile 'io.github.openfeign:feign-slf4j:10.7.0'
+  compile 'io.github.openfeign:feign-core:10.8'
+  compile 'io.github.openfeign:feign-gson:10.8'
+  compile 'io.github.openfeign:feign-slf4j:10.8'
   
   compile 'com.google.code.gson:gson:2.8.6'
-  compile 'commons-codec:commons-codec:1.13'
+  compile 'commons-codec:commons-codec:1.14'
 
   compile 'org.webjars.bower:jquery:3.4.1'
   compile 'org.webjars.bower:angular:1.7.7'
   compile 'org.webjars.bower:angular-resource:1.7.7'
   compile 'org.webjars.bower:angular-route:1.7.7'
-  compile 'org.webjars.bower:bootstrap:4.3.1'
+  compile 'org.webjars.bower:bootstrap:4.4.1'
   compile 'org.webjars.bower:open-iconic:1.1.1'
   compile 'org.webjars.bower:json-formatter:0.6.0'
 
-  compile 'com.rabbitmq:amqp-client:5.7.3'
+  compile 'com.rabbitmq:amqp-client:5.8.0'
 
   testCompile 'org.springframework.boot:spring-boot-starter-test'
   testCompile 'org.hamcrest:hamcrest-core:2.2'
-  testCompile "org.testcontainers:testcontainers:1.12.3"
+  testCompile "org.testcontainers:testcontainers:1.13.0"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
