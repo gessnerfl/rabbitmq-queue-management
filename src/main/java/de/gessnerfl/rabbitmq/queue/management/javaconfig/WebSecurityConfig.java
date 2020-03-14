@@ -29,18 +29,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .anyRequest().fullyAuthenticated()
                     .and()
                     .formLogin()
-                    .loginPage("/login")
-                    .failureUrl("/login-error")
-                    .permitAll()
+                        .loginPage("/login")
+                        .failureUrl("/login-error")
+                        .permitAll()
                     .and()
                     .logout()
-                    .invalidateHttpSession(true)
-                    .clearAuthentication(true)
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                    .logoutSuccessUrl("/login?logout")
-                    .permitAll();
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll();
         } else {
-            http.authorizeRequests().anyRequest().permitAll();
+            http.authorizeRequests()
+                    .anyRequest().permitAll();
         }
     }
 
