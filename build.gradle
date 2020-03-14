@@ -36,6 +36,7 @@ dependencies {
   compile 'org.springframework.boot:spring-boot-starter-actuator'
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-security'
+  compile 'org.springframework.security:spring-security-ldap'
   compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
   compile 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
   compile 'org.springframework.boot:spring-boot-devtools'

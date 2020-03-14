@@ -94,13 +94,38 @@ configuration e.g. authentication is needed please check the Spring Boot Documen
 ## RabbitMQ Connection setup
 The following snippet shows the configuration of a RabbitMQ connection with its default values.
 
-    de.gessnerfl.rabbitmq.hostname=                   #The hostname of the rabbitmq host
-    de.gessnerfl.rabbitmq.port=5672                   #AMQP Port number
-    de.gessnerfl.rabbitmq.managementPort=15672        #RabbitMQ management port number
-    de.gessnerfl.rabbitmq.managemnetPortSecured=false #Indicator if the management interface is accessible via http (false) or https (true)
-    de.gessnerfl.rabbitmq.username=guest              #Username for connection to rabbitmq host
-    de.gessnerfl.rabbitmq.password=guest              #Password for connection to rabbitmq host
+```yaml
+de:
+  gessnerfl:
+    rabbitmq:
+      hostname: rabbitmq.mydomain.com  #The hostname of the rabbitmq host
+      port: 5672                       #AMQP Port number
+      managementPort: 15672            #RabbitMQ management port number
+      managemnetPortSecured: false     #Indicator if the management interface is accessible via http (false) or https (true)
+      username: guest                  #Username for connection to rabbitmq host
+      password: guest                  #Password for connection to rabbitmq host
+```
 
+## LDAP Authentication
+The following snippet shows the configuration of the optional LDAP Authentication. By default authentication is disabled.
+
+```yaml
+de:
+  gessnerfl:
+    security:
+      authentication:
+        enabled: true #enable authentication. By default authentication is disabled
+        ldap:
+          user-search-base:  ou=users,ou=myorg,dc=example,dc=com    #ldap user search base 
+          user-search-filter: (uid={0})                             #ldap user search filter
+          group-search-base: ou=groups,ou=myorg,dc=example,dc=com   #ldap group search base
+          group-search-filter: member={0}                           #ldap group search filter
+          contextSource:
+            url: ldap://mylap.example.com:389   #ldap server URL
+            root: dc=example,dc=com             #ldap root DN
+            managerDn: manager                  #ldap manager DN
+            managerPassword: fXLREqUsc6Ies      #ldap manager DN password
+```
 
 ## Web UI
 The following snippet shows the pre-defined web application configuration

@@ -1,6 +1,6 @@
 package de.gessnerfl.rabbitmq.queue.management.controller;
 
-import de.gessnerfl.rabbitmq.queue.management.javaconfig.AuthenticationConfig;
+import de.gessnerfl.rabbitmq.queue.management.service.security.AuthenticationConfig;
 import de.gessnerfl.rabbitmq.queue.management.service.security.SecurityContextService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class LoginController {
     @GetMapping("/login-error")
     public String showLoginError(Model model, HttpServletRequest request) {
         model.addAttribute("error", true);
-        model.addAttribute("login_error_msg", "Invalid username or password");
+        model.addAttribute("login_error_msg", "Invalid username or password or insufficient permissions");
         return "login";
     }
 }
