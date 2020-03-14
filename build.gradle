@@ -58,7 +58,9 @@ dependencies {
 
   compile 'com.rabbitmq:amqp-client:5.8.0'
 
+  testCompile 'com.unboundid:unboundid-ldapsdk:5.0.0'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
+  testCompile 'org.springframework.security:spring-security-test'
   testCompile 'org.hamcrest:hamcrest-core:2.2'
   testCompile "org.testcontainers:testcontainers:1.13.0"
 }

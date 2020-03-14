@@ -33,8 +33,8 @@
 	<link rel="icon" type="image/x-icon" href="./favicon.ico" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<meta name="_csrf" th:content="${_csrf.token}"/>
-	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+	<meta th:if="${#request.getSession(false) != null}" name="_csrf" th:content="${_csrf.token}"/>
+	<meta th:if="${#request.getSession(false) != null}" name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 
 <body class="bg-light" ng-app="rmqmgmt">

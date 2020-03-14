@@ -94,6 +94,7 @@ public class AuthenticationConfig {
         private Integer port = 389;
         private String root;
         private String url;
+        private String ldif;
 
         public String getManagerPassword() {
             return managerPassword;
@@ -133,6 +134,14 @@ public class AuthenticationConfig {
 
         public void setUrl(String url) {
             this.url = url;
+        }
+
+        public String getLdif() {
+            return ldif;
+        }
+
+        public void setLdif(String ldif) {
+            this.ldif = ldif;
         }
     }
 }

@@ -21,8 +21,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         if (authenticationConfig.isEnabled()) {
-            http
-                    .authorizeRequests()
+            http.authorizeRequests()
                     .antMatchers("/css/**").permitAll()
                     .antMatchers("/gfx/**").permitAll()
                     .antMatchers("/webjars/**").permitAll()
@@ -62,7 +61,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .managerPassword(ldap.getContextSource().getManagerPassword())
                         .root(ldap.getContextSource().getRoot())
                         .port(ldap.getContextSource().getPort())
-                        .url(ldap.getContextSource().getUrl());
+                        .url(ldap.getContextSource().getUrl())
+                        .ldif(ldap.getContextSource().getLdif());
         }
     }
 
