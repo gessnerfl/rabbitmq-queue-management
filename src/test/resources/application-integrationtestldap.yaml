@@ -1,0 +1,20 @@
+de:
+  gessnerfl:
+    security:
+      authentication:
+        enabled: true
+        ldap:
+          user-search-base: ou=people
+          user-search-filter: (uid={0})
+          group-search-base: ou=groups
+          group-search-filter: member={0}
+          context-source:
+            root: dc=gessnerfl,dc=de
+            port: 389
+            ldif: classpath:test-users.ldif
+    rabbitmq:
+      hostname: localhost
+      port: 5672
+      managementPort: 15672
+      username: guest
+      password: guest

@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: RabbitMQ Queue Managment
+
+server:
+  port: 8780
+management:
+  server:
+    port: 8781
+
+de:
+  gessnerfl:
+    rabbitmq:
+      hostname: localhost
+      port: 5672
+      managementPort: 15672
+      username: guest
+      password: guest

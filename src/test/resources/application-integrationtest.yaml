@@ -1,0 +1,8 @@
+de:
+  gessnerfl:
+    rabbitmq:
+      hostname: localhost
+      port: 5672
+      managementPort: 15672
+      username: guest
+      password: guest

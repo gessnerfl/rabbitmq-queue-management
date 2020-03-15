@@ -1,0 +1,31 @@
+dn: ou=groups,dc=gessnerfl,dc=de
+objectclass: top
+objectclass: organizationalUnit
+ou: groups
+
+dn: ou=people,dc=gessnerfl,dc=de
+objectclass: top
+objectclass: organizationalUnit
+ou: people
+
+dn: uid=tester,ou=people,dc=gessnerfl,dc=de
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Jim Beam
+sn: Beam
+uid: tester
+userPassword: tester
+
+dn: cn=admin,ou=groups,dc=gessnerfl,dc=de
+objectclass: top
+objectclass: groupOfNames
+cn: admin
+member: uid=tester,ou=people,dc=gessnerfl,dc=de
+
+dn: cn=user,ou=groups,dc=gessnerfl,dc=de
+objectclass: top
+objectclass: groupOfNames
+cn: user
+member: uid=tester,ou=people,dc=gessnerfl,dc=de

@@ -9,9 +9,9 @@ public class ForwardControllerIntegrationTest extends AbstractControllerIntegrat
 
     @Test
     public void shouldReturnListOfQueues() throws Exception {
-        mockMvc.perform(get("/"))
+        mockMvc.perform(get("/queues"))
             .andExpect(status().isOk())
-            .andExpect(forwardedUrl("index.html"));
+            .andExpect(forwardedUrl("/"));
     }
     
 }

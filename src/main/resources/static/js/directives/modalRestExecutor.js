@@ -13,9 +13,14 @@ angular.module('rmqmgmt').factory("modalRestExecutor", ["$http", function($http)
                 modalScope.error = "An unexpected error occurred";
             }
         }
+        var csrfToken = $("meta[name='_csrf']").attr("content");
+        var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+        var headers = {}
+        headers[csrfHeader] = csrfToken
         $http({
             method : method,
-            url : url
+            url : url,
+            headers: headers
         }).then(onSuccess, onError);
     };
     
