@@ -33,36 +33,36 @@ targetCompatibility = 1.8
 repositories { jcenter() }
 
 dependencies {
-  compile 'org.springframework.boot:spring-boot-starter-actuator'
-  compile 'org.springframework.boot:spring-boot-starter-web'
-  compile 'org.springframework.boot:spring-boot-starter-security'
-  compile 'org.springframework.security:spring-security-ldap'
-  compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
-  compile 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
-  compile 'org.springframework.boot:spring-boot-devtools'
+  implementation 'org.springframework.boot:spring-boot-starter-actuator'
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'org.springframework.boot:spring-boot-starter-security'
+  implementation 'org.springframework.security:spring-security-ldap'
+  implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+  implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+  implementation 'org.springframework.boot:spring-boot-devtools'
 
-  compile 'io.github.openfeign:feign-core:10.8'
-  compile 'io.github.openfeign:feign-gson:10.8'
-  compile 'io.github.openfeign:feign-slf4j:10.8'
-  
-  compile 'com.google.code.gson:gson:2.8.6'
-  compile 'commons-codec:commons-codec:1.14'
+  implementation 'io.github.openfeign:feign-core:10.8'
+  implementation 'io.github.openfeign:feign-gson:10.8'
+  implementation 'io.github.openfeign:feign-slf4j:10.8'
 
-  compile 'org.webjars.bower:jquery:3.4.1'
-  compile 'org.webjars.bower:angular:1.7.7'
-  compile 'org.webjars.bower:angular-resource:1.7.7'
-  compile 'org.webjars.bower:angular-route:1.7.7'
-  compile 'org.webjars.bower:bootstrap:4.4.1'
-  compile 'org.webjars.bower:open-iconic:1.1.1'
-  compile 'org.webjars.bower:json-formatter:0.6.0'
+  implementation 'com.google.code.gson:gson:2.8.6'
+  implementation 'commons-codec:commons-codec:1.14'
 
-  compile 'com.rabbitmq:amqp-client:5.8.0'
+  implementation 'org.webjars.bower:jquery:3.4.1'
+  implementation 'org.webjars.bower:angular:1.7.7'
+  implementation 'org.webjars.bower:angular-resource:1.7.7'
+  implementation 'org.webjars.bower:angular-route:1.7.7'
+  implementation 'org.webjars.bower:bootstrap:4.4.1'
+  implementation 'org.webjars.bower:open-iconic:1.1.1'
+  implementation 'org.webjars.bower:json-formatter:0.6.0'
 
-  testCompile 'com.unboundid:unboundid-ldapsdk:5.0.0'
-  testCompile 'org.springframework.boot:spring-boot-starter-test'
-  testCompile 'org.springframework.security:spring-security-test'
-  testCompile 'org.hamcrest:hamcrest-core:2.2'
-  testCompile "org.testcontainers:testcontainers:1.13.0"
+  implementation 'com.rabbitmq:amqp-client:5.8.0'
+
+  testImplementation 'com.unboundid:unboundid-ldapsdk:5.0.0'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  testImplementation 'org.springframework.security:spring-security-test'
+  testImplementation 'org.hamcrest:hamcrest-core:2.2'
+  testImplementation "org.testcontainers:testcontainers:1.13.0"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -84,6 +84,14 @@ bootJar {
 artifacts {
   archives sourcesJar
   archives javadocJar
+}
+
+jacocoTestReport {
+  reports {
+    xml.enabled true
+    csv.enabled false
+    html.enabled true
+  }
 }
 
 sonarqube {
