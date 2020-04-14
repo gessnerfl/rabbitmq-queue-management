@@ -7,6 +7,9 @@ server:
 management:
   server:
     port: 8781
+  health:
+    ldap:
+      enabled: false
 
 de:
   gessnerfl:
