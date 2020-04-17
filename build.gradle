@@ -10,7 +10,6 @@ buildscript {
 plugins {
   id "com.cinnober.gradle.semver-git" version "2.4.0"
   id 'org.springframework.boot' version '2.2.5.RELEASE'
-  id "io.freefair.lombok" version "4.1.6"
 }
 
 //apply plugin: 'java-library'
@@ -48,13 +47,9 @@ dependencies {
   implementation 'com.google.code.gson:gson:2.8.6'
   implementation 'commons-codec:commons-codec:1.14'
 
-  implementation 'org.webjars.bower:jquery:3.4.1'
-  implementation 'org.webjars.bower:angular:1.7.7'
-  implementation 'org.webjars.bower:angular-resource:1.7.7'
-  implementation 'org.webjars.bower:angular-route:1.7.7'
+  implementation 'org.webjars.bowergithub.caldwell:renderjson:1.4.0'
   implementation 'org.webjars.bower:bootstrap:4.4.1'
   implementation 'org.webjars.bower:open-iconic:1.1.1'
-  implementation 'org.webjars.bower:json-formatter:0.6.0'
 
   implementation 'com.rabbitmq:amqp-client:5.8.0'
 

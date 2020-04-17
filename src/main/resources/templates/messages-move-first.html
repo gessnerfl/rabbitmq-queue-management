@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<link rel="stylesheet" th:href="@{/webjars/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css}"/>
+	<link rel="stylesheet" th:href="@{/css/customization.css}"/>
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.4.1/dist/css/bootstrap.min.css}"/>
+
+	<title>RabbitMQ :: Queue Management</title>
+
+	<base th:href="@{/}">
+	<link rel="icon" type="image/x-icon" href="./favicon.ico" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<meta th:if="${#request.getSession(false) != null}" name="_csrf" th:content="${_csrf.token}"/>
+	<meta th:if="${#request.getSession(false) != null}" name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<body class="bg-light">
+<div th:replace="fragments/navbar"/>
+<div class="container main">
+	<div class="row">
+		<div class="col-12 mb-4">
+			<h1><span class="text-secondary">Queue</span>&nbsp;<span th:text="${queue}"></span><span class="text-secondary">| Virtual host</span>&nbsp;<span th:text="${vhost}"></span></h1>
+
+			<div class="card">
+				<div class="card-body">
+					<h4 class="card-title">Move first Messages</h4>
+
+					<div class="alert alert-danger" role="alert" th:if="${errorMessage != null}">
+						<p class="mb-0"><b><i class="oi oi-warning"></i>&nbsp;Error:</b>&nbsp;<span th:text="${errorMessage}"></span></p>
+					</div>
+					<p>Move the first message of queue <b th:text="${queue}"></b> with the following checksum?</p>
+					<p><b>Checksum:</b></p>
+					<pre th:text="${checksum}"></pre>
+
+					<form th:if="${targetExchange == null}" th:action="@{/messages/move-first}" method="post">
+						<h5>Step 1/2 - Select Target Exchange</h5>
+						<input type="hidden" name="vhost" th:value="${vhost}" />
+						<input type="hidden" name="queue" th:value="${queue}" />
+						<input type="hidden" name="checksum" th:value="${checksum}" />
+						<div class="form-group">
+							<label for="targetExchangeSelect">Target Exchange:</label>
+							<select  class="form-control" id="targetExchangeSelect" name="targetExchange">
+								<option th:each="e : ${exchanges}" th:value="${e.name}" th:text="${e.name}"></option>
+							</select>
+						</div>
+						<div class="btn-group" role="group">
+							<a class="btn btn-light" th:href="@{/messages(queue=${queue},vhost=${vhost})}">Cancel</a>
+							<button type="submit" class="btn btn-primary">Next</button>
+						</div>
+					</form>
+					<form th:if="${targetExchange != null}" th:action="@{/messages/move-first}" method="post">
+						<h5>Step 2/2 - Select Routing Key</h5>
+						<input type="hidden" name="vhost" th:value="${vhost}" />
+						<input type="hidden" name="queue" th:value="${queue}" />
+						<input type="hidden" name="checksum" th:value="${checksum}" />
+						<input type="hidden" name="targetExchange" th:value="${targetExchange}" />
+						<div class="form-group">
+							<label for="targetExchangeText">Target Exchange:</label>
+							<input  class="form-control" id="targetExchangeText" type="text" name="targetExchangeText" th:value="${targetExchange}" disabled="disabled" />
+						</div>
+						<div class="form-group">
+							<label for="targetRoutingKeySelect">Target Routing Key:</label>
+							<select class="form-control"  id="targetRoutingKeySelect" name="targetRoutingKey">
+								<option th:each="rk : ${routingKeys}" th:value="${rk}" th:text="${rk}">	</option>
+							</select>
+						</div>
+						<div class="btn-group" role="group">
+							<a class="btn btn-light" th:href="@{/messages(queue=${queue},vhost=${vhost})}">Cancel</a>
+							<button type="submit" class="btn btn-primary">Move</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

@@ -1,35 +1,13 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-	<link rel="stylesheet" th:href="@{webjars/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css}"/>
-	<link rel="stylesheet" th:href="@{webjars/json-formatter/0.6.0/dist/json-formatter.min.css}"/>
-
-	<link rel="stylesheet" th:href="@{css/customization.css}"/>
-	<link rel="stylesheet" th:href="@{webjars/bootstrap/4.4.1/dist/css/bootstrap.min.css}"/>
-
-	<script type="text/javascript" th:src="@{webjars/jquery/3.4.1/dist/jquery.min.js}"></script>
-	<script type="text/javascript" th:src="@{webjars/angular/1.7.7/angular.min.js}"></script>
-	<script type="text/javascript" th:src="@{webjars/angular-resource/1.7.7/angular-resource.min.js}"></script>
-	<script type="text/javascript" th:src="@{webjars/angular-route/1.7.7/angular-route.min.js}"></script>
-	<script type="text/javascript" th:src="@{webjars/bootstrap/4.4.1/dist/js/bootstrap.min.js}"></script>
-	<script type="text/javascript" th:src="@{webjars/json-formatter/0.6.0/dist/json-formatter.min.js}"></script>
-
-	<script type="text/javascript" th:src="@{js/app.js}"></script>
-	<script type="text/javascript" th:src="@{js/services/errorHandler.js}"></script>
-	<script type="text/javascript" th:src="@{js/services/ajaxInterceptor.js}"></script>
-	<script type="text/javascript" th:src="@{js/controller/queues.js}"></script>
-	<script type="text/javascript" th:src="@{js/controller/messages.js}"></script>
-	<script type="text/javascript" th:src="@{js/directives/modalRestExecutor.js}"></script>
-	<script type="text/javascript" th:src="@{js/directives/deleteMessageModal.js}"></script>
-	<script type="text/javascript" th:src="@{js/directives/moveMessageModal.js}"></script>
-	<script type="text/javascript" th:src="@{js/directives/requeueMessageModal.js}"></script>
-	<script type="text/javascript" th:src="@{js/directives/deleteAllMessagesModal.js}"></script>
-	<script type="text/javascript" th:src="@{js/directives/moveAllMessagesModal.js}"></script>
-	<script type="text/javascript" th:src="@{js/directives/requeueAllMessagesModal.js}"></script>
+	<link rel="stylesheet" th:href="@{/webjars/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css}"/>
+	<link rel="stylesheet" th:href="@{/css/customization.css}"/>
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.4.1/dist/css/bootstrap.min.css}"/>
 
 	<title>RabbitMQ :: Queue Management</title>
 
-	<base href="/">
+	<base th:href="@{/}">
 	<link rel="icon" type="image/x-icon" href="./favicon.ico" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -37,30 +15,51 @@
 	<meta th:if="${#request.getSession(false) != null}" name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 
-<body class="bg-light" ng-app="rmqmgmt">
-<nav class="navbar navbar-default navbar-expand-lg navbar-expand-m navbar-fixed-top navbar-dark bg-dark">
-	<span class="navbar-brand"><img alt="RabbitMQ Icon" src="/gfx/rmq.png" width="24px" height="24px" style="display: inline-block"/>&nbsp;RabbitMQ :: Queue Management</span>
-
-	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
-	</button>
-
-	<div class="collapse navbar-collapse" id="navbarSupportedContent">
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item">
-				<a class="nav-link" href="/queues"><i class="oi oi-random" aria-hidden="true"></i>&nbsp;Queues</a>
-			</li>
-		</ul>
-	</div>
-
-	<span sec:authorize="isAuthenticated()" class="navbar-text pr-3" sec:authentication="name"></span>
-
-	<form sec:authorize="isAuthenticated()" class="form-inline navbar-text" th:action="@{/logout}" method="POST">
-		<button type="submit" class="btn btn-outline-light"><i class="oi oi-power-standby"></i></button>
-	</form>
-</nav>
+<body class="bg-light">
+<div th:replace="fragments/navbar"/>
 <div class="container main">
-	<div ng-view="ng-view"></div>
+	<div class="row">
+		<div class="col-12">
+			<h1>All Queues</h1>
+			<div class="message-panel"/>
+			<div th:if="${#lists.isEmpty(queues)}" class="alert alert-warning" role="alert">
+				<strong>Warning!</strong> No queues are available. Check your configuration
+			</div>
+			<table th:if="${not #lists.isEmpty(queues)}" class="table table-bordered table-sm mt-4">
+				<thead class="thead-light">
+				<tr>
+					<th rowspan="2">Vhost</th>
+					<th rowspan="2">Name</th>
+					<th rowspan="2">State</th>
+					<th rowspan="2">Consumers</th>
+					<th colspan="3">Messages</th>
+					<th rowspan="2">Attributes</th>
+				</tr>
+				<tr>
+					<th>Total</th>
+					<th>Ready</th>
+					<th>Unacknowledged</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr th:each="queue : ${queues}">
+					<td th:text="${queue.vhost}"></td>
+					<td><a th:href="@{/messages(queue=${queue.name},vhost=${queue.vhost})}" th:text="${queue.name}">}</a></td>
+					<td th:text="${queue.state}"></td>
+					<td th:text="${queue.consumers}"></td>
+					<td th:text="${queue.messages}"></td>
+					<td th:text="${queue.messagesReady}"></td>
+					<td th:text="${queue.messagesUnacknowledged}"></td>
+					<td>
+						<span th:if="${queue.durable}" class="badge badge-success">D</span>
+						<span th:if="${queue.isDeadLetterExchangeConfigured()}" class="badge badge-secondary">DLX</span>
+						<span th:if="${queue.isDeadLetterRoutingKeyConfigured()}" class="badge badge-secondary">DLK</span>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
 </div>
 </body>
 </html>
