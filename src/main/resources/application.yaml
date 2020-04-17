@@ -4,8 +4,6 @@ spring:
 
 server:
   port: 8780
-  servlet:
-    context-path: /admin/rabbitmq-queue-management
 management:
   server:
     port: 8781
@@ -21,7 +19,3 @@ de:
       managementPort: 15672
       username: guest
       password: guest
-
-logging:
-  level:
-    org.springframework.security: DEBUG
