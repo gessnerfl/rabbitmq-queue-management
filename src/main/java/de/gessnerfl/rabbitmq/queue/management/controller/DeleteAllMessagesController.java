@@ -30,8 +30,9 @@ public class DeleteAllMessagesController {
     public String getDeleteAllMessagePage(@RequestParam(Parameters.VHOST) String vhost,
                                           @RequestParam(Parameters.QUEUE) String queue,
                                           Model model){
-        model.addAttribute(Parameters.VHOST, vhost);
-        model.addAttribute(Parameters.QUEUE, queue);
+        ParameterAppender.of(model)
+                .vhost(vhost)
+                .queue(queue);
         return VIEW_NAME;
     }
 
@@ -42,12 +43,13 @@ public class DeleteAllMessagesController {
                                     RedirectAttributes redirectAttributes){
         try {
             facade.purgeQueue(vhost, queue);
-            return MessagesControllers.redirectToMessagesPage(vhost,queue, redirectAttributes);
+            return Pages.MESSAGES.redirectTo(vhost,queue, redirectAttributes);
         } catch (Exception e) {
             logger.error("Failed to delete all messages or queue {} of vhost {}", queue, vhost, e);
-            model.addAttribute(Parameters.VHOST, vhost);
-            model.addAttribute(Parameters.QUEUE, queue);
-            model.addAttribute(Parameters.ERROR_MESSAGE, e.getMessage());
+            ParameterAppender.of(model)
+                    .vhost(vhost)
+                    .queue(queue)
+                    .errorMessage(e.getMessage());
             return VIEW_NAME;
         }
     }

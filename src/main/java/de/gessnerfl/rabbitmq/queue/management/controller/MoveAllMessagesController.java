@@ -35,9 +35,10 @@ public class MoveAllMessagesController {
     public String getMoveAllMessagePage(@RequestParam(Parameters.VHOST) String vhost,
                                         @RequestParam(Parameters.QUEUE) String queue,
                                         Model model){
-        model.addAttribute(Parameters.VHOST, vhost);
-        model.addAttribute(Parameters.QUEUE, queue);
-        model.addAttribute(Parameters.EXCHANGES, facade.getExchanges(vhost));
+        ParameterAppender.of(model)
+                .vhost(vhost)
+                .queue(queue)
+                .exchanges(facade.getExchanges(vhost));
         return VIEW_NAME;
     }
 
@@ -54,14 +55,15 @@ public class MoveAllMessagesController {
 
         try {
             facade.moveAllMessagesInQueue(vhost, queue, targetExchange, targetRoutingKey);
-            return MessagesControllers.redirectToMessagesPage(vhost,queue, redirectAttributes);
+            return Pages.MESSAGES.redirectTo(vhost,queue, redirectAttributes);
         } catch (Exception e) {
             logger.error("Failed to move all messages from queue {} of vhost {} to exchange {} with routing key {}", queue, vhost, targetExchange, targetRoutingKey, e);
-            model.addAttribute(Parameters.VHOST, vhost);
-            model.addAttribute(Parameters.QUEUE, queue);
-            model.addAttribute(Parameters.TARGET_EXCHANGE, targetExchange);
-            model.addAttribute(Parameters.TARGET_ROUTING_KEY, targetRoutingKey);
-            model.addAttribute(Parameters.ERROR_MESSAGE, e.getMessage());
+            ParameterAppender.of(model)
+                    .vhost(vhost)
+                    .queue(queue)
+                    .targetExchange(targetExchange)
+                    .targetRoutingKey(targetRoutingKey)
+                    .errorMessage(e.getMessage());
             return VIEW_NAME;
         }
     }
@@ -72,10 +74,11 @@ public class MoveAllMessagesController {
                 .map(Binding::getRoutingKey)
                 .distinct()
                 .collect(Collectors.toList());
-        model.addAttribute(Parameters.VHOST, vhost);
-        model.addAttribute(Parameters.QUEUE, queue);
-        model.addAttribute(Parameters.TARGET_EXCHANGE, targetExchange);
-        model.addAttribute(Parameters.ROUTING_KEYS, routingKeys);
+        ParameterAppender.of(model)
+                .vhost(vhost)
+                .queue(queue)
+                .targetExchange(targetExchange)
+                .routingKeys(routingKeys);
         return VIEW_NAME;
     }
 }

@@ -36,14 +36,15 @@ public class RequeueFirstMessageController {
                                              RedirectAttributes redirectAttributes){
         List<Message> messages = facade.getMessagesOfQueue(vhost, queue, 1);
         if(messages.isEmpty() || !messages.get(0).isRequeueAllowed() || !checksum.equals(messages.get(0).getChecksum())){
-            return MessagesControllers.redirectToMessagesPage(vhost,queue, redirectAttributes);
+            return Pages.MESSAGES.redirectTo(vhost,queue, redirectAttributes);
         }
         Message message = messages.get(0);
-        model.addAttribute(Parameters.VHOST, vhost);
-        model.addAttribute(Parameters.QUEUE, queue);
-        model.addAttribute(Parameters.CHECKSUM, checksum);
-        model.addAttribute(Parameters.TARGET_EXCHANGE, message.getRequeueDetails().getExchangeName());
-        model.addAttribute(Parameters.TARGET_ROUTING_KEY, message.getRequeueDetails().getRoutingKey());
+        ParameterAppender.of(model)
+                .vhost(vhost)
+                .queue(queue)
+                .checksum(checksum)
+                .targetExchange(message.getRequeueDetails().getExchangeName())
+                .targetRoutingKey(message.getRequeueDetails().getRoutingKey());
         return VIEW_NAME;
     }
 
@@ -57,15 +58,16 @@ public class RequeueFirstMessageController {
                                       RedirectAttributes redirectAttributes){
         try {
             facade.requeueFirstMessageInQueue(vhost, queue, checksum);
-            return MessagesControllers.redirectToMessagesPage(vhost,queue, redirectAttributes);
+            return Pages.MESSAGES.redirectTo(vhost,queue, redirectAttributes);
         } catch (Exception e) {
             logger.error("Failed to requeue first message with checksum {} of queue {} of vhost{} to target exchange {} and routing key{}", checksum, queue, vhost, targetExchange, targetRoutingKey, e);
-            model.addAttribute(Parameters.VHOST, vhost);
-            model.addAttribute(Parameters.QUEUE, queue);
-            model.addAttribute(Parameters.CHECKSUM, checksum);
-            model.addAttribute(Parameters.TARGET_EXCHANGE, targetExchange);
-            model.addAttribute(Parameters.TARGET_ROUTING_KEY, targetRoutingKey);
-            model.addAttribute(Parameters.ERROR_MESSAGE, e.getMessage());
+            ParameterAppender.of(model)
+                    .vhost(vhost)
+                    .queue(queue)
+                    .checksum(checksum)
+                    .targetExchange(targetExchange)
+                    .targetRoutingKey(targetRoutingKey)
+                    .errorMessage(e.getMessage());
             return VIEW_NAME;
         }
     }

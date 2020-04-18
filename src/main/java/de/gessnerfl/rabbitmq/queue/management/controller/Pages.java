@@ -1,5 +1,7 @@
 package de.gessnerfl.rabbitmq.queue.management.controller;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 public enum Pages {
 
     INDEX("/index"),
@@ -12,5 +14,11 @@ public enum Pages {
 
     public String redirectTo(){
         return "redirect:" + path;
+    }
+
+    public String redirectTo(String vhost, String queue, RedirectAttributes redirectAttributes){
+        redirectAttributes.addAttribute(Parameters.VHOST, vhost);
+        redirectAttributes.addAttribute(Parameters.QUEUE, queue);
+        return redirectTo();
     }
 }

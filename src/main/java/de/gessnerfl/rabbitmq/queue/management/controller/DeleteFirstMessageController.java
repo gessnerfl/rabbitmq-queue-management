@@ -31,9 +31,10 @@ public class DeleteFirstMessageController {
                                             @RequestParam(Parameters.QUEUE) String queue,
                                             @RequestParam(Parameters.CHECKSUM) String checksum,
                                             Model model){
-        model.addAttribute(Parameters.VHOST, vhost);
-        model.addAttribute(Parameters.QUEUE, queue);
-        model.addAttribute(Parameters.CHECKSUM, checksum);
+        ParameterAppender.of(model)
+                .vhost(vhost)
+                .queue(queue)
+                .checksum(checksum);
         return VIEW_NAME;
     }
 
@@ -45,13 +46,14 @@ public class DeleteFirstMessageController {
                                      RedirectAttributes redirectAttributes){
         try {
             facade.deleteFirstMessageInQueue(vhost, queue, checksum);
-            return MessagesControllers.redirectToMessagesPage(vhost,queue, redirectAttributes);
+            return Pages.MESSAGES.redirectTo(vhost,queue, redirectAttributes);
         } catch (Exception e) {
             logger.error("Failed to delete first message with checksum {} from queue {} of vhost {}", checksum, queue, vhost, e);
-            model.addAttribute(Parameters.VHOST, vhost);
-            model.addAttribute(Parameters.QUEUE, queue);
-            model.addAttribute(Parameters.CHECKSUM, checksum);
-            model.addAttribute(Parameters.ERROR_MESSAGE, e.getMessage());
+            ParameterAppender.of(model)
+                    .vhost(vhost)
+                    .queue(queue)
+                    .checksum(checksum)
+                    .errorMessage(e.getMessage());
             return VIEW_NAME;
         }
     }

@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 public class Message {
+  public static final String X_DEATH_HEADER = "x-death";
+  public static final String XDEATH_HEADER_EXCHANGE_FIELD = "exchange";
+  public static final String XDEATH_HEADER_ROUTING_KEYS_FIELD = "routing-keys";
   private final Envelope envelope;
   private final BasicProperties properties;
   private final byte[] body;
@@ -24,12 +27,12 @@ public class Message {
     this.body = body;
     this.checksum = checksum;
 
-    if(properties.getHeaders() != null && properties.getHeaders().get("x-death") != null){
-      List xDeathList = (List) (properties.getHeaders().get("x-death"));
+    if(properties.getHeaders() != null && properties.getHeaders().get(X_DEATH_HEADER) != null){
+      List xDeathList = (List) (properties.getHeaders().get(X_DEATH_HEADER));
       if(!xDeathList.isEmpty()) {
         Map xdeath = (Map) xDeathList.get(0);
-        String exchange = (String) xdeath.get("exchange");
-        String routingKey = (String) (xdeath.get("routing-keys") != null && ((List) xdeath.get("routing-keys")).size() > 0 ? ((List) xdeath.get("routing-keys")).get(0) : null);
+        String exchange = (String) xdeath.get(XDEATH_HEADER_EXCHANGE_FIELD);
+        String routingKey = (String) (xdeath.get(XDEATH_HEADER_ROUTING_KEYS_FIELD) != null && !((List) xdeath.get(XDEATH_HEADER_ROUTING_KEYS_FIELD)).isEmpty() ? ((List) xdeath.get(XDEATH_HEADER_ROUTING_KEYS_FIELD)).get(0) : null);
         if (StringUtils.hasText(exchange) && StringUtils.hasText(routingKey)) {
           requeueDetails = new RequeueDetails(exchange, routingKey);
         }

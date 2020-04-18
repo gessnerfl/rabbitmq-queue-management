@@ -54,31 +54,39 @@ public class MoveFirstMessageController {
 
         try {
             facade.moveFirstMessageInQueue(vhost, queue, checksum, targetExchange, targetRoutingKey);
-            return MessagesControllers.redirectToMessagesPage(vhost,queue, redirectAttributes);
+            return Pages.MESSAGES.redirectTo(vhost,queue, redirectAttributes);
         } catch (Exception e) {
             logger.error("Failed to move message with checksum {} from queue {} of vhost {} to target exchange {} and routing key {}", checksum, queue, vhost, targetExchange, targetRoutingKey, e);
-            model.addAttribute(Parameters.VHOST, vhost);
-            model.addAttribute(Parameters.QUEUE, queue);
-            model.addAttribute(Parameters.CHECKSUM, checksum);
-            model.addAttribute(Parameters.TARGET_EXCHANGE, targetExchange);
-            model.addAttribute(Parameters.TARGET_ROUTING_KEY, targetRoutingKey);
-            model.addAttribute(Parameters.ERROR_MESSAGE, e.getMessage());
+            List<String> routingKeys = getRoutingKeysForExchange(vhost, targetExchange);
+            ParameterAppender.of(model)
+                    .vhost(vhost)
+                    .queue(queue)
+                    .checksum(checksum)
+                    .targetExchange(targetExchange)
+                    .targetRoutingKey(targetRoutingKey)
+                    .routingKeys(routingKeys)
+                    .errorMessage(e.getMessage());
             return VIEW_NAME;
         }
     }
 
     private String showViewWithRoutingKeysOfSelectedExchange(@RequestParam(Parameters.VHOST) String vhost, @RequestParam(Parameters.QUEUE) String queue, @RequestParam(Parameters.CHECKSUM) String checksum, @RequestParam(Parameters.TARGET_EXCHANGE) String targetExchange, Model model) {
-        List<String> routingKeys = facade.getExchangeSourceBindings(vhost, targetExchange)
-                .stream()
-                .map(Binding::getRoutingKey)
-                .distinct()
-                .collect(Collectors.toList());
-        model.addAttribute(Parameters.VHOST, vhost);
-        model.addAttribute(Parameters.QUEUE, queue);
-        model.addAttribute(Parameters.CHECKSUM, checksum);
-        model.addAttribute(Parameters.TARGET_EXCHANGE, targetExchange);
-        model.addAttribute(Parameters.ROUTING_KEYS, routingKeys);
+        List<String> routingKeys = getRoutingKeysForExchange(vhost, targetExchange);
+        ParameterAppender.of(model)
+                .vhost(vhost)
+                .queue(queue)
+                .checksum(checksum)
+                .targetExchange(targetExchange)
+                .routingKeys(routingKeys);
         return VIEW_NAME;
+    }
+
+    private List<String> getRoutingKeysForExchange(@RequestParam(Parameters.VHOST) String vhost, @RequestParam(Parameters.TARGET_EXCHANGE) String targetExchange) {
+        return facade.getExchangeSourceBindings(vhost, targetExchange)
+                    .stream()
+                    .map(Binding::getRoutingKey)
+                    .distinct()
+                    .collect(Collectors.toList());
     }
 
 

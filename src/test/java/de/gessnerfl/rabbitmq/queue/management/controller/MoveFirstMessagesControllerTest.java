@@ -109,6 +109,10 @@ public class MoveFirstMessagesControllerTest {
     public void shouldTryToMoveFirstMessagesAndStayOnMoveAllMessagePageWhenTargetExchangeAndRoutingKeyAreProvidedAndMoveFailed(){
         final String errorMessage = "error";
         final RuntimeException expectedException = new RuntimeException(errorMessage);
+        final String routingKey1 = "routingKey1";
+        final String routingKey2 = "routingKey2";
+        final Binding binding1 = mock(Binding.class);
+        final Binding binding2 = mock(Binding.class);
         final String vhost = "vhost";
         final String queue = "queue";
         final String checksum = "checksum";
@@ -117,6 +121,10 @@ public class MoveFirstMessagesControllerTest {
         final Model model = mock(Model.class);
         final RedirectAttributes redirectAttributes = mock(RedirectAttributes.class);
 
+        when(binding1.getRoutingKey()).thenReturn(routingKey1);
+        when(binding2.getRoutingKey()).thenReturn(routingKey2);
+        when(facade.getExchangeSourceBindings(vhost, targetExchange)).thenReturn(Arrays.asList(binding1, binding2));
+
         doThrow(expectedException).when(facade).moveFirstMessageInQueue(vhost, queue, checksum, targetExchange, targetRoutingKey);
 
         String result = sut.moveFirstMessage(vhost, queue, checksum, targetExchange, targetRoutingKey, model, redirectAttributes);
@@ -124,12 +132,14 @@ public class MoveFirstMessagesControllerTest {
         assertEquals(MoveFirstMessageController.VIEW_NAME, result);
 
         verify(facade).moveFirstMessageInQueue(vhost, queue, checksum, targetExchange, targetRoutingKey);
+        verify(facade).getExchangeSourceBindings(vhost, targetExchange);
         verify(logger).error(anyString(), eq(checksum), eq(queue), eq(vhost), eq(targetExchange), eq(targetRoutingKey),  eq(expectedException));
         verify(model).addAttribute(Parameters.VHOST, vhost);
         verify(model).addAttribute(Parameters.QUEUE, queue);
         verify(model).addAttribute(Parameters.CHECKSUM, checksum);
         verify(model).addAttribute(Parameters.TARGET_EXCHANGE, targetExchange);
         verify(model).addAttribute(Parameters.TARGET_ROUTING_KEY, targetRoutingKey);
+        verify(model).addAttribute(Parameters.ROUTING_KEYS, Arrays.asList(routingKey1, routingKey2));
         verify(model).addAttribute(Parameters.ERROR_MESSAGE, errorMessage);
         verifyNoInteractions(redirectAttributes);
         verifyNoMoreInteractions(facade, model, logger);
