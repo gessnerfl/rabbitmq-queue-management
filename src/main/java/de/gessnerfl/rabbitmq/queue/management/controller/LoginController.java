@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import sun.jvm.hotspot.debugger.Page;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,11 +29,11 @@ public class LoginController {
     public String getLogin(HttpServletRequest request) {
         if (!authenticationConfig.isEnabled()){
             LOGGER.info("Authentication not enabled. Redirect to index page");
-            return "redirect:/index";
+            return Pages.INDEX.redirectTo();
         }
         if (securityContextService.isUserAuthenticated()) {
             LOGGER.info("User is already authenticated. Redirect to index page");
-            return "redirect:/index";
+            return Pages.INDEX.redirectTo();
         }
         return "login";
     }
