@@ -42,9 +42,7 @@ public class DeleteAllMessagesController {
                                     RedirectAttributes redirectAttributes){
         try {
             facade.purgeQueue(vhost, queue);
-            redirectAttributes.addAttribute(Parameters.VHOST, vhost);
-            redirectAttributes.addAttribute(Parameters.QUEUE, queue);
-            return Pages.MESSAGES.redirectTo();
+            return MessagesControllers.redirectToMessagesPage(vhost,queue, redirectAttributes);
         } catch (Exception e) {
             logger.error("Failed to delete all messages or queue {} of vhost {}", queue, vhost, e);
             model.addAttribute(Parameters.VHOST, vhost);
