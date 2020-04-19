@@ -12,6 +12,10 @@ public enum Pages {
         this.path=path;
     }
 
+    public String path(){
+        return path;
+    }
+
     public String redirectTo(){
         return "redirect:" + path;
     }
