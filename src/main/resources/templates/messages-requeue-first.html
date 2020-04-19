@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<link rel="stylesheet" th:href="@{/webjars/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css}"/>
+	<link rel="stylesheet" th:href="@{/css/customization.css}"/>
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.4.1/dist/css/bootstrap.min.css}"/>
+
+	<title>RabbitMQ :: Queue Management</title>
+
+	<base th:href="@{/}">
+	<link rel="icon" type="image/x-icon" href="./favicon.ico" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<meta th:if="${#request.getSession(false) != null}" name="_csrf" th:content="${_csrf.token}"/>
+	<meta th:if="${#request.getSession(false) != null}" name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<body class="bg-light">
+<div th:replace="fragments/navbar"/>
+<div class="container main">
+	<div class="row">
+		<div class="col-12 mb-4">
+			<h1><span class="text-secondary">Queue</span>&nbsp;<span th:text="${queue}"></span><span class="text-secondary">| Virtual host</span>&nbsp;<span th:text="${vhost}"></span></h1>
+
+			<div class="card">
+				<div class="card-body">
+					<h4 class="card-title">Requeue first Messages</h4>
+
+					<div class="alert alert-danger" role="alert" th:if="${errorMessage != null}">
+						<p class="mb-0"><b><i class="oi oi-warning"></i>&nbsp;Error:</b>&nbsp;<span th:text="${errorMessage}"></span></p>
+					</div>
+
+					<p>Requeue first message of queue <b th:text="${queue}"></b></p>
+					<p><b>Checksum:</b></p>
+					<pre th:text="${checksum}"></pre>
+
+					<h6>Target Routing:</h6>
+					<dl class="row">
+						<dt class="col-sm-6">Target Exchange</dt>
+						<dd class="col-sm-6" th:text="${targetExchange}"></dd>
+						<dt class="col-sm-6">Target Routing Key</dt>
+						<dd class="col-sm-6" th:text="${targetRoutingKey}"></dd>
+					</dl>
+
+					<hr>
+					<form class="form-inline" th:action="@{/messages/requeue-first}" method="post">
+						<input type="hidden" name="vhost" th:value="${vhost}" />
+						<input type="hidden" name="queue" th:value="${queue}" />
+						<input type="hidden" name="checksum" th:value="${checksum}" />
+						<input type="hidden" name="targetExchange" th:value="${targetExchange}" />
+						<input type="hidden" name="targetRoutingKey" th:value="${targetRoutingKey}" />
+						<div class="btn-group" role="group">
+							<a class="btn btn-light" th:href="@{/messages(queue=${queue},vhost=${vhost})}">No</a>
+							<button type="submit" class="btn btn-primary">Yes</button>
+						</div>
+					</form>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

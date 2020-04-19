@@ -20,32 +20,16 @@ body .login-form {
     font-weight: bold;
 }
 
-.amqp-message .json-formatter-dark.json-formatter-row, .json-formatter-row {
-    font-size: 0.9rem;
-    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-}
+.renderjson                { margin-bottom: 0; }
+.renderjson a              { text-decoration: none; }
+.renderjson .disclosure    { color: #007bff;
+                             font-size: 150%; }
+.renderjson .syntax        { color: #2C3E50; }
+.renderjson .string        { color: #1E8449; }
+.renderjson .number        { color: #1F618D; }
+.renderjson .boolean       { color: #7D3C98; }
+.renderjson .key           { color: #2E86C1; }
+.renderjson .keyword       { color: #D35400; }
+.renderjson .object.syntax { color: #2C3E50; }
+.renderjson .array.syntax  { color: #2C3E50; }
 
-.amqp-message .json-formatter-row .key {
-    color: #d35400;
-}
-
-.amqp-message .json-formatter-row .string {
-    color: #196F3D;
-}
-
-.amqp-message .json-formatter-row .number {
-    color: #3498DB;
-}
-
-.amqp-message .json-formatter-row .boolean {
-    color: #6C3483;
-}
-.amqp-message .json-formatter-row .null {
-    color: #6C3483;
-}
-
-.amqp-message .json-formatter-row .toggler:after {
-    content: ">";
-    color: #007bff;
-    font-weight: 900;
-}
