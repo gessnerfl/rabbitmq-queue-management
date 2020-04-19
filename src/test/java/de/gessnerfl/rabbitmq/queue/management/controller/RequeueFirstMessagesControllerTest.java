@@ -120,10 +120,10 @@ public class RequeueFirstMessagesControllerTest {
         final RedirectAttributes redirectAttributes = mock(RedirectAttributes.class);
         final Message message = mock(Message.class);
 
-        when(message.isRequeueAllowed()).thenReturn(false);
+        when(message.isRequeueAllowed()).thenReturn(true);
         when(facade.getMessagesOfQueue(vhost,queue,1)).thenReturn(Collections.singletonList(message));
 
-        String result = sut.getRequeueFirstMessagePage(vhost, queue, checksum, model, redirectAttributes);
+        String result = sut.getRequeueFirstMessagePage(vhost, queue, "other-checksum", model, redirectAttributes);
 
         assertEquals(Pages.MESSAGES.redirectTo(), result);
 
