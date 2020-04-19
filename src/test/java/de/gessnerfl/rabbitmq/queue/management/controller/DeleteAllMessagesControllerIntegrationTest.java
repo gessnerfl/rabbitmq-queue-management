@@ -4,6 +4,7 @@ import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,11 @@ public class DeleteAllMessagesControllerIntegrationTest extends AbstractControll
                 .build()
                 .build();
         testEnvironment.setup();
+    }
+
+    @After
+    public void cleanup() {
+        testEnvironment.cleanup();
     }
 
     @Test
