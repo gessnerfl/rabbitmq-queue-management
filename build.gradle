@@ -67,25 +67,15 @@ dependencies {
   testImplementation "org.testcontainers:testcontainers:1.15.0"
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-  archiveClassifier = 'sources'
-  from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-  archiveClassifier = 'javadoc'
-  from javadoc.destinationDir
+java {
+  withSourcesJar()
+  withJavadocJar()
 }
 
 bootJar {
     manifest {
         attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
     }
-}
-
-artifacts {
-  archives sourcesJar
-  archives javadocJar
 }
 
 test {
