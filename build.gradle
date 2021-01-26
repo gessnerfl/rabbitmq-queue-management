@@ -71,7 +71,6 @@ bootJar {
 }
 
 test {
-  useJUnitPlatform()
   finalizedBy jacocoTestReport
 }
 
