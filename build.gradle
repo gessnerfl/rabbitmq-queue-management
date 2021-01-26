@@ -25,8 +25,8 @@ project.version = scmVersion.version
 ext.scmUrl = 'git@github.com:gessnerfl/rabbitmq-queue-management.git'
 ext.projectUrl = 'https://github.com/gessnerfl/rabbitmq-queue-management'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 repositories { jcenter() }
 
