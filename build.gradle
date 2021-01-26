@@ -8,7 +8,7 @@ buildscript {
 }
 
 plugins {
-  id "com.cinnober.gradle.semver-git" version "2.4.0"
+  id 'pl.allegro.tech.build.axion-release' version '1.12.1'
   id 'org.springframework.boot' version '2.2.5.RELEASE'
 }
 
@@ -20,8 +20,15 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'jacoco'
 apply plugin: 'org.sonarqube'
 
+scmVersion {
+  tag {
+    prefix = ''
+  }
+}
+
 group = 'de.gessnerfl.rabbitmq'
 description = """RabbitMQ :: Queue Management :: List/Move/Delete dead messages from queues"""
+project.version = scmVersion.version
 
 ext.scmUrl = 'git@github.com:gessnerfl/rabbitmq-queue-management.git'
 ext.projectUrl = 'https://github.com/gessnerfl/rabbitmq-queue-management'
