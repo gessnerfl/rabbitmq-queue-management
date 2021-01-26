@@ -57,7 +57,7 @@ dependencies {
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
   testImplementation 'org.springframework.security:spring-security-test'
   testImplementation 'org.hamcrest:hamcrest-core:2.2'
-  testImplementation "org.testcontainers:testcontainers:1.13.0"
+  testImplementation "org.testcontainers:testcontainers:1.15.0"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -81,7 +81,13 @@ artifacts {
   archives javadocJar
 }
 
+test {
+  useJUnitPlatform()
+  finalizedBy jacocoTestReport
+}
+
 jacocoTestReport {
+  dependsOn test
   reports {
     xml.enabled true
     csv.enabled false
@@ -91,6 +97,8 @@ jacocoTestReport {
 
 sonarqube {
   properties {
+    property 'sonar.host.url', 'https://sonarcloud.io'
+    property 'sonar.organization', 'gessnerfl-github'
     property "sonar.projectName", "RabbitMQ Queue Managment"
     property "sonar.projectKey", "de.gessnerfl.rabbitmq-queue-management"
   }

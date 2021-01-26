@@ -1,5 +1,5 @@
 # RabbitMQ Queue Management
-[![Build Status](https://travis-ci.org/gessnerfl/rabbitmq-queue-management.svg?branch=master)](https://travis-ci.org/gessnerfl/rabbitmq-queue-management)
+[![Build Status](https://github.com/gessnerfl/rabbitmq-queue-management/workflows/CI%2FCD/badge.svg)](https://github.com/gessnerfl/rabbitmq-queue-management/workflows/CI%2FCD/badge.svg)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=de.gessnerfl.rabbitmq-queue-management&metric=alert_status)](https://sonarcloud.io/dashboard?id=de.gessnerfl.rabbitmq-queue-management)
 
 *Application to list, delete and re-queue messages of queues.*
