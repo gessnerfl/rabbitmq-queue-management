@@ -1,5 +1,6 @@
 package de.gessnerfl.rabbitmq.queue.management.controller;
 
+import de.gessnerfl.rabbitmq.queue.management.javaconfig.LdapAuthWebSecurityConfig;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,30 +59,27 @@ public class LdapAuthenticationControllerIntegrationTest {
     }
 
     @Test
-    public void shouldSuccessfullyLoginUserAndRedirectToIndex() throws Exception {
-        mockMvc.perform(post("/login")
-                .param("username", "tester")
-                .param("password", "tester")
-                .with(csrf()))
-                .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/"));
-    }
-
-    @Test
-    public void shouldFailToLoginWhenCsrfTokenIsMissing() throws Exception {
+    public void shouldSuccessfullyLoginUserAndRedirectToIndexAndRedirectToLoginPageAfterSuccessfulLogout() throws Exception {
         mockMvc.perform(post("/login")
                 .param("username", "tester")
                 .param("password", "tester"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/"))
+                .andExpect(cookie().exists(LdapAuthWebSecurityConfig.JWT_TOKEN_COOKIE_NAME));
+
+        mockMvc.perform(post("/logout").with(csrf()))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/login?logout"))
+                .andExpect(cookie().maxAge(LdapAuthWebSecurityConfig.JWT_TOKEN_COOKIE_NAME, 0));
     }
 
     @Test
     public void shouldFailToLoginWhenUserCredentialsAreNotValid() throws Exception {
         mockMvc.perform(post("/login")
                 .param("username", "tester")
-                .param("password", "invalid")
-                .with(csrf()))
+                .param("password", "invalid"))
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/login-error"));
+                .andExpect(redirectedUrl("/login-error"))
+                .andExpect(cookie().doesNotExist(LdapAuthWebSecurityConfig.JWT_TOKEN_COOKIE_NAME));
     }
 }
