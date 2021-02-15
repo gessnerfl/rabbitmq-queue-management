@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 public class JwtTokenProvider {
 
+    public static final String CLAIM_NAME_ROLES = "roles";
     private final JWTConfig jwtConfig;
     private final String secretKeyBase64Encoded;
     private final JWSAlgorithm jwsAlgorithm;
@@ -27,7 +28,14 @@ public class JwtTokenProvider {
         this.jwtConfig = jwtConfig;
         this.secretKeyBase64Encoded = jwtConfig.getToken().getSecretKeyBase64Encoded();
         var keyLength = secretKeyBase64Encoded.length();
-        this.jwsAlgorithm = keyLength < 48 ? JWSAlgorithm.HS256 : (keyLength < 64 ? JWSAlgorithm.HS384 : JWSAlgorithm.HS512);
+
+        if(keyLength < 48){
+            this.jwsAlgorithm = JWSAlgorithm.HS256;
+        } else if (keyLength < 64) {
+            this.jwsAlgorithm = JWSAlgorithm.HS384;
+        } else {
+            this.jwsAlgorithm = JWSAlgorithm.HS512;
+        }
     }
 
     public String createToken(UserDetails user) {
@@ -41,7 +49,7 @@ public class JwtTokenProvider {
                     .audience(jwtConfig.getToken().getAudience())
                     .issueTime(now)
                     .expirationTime(expirationTime)
-                    .claim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                    .claim(CLAIM_NAME_ROLES, user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                     .build();
 
             SignedJWT signedJWT = new SignedJWT(new JWSHeader(jwsAlgorithm), claimsSet);
@@ -57,7 +65,7 @@ public class JwtTokenProvider {
         try {
             var jwt = parseAndVerifyToken(token);
             var claimsSet = jwt.getJWTClaimsSet();
-            return new User(claimsSet.getSubject(), "", claimsSet.getStringListClaim("roles").stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+            return new User(claimsSet.getSubject(), "", claimsSet.getStringListClaim(CLAIM_NAME_ROLES).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
         } catch (ParseException e) {
             throw new InvalidJwtTokenException("Failed to parse claims from JWT token", e);
         }
@@ -84,7 +92,7 @@ public class JwtTokenProvider {
     private void verifyClaims(SignedJWT jwt) throws ParseException, BadJWTException {
         String issuer = jwtConfig.getToken().getIssuer();
         String audience = jwtConfig.getToken().getAudience();
-        var verifier = new DefaultJWTClaimsVerifier(audience, new JWTClaimsSet.Builder().issuer(issuer).build(), new HashSet<>(Arrays.asList("exp", "sub", "roles")));
+        var verifier = new DefaultJWTClaimsVerifier(audience, new JWTClaimsSet.Builder().issuer(issuer).build(), new HashSet<>(Arrays.asList("exp", "sub", CLAIM_NAME_ROLES)));
         verifier.verify(jwt.getJWTClaimsSet());
     }
 }

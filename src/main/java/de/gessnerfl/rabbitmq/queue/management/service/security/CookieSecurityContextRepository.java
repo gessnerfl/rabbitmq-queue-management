@@ -79,7 +79,7 @@ public class CookieSecurityContextRepository implements SecurityContextRepositor
     }
 
     private class SaveToCookieResponseWrapper extends SaveContextOnUpdateOrErrorResponseWrapper {
-        private final Logger LOG = LoggerFactory.getLogger(SaveToCookieResponseWrapper.class);
+        private final Logger logger = LoggerFactory.getLogger(SaveToCookieResponseWrapper.class);
         private final HttpServletRequest request;
 
         SaveToCookieResponseWrapper(HttpServletRequest request, HttpServletResponse response) {
@@ -92,17 +92,17 @@ public class CookieSecurityContextRepository implements SecurityContextRepositor
             HttpServletResponse response = (HttpServletResponse) getResponse();
             Authentication authentication = securityContext.getAuthentication();
             if (authentication == null) {
-                LOG.debug("No securityContext.authentication, skip saveContext");
+                logger.debug("No securityContext.authentication, skip saveContext");
                 return;
             }
 
             if (LdapAuthWebSecurityConfig.ANONYMOUS_USER.equals(authentication.getPrincipal())) {
-                LOG.debug("Anonymous User SecurityContext, skip saveContext");
+                logger.debug("Anonymous User SecurityContext, skip saveContext");
                 return;
             }
 
             if (!(authentication.getPrincipal() instanceof UserDetails)) {
-                LOG.warn("securityContext.authentication.principal of unexpected type {}, skip saveContext", authentication.getPrincipal().getClass().getCanonicalName());
+                logger.warn("securityContext.authentication.principal of unexpected type {}, skip saveContext", authentication.getPrincipal().getClass().getCanonicalName());
                 return;
             }
 
@@ -112,7 +112,7 @@ public class CookieSecurityContextRepository implements SecurityContextRepositor
             cookie.setSecure(request.isSecure());
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
-            LOG.debug("SecurityContext for principal '{}' saved in Cookie", userDetails.getUsername());
+            logger.debug("SecurityContext for principal '{}' saved in Cookie", userDetails.getUsername());
         }
     }
 }

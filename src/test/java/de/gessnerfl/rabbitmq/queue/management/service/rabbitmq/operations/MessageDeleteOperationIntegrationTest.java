@@ -59,10 +59,10 @@ class MessageDeleteOperationIntegrationTest extends AbstractOperationIntegration
 
     @Test
     void shouldFailToDeleteMessageIfMessageWasAlreadyDeletedOrNoMessageExists(){
-        assertThrows(MessageOperationFailedException.class, () -> {
-            List<Message> firstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 2);
-            assertThat(firstFetch, empty());
+        List<Message> firstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 2);
+        assertThat(firstFetch, empty());
 
+        assertThrows(MessageOperationFailedException.class, () -> {
             sut.deleteFirstMessageInQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, "anyChecksum");
         });
     }

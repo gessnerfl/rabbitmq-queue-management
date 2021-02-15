@@ -93,18 +93,18 @@ class ConnectorTest {
     
     @Test
     void shouldThrowExceptionWhenConnectionCannotBeEstablished() throws Exception {
-        assertThrows(ConnectionFailedException.class, () -> {
-            when(connectionFactory.newConnection()).thenThrow(new IOException("foo"));
+        when(connectionFactory.newConnection()).thenThrow(new IOException("foo"));
 
+        assertThrows(ConnectionFailedException.class, () -> {
             sut.connect(VHOST);
         });
     }
     
     @Test
     void shouldThrowExceptionWhenChannelCannotBeOpened() throws Exception {
-        assertThrows(ConnectionFailedException.class, () -> {
-            when(connection.createChannel()).thenThrow(new IOException("foo"));
+        when(connection.createChannel()).thenThrow(new IOException("foo"));
 
+        assertThrows(ConnectionFailedException.class, () -> {
             sut.connect(VHOST);
         });
     }
