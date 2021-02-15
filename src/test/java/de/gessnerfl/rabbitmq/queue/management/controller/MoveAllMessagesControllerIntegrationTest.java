@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class MoveAllMessagesControllerIntegrationTest extends AbstractControllerIntegrationTest {
+class MoveAllMessagesControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private static final String VHOST_NAME = "/";
     private static final String EXCHANGE_NAME = "test.ex";
     private static final String QUEUE_1_NAME = "test1.controller.in";
@@ -32,7 +32,7 @@ public class MoveAllMessagesControllerIntegrationTest extends AbstractController
     private RabbitMqFacade facade;
 
     @BeforeEach
-    public void init() throws Exception {
+    void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
                 .withQueue(QUEUE_1_NAME)
@@ -46,12 +46,12 @@ public class MoveAllMessagesControllerIntegrationTest extends AbstractController
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         testEnvironment.cleanup();
     }
 
     @Test
-    public void shouldReturnPageOnGet() throws Exception {
+    void shouldReturnPageOnGet() throws Exception {
         mockMvc.perform(get("/messages/move-all")
                     .param(Parameters.VHOST, VHOST_NAME)
                     .param(Parameters.QUEUE, QUEUE_1_NAME))
@@ -62,7 +62,7 @@ public class MoveAllMessagesControllerIntegrationTest extends AbstractController
     }
 
     @Test
-    public void shouldProvideScreenToSelectRoutingKeyWhenTargetExchangeIsProvidedAndTargetRoutingKeyIsNotProvidedOnPost() throws Exception {
+    void shouldProvideScreenToSelectRoutingKeyWhenTargetExchangeIsProvidedAndTargetRoutingKeyIsNotProvidedOnPost() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, 10), hasSize(2));
@@ -84,7 +84,7 @@ public class MoveAllMessagesControllerIntegrationTest extends AbstractController
     }
 
     @Test
-    public void shouldMoveAllMessagesFromSourceToTargetQueueOnPostWhenTargetExchangeAndRoutingKeyAreProvidedOnPost() throws Exception {
+    void shouldMoveAllMessagesFromSourceToTargetQueueOnPostWhenTargetExchangeAndRoutingKeyAreProvidedOnPost() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, 10), hasSize(2));

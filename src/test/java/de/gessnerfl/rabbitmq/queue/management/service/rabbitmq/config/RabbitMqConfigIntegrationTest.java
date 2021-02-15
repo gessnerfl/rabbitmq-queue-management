@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import de.gessnerfl.rabbitmq.queue.management.AbstractIntegrationTest;
 
-public class RabbitMqConfigIntegrationTest extends AbstractIntegrationTest {
+class RabbitMqConfigIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private RabbitMqConfig rabbitMqConfig;
 
     @Test
-    public void shouldReadDefaultSettings() {
+    void shouldReadDefaultSettings() {
         assertEquals("localhost", rabbitMqConfig.getHostname());
         assertEquals(5672, rabbitMqConfig.getPort());
         assertEquals("guest", rabbitMqConfig.getUsername());

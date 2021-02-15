@@ -31,7 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 
 @ExtendWith(MockitoExtension.class)
-public class MessageOperationExecutorTest {
+class MessageOperationExecutorTest {
     private static final String DEFAULT_VHOST_NAME = "defaultVhost";
     private static final String DEFAULT_QUEUE_NAME = "defaultQueue";
     private static final Envelope DEFAULT_ENVELOPE = mock(Envelope.class);
@@ -70,7 +70,7 @@ public class MessageOperationExecutorTest {
     private MessageOperationExecutor sut;
 
     @BeforeEach
-    public void init() {
+    void init() {
         when(connector.connectAsClosable(DEFAULT_VHOST_NAME)).thenReturn(closeableChannelWrapper);
         when(DEFAULT_ENVELOPE.getDeliveryTag()).thenReturn(DEFAULT_DELIVERY_TAG);
         //
@@ -80,7 +80,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldRetrieveMessageFromQueueAndPerformFunctionWhenChecksumMatches() throws Exception {
+    void shouldRetrieveMessageFromQueueAndPerformFunctionWhenChecksumMatches() throws Exception {
         GetResponse response = mockDefaultGetResponse();
 
         when(closeableChannelWrapper.getChannel()).thenReturn(channel);
@@ -94,7 +94,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldRetrieveMessageFromQueueAndNackWithRequeuWhenChecksumDoesNotMatch() throws Exception {
+    void shouldRetrieveMessageFromQueueAndNackWithRequeuWhenChecksumDoesNotMatch() throws Exception {
         GetResponse response = mockDefaultGetResponse();
 
         when(closeableChannelWrapper.getChannel()).thenReturn(channel);
@@ -112,7 +112,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldFailWhenQueueIsEmpty() throws Exception {
+    void shouldFailWhenQueueIsEmpty() throws Exception {
         when(closeableChannelWrapper.getChannel()).thenReturn(channel);
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(null);
 
@@ -127,7 +127,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenConnectionCannotBeEstablished() throws Exception {
+    void shouldThrowExceptionWhenConnectionCannotBeEstablished() throws Exception {
         ConnectionFailedException expectedException = new ConnectionFailedException(null);
 
         when(connector.connectAsClosable(DEFAULT_VHOST_NAME)).thenThrow(expectedException);
@@ -142,7 +142,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenMessageCannotBeFetched() throws Exception {
+    void shouldThrowExceptionWhenMessageCannotBeFetched() throws Exception {
         IOException expectedException = new IOException();
 
         when(closeableChannelWrapper.getChannel()).thenReturn(channel);
@@ -160,7 +160,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenFunctionCannotBePerformedSuccessfulChecksumCheck()
+    void shouldThrowExceptionWhenFunctionCannotBePerformedSuccessfulChecksumCheck()
             throws Exception {
         GetResponse getResponse = mockDefaultGetResponse();
         IOException expectedException = new IOException();
@@ -184,7 +184,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenAckCannotBeSentAfterSuccessfulFunctionExecution() throws Exception {
+    void shouldThrowExceptionWhenAckCannotBeSentAfterSuccessfulFunctionExecution() throws Exception {
         GetResponse getResponse = mockDefaultGetResponse();
         IOException expectedException = new IOException();
 
@@ -208,7 +208,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenNackCannotBeSentAfterChecksumMatchFailed()
+    void shouldThrowExceptionWhenNackCannotBeSentAfterChecksumMatchFailed()
             throws Exception {
         GetResponse getResponse = mockDefaultGetResponse();
         IOException expectedException = new IOException();
@@ -232,7 +232,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldPerformMassOperationUntilAllMessagesAreConsumedAndMessagesDoNotContainAnyBasicProperty() throws Exception {
+    void shouldPerformMassOperationUntilAllMessagesAreConsumedAndMessagesDoNotContainAnyBasicProperty() throws Exception {
         GetResponse getResponse = mock(GetResponse.class);
         when(getResponse.getEnvelope()).thenReturn(DEFAULT_ENVELOPE);
 
@@ -240,7 +240,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldPerformMassOperationUntilAllMessagesAreConsumedAndMessagesDoNotContainAnyHeader() throws Exception {
+    void shouldPerformMassOperationUntilAllMessagesAreConsumedAndMessagesDoNotContainAnyHeader() throws Exception {
         AMQP.BasicProperties basicProperties = mock(AMQP.BasicProperties.class);
         when(basicProperties.getHeaders()).thenReturn(null);
         GetResponse getResponse = mock(GetResponse.class);
@@ -251,7 +251,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldPerformMassOperationUntilAllMessagesAreConsumedAndOperationIdIsNotTheSame() throws Exception {
+    void shouldPerformMassOperationUntilAllMessagesAreConsumedAndOperationIdIsNotTheSame() throws Exception {
         AMQP.BasicProperties basicProperties = mock(AMQP.BasicProperties.class);
         when(basicProperties.getHeaders()).thenReturn(new HashMap<>());
         GetResponse getResponse = mock(GetResponse.class);
@@ -278,7 +278,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldStopToPerformMassOperationWhenSameOperationIdAppearsInHeader() throws Exception {
+    void shouldStopToPerformMassOperationWhenSameOperationIdAppearsInHeader() throws Exception {
         final Map<String, Object> headers = mock(Map.class);
         AMQP.BasicProperties basicProperties = mock(AMQP.BasicProperties.class);
         GetResponse getResponse = mock(GetResponse.class);
@@ -305,7 +305,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldFailToRunMassOperationWhenMessagesCannotBeConsumed() throws Exception {
+    void shouldFailToRunMassOperationWhenMessagesCannotBeConsumed() throws Exception {
         IOException expectedException = new IOException();
 
         when(closeableChannelWrapper.getChannel()).thenReturn(channel);
@@ -323,7 +323,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldFailToRunMassOperationWhenFunctionThrowsAnException() throws Exception {
+    void shouldFailToRunMassOperationWhenFunctionThrowsAnException() throws Exception {
         GetResponse getResponse = mock(GetResponse.class);
         MessageOperationFailedException expectedException = mock(MessageOperationFailedException.class);
 
@@ -349,7 +349,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldRouteFirstMessage() throws Exception {
+    void shouldRouteFirstMessage() throws Exception {
         GetResponse getResponse = mockDefaultGetResponse();
         RoutingDetails routingDetails = mockDefaultRoutingDetails();
         AMQP.BasicProperties mappedBasicProperties = mock(AMQP.BasicProperties.class);
@@ -369,7 +369,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldFailToRouteFirstMessageWhenReturnListenerWasTriggered() throws Exception {
+    void shouldFailToRouteFirstMessageWhenReturnListenerWasTriggered() throws Exception {
         GetResponse getResponse = mockDefaultGetResponse();
         RoutingDetails routingDetails = mockDefaultRoutingDetails();
         AMQP.BasicProperties mappedBasicProperties = mock(AMQP.BasicProperties.class);
@@ -402,7 +402,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldRouteAllMessage() throws Exception {
+    void shouldRouteAllMessage() throws Exception {
         GetResponse getResponse = mockDefaultGetResponse();
         RoutingDetails routingDetails = mockDefaultRoutingDetails();
         AMQP.BasicProperties mappedBasicProperties = mock(AMQP.BasicProperties.class);
@@ -423,7 +423,7 @@ public class MessageOperationExecutorTest {
     }
 
     @Test
-    public void shouldFailToRouteAllMessageWhenReturnListenerWasTriggered() throws Exception {
+    void shouldFailToRouteAllMessageWhenReturnListenerWasTriggered() throws Exception {
         GetResponse getResponse = mockDefaultGetResponse();
         RoutingDetails routingDetails = mockDefaultRoutingDetails();
         AMQP.BasicProperties mappedBasicProperties = mock(AMQP.BasicProperties.class);

@@ -7,17 +7,17 @@ import org.slf4j.Logger;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-public class StateKeepingReturnListenerFactoryTest {
+class StateKeepingReturnListenerFactoryTest {
 
     private StateKeepingReturnListenerFactory sut;
 
     @BeforeEach
-    public void init(){
+    void init(){
         sut = new StateKeepingReturnListenerFactory();
     }
 
     @Test
-    public void shouldCreateNewInsanceOfStateKeepingReturnListener(){
+    void shouldCreateNewInsanceOfStateKeepingReturnListener(){
         OperationId operationId = mock(OperationId.class);
         Logger logger = mock(Logger.class);
 

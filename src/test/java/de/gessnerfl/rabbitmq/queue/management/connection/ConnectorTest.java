@@ -19,7 +19,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class ConnectorTest {
+class ConnectorTest {
     private final static String VHOST = "vhost";
     
     @Mock
@@ -35,13 +35,13 @@ public class ConnectorTest {
     private Connector sut;
     
     @BeforeEach
-    public void init() throws Exception {
+    void init() throws Exception {
         when(connectionFactories.getOrCreate(VHOST)).thenReturn(connectionFactory);
         when(connectionFactory.newConnection()).thenReturn(connection);
     }
     
     @Test
-    public void shouldCreateNewConnectionIfNoConnectionWasInitializedYet() throws Exception {
+    void shouldCreateNewConnectionIfNoConnectionWasInitializedYet() throws Exception {
         when(connection.createChannel()).thenReturn(channel);
 
         Channel channel = sut.connect(VHOST);
@@ -53,7 +53,7 @@ public class ConnectorTest {
     }
     
     @Test
-    public void shouldReuseExistingConnectionIfConnectionIsNotClosed() throws Exception {
+    void shouldReuseExistingConnectionIfConnectionIsNotClosed() throws Exception {
         when(connection.createChannel()).thenReturn(channel);
         when(connection.isOpen()).thenReturn(true);
         
@@ -66,7 +66,7 @@ public class ConnectorTest {
     }
     
     @Test
-    public void shouldRecreateConnectionIfConnectionIsClosed() throws Exception {
+    void shouldRecreateConnectionIfConnectionIsClosed() throws Exception {
         when(connection.createChannel()).thenReturn(channel);
         when(connection.isOpen()).thenReturn(false);
         
@@ -79,7 +79,7 @@ public class ConnectorTest {
     }
     
     @Test
-    public void shouldRecreateConnectionIfConnectionIsNull() throws Exception {
+    void shouldRecreateConnectionIfConnectionIsNull() throws Exception {
         when(connection.createChannel()).thenReturn(channel);
         sut.connections.put(VHOST, null);
         
@@ -92,7 +92,7 @@ public class ConnectorTest {
     }
     
     @Test
-    public void shouldThrowExceptionWhenConnectionCannotBeEstablished() throws Exception {
+    void shouldThrowExceptionWhenConnectionCannotBeEstablished() throws Exception {
         assertThrows(ConnectionFailedException.class, () -> {
             when(connectionFactory.newConnection()).thenThrow(new IOException("foo"));
 
@@ -101,7 +101,7 @@ public class ConnectorTest {
     }
     
     @Test
-    public void shouldThrowExceptionWhenChannelCannotBeOpened() throws Exception {
+    void shouldThrowExceptionWhenChannelCannotBeOpened() throws Exception {
         assertThrows(ConnectionFailedException.class, () -> {
             when(connection.createChannel()).thenThrow(new IOException("foo"));
 

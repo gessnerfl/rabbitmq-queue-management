@@ -7,18 +7,18 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-public class JsonSerializerTest {
+class JsonSerializerTest {
     private final static String JSON = "{\"myString\":\"test\",\"myNumber\":123}";
 
     private JsonSerializer sut;
 
     @BeforeEach
-    public void init() {
+    void init() {
         sut = new JsonSerializer(new Gson());
     }
 
     @Test
-    public void shouldSerializeToJson() {
+    void shouldSerializeToJson() {
         Dummy dummy = new Dummy("test", 123);
 
         String result = sut.toJson(dummy);
@@ -27,7 +27,7 @@ public class JsonSerializerTest {
     }
 
     @Test
-    public void shouldDeserializeFromJson() {
+    void shouldDeserializeFromJson() {
         Dummy result = sut.fromJson(Dummy.class, JSON);
 
         assertEquals("test", result.myString);
@@ -38,7 +38,7 @@ public class JsonSerializerTest {
         final String myString;
         final int myNumber;
 
-        public Dummy(String myString, int myNumber) {
+        Dummy(String myString, int myNumber) {
             this.myString = myString;
             this.myNumber = myNumber;
         }

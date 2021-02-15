@@ -12,10 +12,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class StateKeepingReturnListenerTest {
+class StateKeepingReturnListenerTest {
 
     @Test
-    public void shouldSetStateToReceivedAndLogInfoWhenHandleReturnIsExecuted() throws Exception {
+    void shouldSetStateToReceivedAndLogInfoWhenHandleReturnIsExecuted() throws Exception {
         final Logger logger = mock(Logger.class);
         final OperationId operation = mock(OperationId.class);
         final int replyCode = 1;

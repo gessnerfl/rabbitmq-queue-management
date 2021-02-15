@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class MessageMapperTest {
+class MessageMapperTest {
     private final static byte[] DEFAULT_PAYLOAD = "defaultPayload".getBytes(StandardCharsets.UTF_8);
 
     @Mock
@@ -32,7 +32,7 @@ public class MessageMapperTest {
     private MessageMapper sut;
 
     @Test
-    public void shouldMapBasicMessageFields(){
+    void shouldMapBasicMessageFields(){
         String checksum = "checksum";
         Envelope envelope = mock(Envelope.class);
         AMQP.BasicProperties basicProperties = mock(AMQP.BasicProperties.class);
@@ -50,7 +50,7 @@ public class MessageMapperTest {
 
 
     @Test
-    public void shouldMapAmqpBasicProperties() {
+    void shouldMapAmqpBasicProperties() {
         String contentType = "contentType";
         String contentEncoding = "contentEncoding";
         String headerKey = "headerKey";
@@ -111,7 +111,7 @@ public class MessageMapperTest {
     }
 
     @Test
-    public void shouldMapRabbitMqSpecificTypesInAmqpBasicPropertiesHeaders() {
+    void shouldMapRabbitMqSpecificTypesInAmqpBasicPropertiesHeaders() {
         String headerKey = "headerKey";
         String headerValue = "headerValue";
         LongString longStringValue = mock(LongString.class);
@@ -135,7 +135,7 @@ public class MessageMapperTest {
     }
 
     @Test
-    public void shouldMapRabbitMqSpecificTypesInAmqpBasicPropertiesHeadersDeepInLists() {
+    void shouldMapRabbitMqSpecificTypesInAmqpBasicPropertiesHeadersDeepInLists() {
         String headerKey = "headerKey";
         String listValue = "listValue";
         List<String> list = Arrays.asList(listValue);
@@ -160,7 +160,7 @@ public class MessageMapperTest {
     }
 
     @Test
-    public void shouldMapRabbitMqSpecificTypesInAmqpBasicPropertiesHeadersDeepInMap() {
+    void shouldMapRabbitMqSpecificTypesInAmqpBasicPropertiesHeadersDeepInMap() {
         String headerKey = "headerKey";
         String subHeaderKey = "subHeaderKey";
         String subHeaderValue = "subHeaderValue";

@@ -16,7 +16,7 @@ import feign.Feign;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class ManagementApiConfigTest {
+class ManagementApiConfigTest {
 
     @Mock
     private ManagementApiUrlBuilder managementApiUrlBuilder;
@@ -27,7 +27,7 @@ public class ManagementApiConfigTest {
     private ManagementApiConfig sut;
 
     @Test
-    public void shouldCreateNewInstance() {
+    void shouldCreateNewInstance() {
         String url = "bar";
         when(managementApiUrlBuilder.buildForConfiguration()).thenReturn(url);
 

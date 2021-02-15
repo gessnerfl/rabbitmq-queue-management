@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class DeleteFirstMessageControllerTest {
+class DeleteFirstMessageControllerTest {
 
     @Mock
     private RabbitMqFacade facade;
@@ -25,7 +25,7 @@ public class DeleteFirstMessageControllerTest {
     private DeleteFirstMessageController sut;
 
     @Test
-    public void shouldReturnMainViewWithVhostAndQueueAndChecksumAsParameterOnGet(){
+    void shouldReturnMainViewWithVhostAndQueueAndChecksumAsParameterOnGet(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String checksum = "checksum";
@@ -42,7 +42,7 @@ public class DeleteFirstMessageControllerTest {
     }
 
     @Test
-    public void shouldDeleteFirstMessagesAndRedirectToMessagesPageWhenDeletionWasSuccessful(){
+    void shouldDeleteFirstMessagesAndRedirectToMessagesPageWhenDeletionWasSuccessful(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String checksum = "checksum";
@@ -61,7 +61,7 @@ public class DeleteFirstMessageControllerTest {
     }
 
     @Test
-    public void shouldTryToDeleteFirstMessagesAndStayOnDeleteFirstMessagePageWhenDeletionFailed(){
+    void shouldTryToDeleteFirstMessagesAndStayOnDeleteFirstMessagePageWhenDeletionFailed(){
         final String errorMessage = "error";
         final RuntimeException expectedException = new RuntimeException(errorMessage);
         final String vhost = "vhost";

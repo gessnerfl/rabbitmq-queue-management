@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class RequeueAllMessagesControllerTest {
+class RequeueAllMessagesControllerTest {
 
     @Mock
     private RabbitMqFacade facade;
@@ -28,7 +28,7 @@ public class RequeueAllMessagesControllerTest {
     private RequeueAllMessagesController sut;
 
     @Test
-    public void shouldReturnViewWithVhostAndQueueAndTargetExchangeAndTargetRoutingKeyAsParameterOnGet(){
+    void shouldReturnViewWithVhostAndQueueAndTargetExchangeAndTargetRoutingKeyAsParameterOnGet(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String targetExchange = "targetExchange";
@@ -59,7 +59,7 @@ public class RequeueAllMessagesControllerTest {
     }
 
     @Test
-    public void shouldReturnToMessagePageOnGetWhenNoMessagesAreAvailable(){
+    void shouldReturnToMessagePageOnGetWhenNoMessagesAreAvailable(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String targetExchange = "targetExchange";
@@ -81,7 +81,7 @@ public class RequeueAllMessagesControllerTest {
     }
 
     @Test
-    public void shouldReturnToMessagePageOnGetWhenFirstMessageDoesNotSupportRequeuing(){
+    void shouldReturnToMessagePageOnGetWhenFirstMessageDoesNotSupportRequeuing(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String targetExchange = "targetExchange";
@@ -105,7 +105,7 @@ public class RequeueAllMessagesControllerTest {
     }
 
     @Test
-    public void shouldRequeueAllMessagesAndRedirectToMessagesPageWhenRequeueWasSuccessful(){
+    void shouldRequeueAllMessagesAndRedirectToMessagesPageWhenRequeueWasSuccessful(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String targetExchange = "targetExchange";
@@ -125,7 +125,7 @@ public class RequeueAllMessagesControllerTest {
     }
 
     @Test
-    public void shouldTryToRequeueAllMessagesAndStayOnRequeueAllMessagePageWhenRequeueFailed(){
+    void shouldTryToRequeueAllMessagesAndStayOnRequeueAllMessagePageWhenRequeueFailed(){
         final String errorMessage = "error";
         final RuntimeException expectedException = new RuntimeException(errorMessage);
         final String vhost = "vhost";

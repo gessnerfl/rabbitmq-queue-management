@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class DeleteAllMessagesControllerTest {
+class DeleteAllMessagesControllerTest {
 
     @Mock
     private RabbitMqFacade facade;
@@ -25,7 +25,7 @@ public class DeleteAllMessagesControllerTest {
     private DeleteAllMessagesController sut;
 
     @Test
-    public void shouldReturnMainViewWithVhostAndQueueAsParameterOnGet(){
+    void shouldReturnMainViewWithVhostAndQueueAsParameterOnGet(){
         final String vhost = "vhost";
         final String queue = "queue";
         final Model model = mock(Model.class);
@@ -40,7 +40,7 @@ public class DeleteAllMessagesControllerTest {
     }
 
     @Test
-    public void shouldDeleteAllMessagesAndRedirectToMessagesPageWhenDeletionWasSuccessful(){
+    void shouldDeleteAllMessagesAndRedirectToMessagesPageWhenDeletionWasSuccessful(){
         final String vhost = "vhost";
         final String queue = "queue";
         final Model model = mock(Model.class);
@@ -58,7 +58,7 @@ public class DeleteAllMessagesControllerTest {
     }
 
     @Test
-    public void shouldTryToDeleteAllMessagesAndStayOnDeleteAllMessagePageWhenDeletionFailed(){
+    void shouldTryToDeleteAllMessagesAndStayOnDeleteAllMessagePageWhenDeletionFailed(){
         final String errorMessage = "error";
         final RuntimeException expectedException = new RuntimeException(errorMessage);
         final String vhost = "vhost";

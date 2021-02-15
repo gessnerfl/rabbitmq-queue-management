@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class MoveAllMessagesControllerTest {
+class MoveAllMessagesControllerTest {
 
     @Mock
     private RabbitMqFacade facade;
@@ -30,7 +30,7 @@ public class MoveAllMessagesControllerTest {
     private MoveAllMessagesController sut;
 
     @Test
-    public void shouldReturnViewWithVhostAndQueueAsParameterOnGet(){
+    void shouldReturnViewWithVhostAndQueueAsParameterOnGet(){
         final String vhost = "vhost";
         final String queue = "queue";
         final Model model = mock(Model.class);
@@ -52,7 +52,7 @@ public class MoveAllMessagesControllerTest {
     }
 
     @Test
-    public void shouldStayOnPageWhenTargetExchangeIsProvidedAndTargetRoutingKeyIsNotProvided(){
+    void shouldStayOnPageWhenTargetExchangeIsProvidedAndTargetRoutingKeyIsNotProvided(){
         final String routingKey1 = "routingKey1";
         final String routingKey2 = "routingKey2";
         final Binding binding1 = mock(Binding.class);
@@ -81,7 +81,7 @@ public class MoveAllMessagesControllerTest {
     }
 
     @Test
-    public void shouldMoveAllMessagesAndRedirectToMessagesPageWhenTargetExchangeAndRoutingKeyAreProvidedAndMoveWasSuccessful(){
+    void shouldMoveAllMessagesAndRedirectToMessagesPageWhenTargetExchangeAndRoutingKeyAreProvidedAndMoveWasSuccessful(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String targetExchange = "targetExchange";
@@ -101,7 +101,7 @@ public class MoveAllMessagesControllerTest {
     }
 
     @Test
-    public void shouldTryToMoveAllMessagesAndStayOnMoveAllMessagePageWhenTargetExchangeAndRoutingKeyAreProvidedAndMoveFailed(){
+    void shouldTryToMoveAllMessagesAndStayOnMoveAllMessagePageWhenTargetExchangeAndRoutingKeyAreProvidedAndMoveFailed(){
         final String errorMessage = "error";
         final RuntimeException expectedException = new RuntimeException(errorMessage);
         final String vhost = "vhost";

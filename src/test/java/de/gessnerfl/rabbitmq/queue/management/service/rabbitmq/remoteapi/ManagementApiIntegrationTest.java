@@ -21,7 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRabbitMqContainer {
+class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRabbitMqContainer {
 
     private final static String VHOST = "/";
     private final static String EXCHANGE_NAME = "test.direct";
@@ -42,7 +42,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRab
     private ManagementApi sut;
 
     @BeforeEach
-    public void init() {
+    void init() {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
                 .withExchange(DEAD_LETTER_EXCHANGE_NAME)
@@ -61,12 +61,12 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRab
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         testEnvironment.cleanup();
     }
 
     @Test
-    public void shouldGetAllExchanges() {
+    void shouldGetAllExchanges() {
         List<Exchange> exchanges = sut.getExchanges(VHOST);
 
         assertThat(exchanges, not(empty()));
@@ -91,7 +91,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRab
     }
 
     @Test
-    public void shouldGetAllQueues() {
+    void shouldGetAllQueues() {
         List<Queue> queues = sut.getQueues(VHOST);
 
         assertThat(queues, not(empty()));
@@ -131,7 +131,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRab
     }
 
     @Test
-    public void shouldGetBindingsOfExchanged() {
+    void shouldGetBindingsOfExchanged() {
         List<Binding> bindings = sut.getExchangeSourceBindings(VHOST, EXCHANGE_NAME);
 
         assertThat(bindings, hasSize(1));
@@ -145,7 +145,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRab
     }
 
     @Test
-    public void shouldGetBindingsOfQueue() {
+    void shouldGetBindingsOfQueue() {
         List<Binding> bindings = sut.getQueueBindings(VHOST, QUEUE_NAME);
 
         assertThat(bindings, hasSize(2));
@@ -168,7 +168,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRab
     }
 
     @Test
-    public void shouldPurgeQueueContent() {
+    void shouldPurgeQueueContent() {
         testEnvironment.publishMessage(EXCHANGE_NAME, ROUTING_KEY);
         testEnvironment.publishMessage(EXCHANGE_NAME, ROUTING_KEY);
 

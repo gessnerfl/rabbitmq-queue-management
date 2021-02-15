@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerIntegrationTest {
+class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private static final String VHOST_NAME = "/";
     private static final String EXCHANGE_NAME = "test.ex";
     private static final String QUEUE_1_NAME = "test1.controller.in";
@@ -35,7 +35,7 @@ public class RequeueFirstMessageControllerIntegrationTest extends AbstractContro
     private RabbitMqFacade facade;
 
     @BeforeEach
-    public void init() throws Exception {
+    void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
                 .withQueue(QUEUE_1_DLX_NAME)
@@ -55,12 +55,12 @@ public class RequeueFirstMessageControllerIntegrationTest extends AbstractContro
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         testEnvironment.cleanup();
     }
 
     @Test
-    public void shouldReturnPageOnGet() throws Exception {
+    void shouldReturnPageOnGet() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         //wait until message is dead lettered
@@ -83,7 +83,7 @@ public class RequeueFirstMessageControllerIntegrationTest extends AbstractContro
     }
 
     @Test
-    public void shouldReturnToMessagePageWhenNoMessagesAreAvailableOnQueue() throws Exception {
+    void shouldReturnToMessagePageWhenNoMessagesAreAvailableOnQueue() throws Exception {
         mockMvc.perform(get("/messages/requeue-first")
                     .param(Parameters.VHOST, VHOST_NAME)
                     .param(Parameters.QUEUE, QUEUE_1_NAME)
@@ -93,7 +93,7 @@ public class RequeueFirstMessageControllerIntegrationTest extends AbstractContro
     }
 
     @Test
-    public void shouldReturnToMessagePageWhenFirstMessageInQueueDoesNotSupportRequeuing() throws Exception {
+    void shouldReturnToMessagePageWhenFirstMessageInQueueDoesNotSupportRequeuing() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_2_NAME, 2);
         List<Message> initialMessages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_2_NAME, 10);
 
@@ -106,7 +106,7 @@ public class RequeueFirstMessageControllerIntegrationTest extends AbstractContro
     }
 
     @Test
-    public void shouldRequeueFirstMessageFromSourceToTargetQueueOnPostWhenTargetExchangeAndRoutingKeyAreProvidedOnPost() throws Exception {
+    void shouldRequeueFirstMessageFromSourceToTargetQueueOnPostWhenTargetExchangeAndRoutingKeyAreProvidedOnPost() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         //wait until message is dead lettered
@@ -130,7 +130,7 @@ public class RequeueFirstMessageControllerIntegrationTest extends AbstractContro
     }
 
     @Test
-    public void shouldFailToRequeueFirstMessageWhenFirstMessageWasAlreadyProcessedInParallel() throws Exception {
+    void shouldFailToRequeueFirstMessageWhenFirstMessageWasAlreadyProcessedInParallel() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         //wait until message is dead lettered

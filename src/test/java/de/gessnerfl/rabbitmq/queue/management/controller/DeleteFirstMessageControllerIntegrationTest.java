@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class DeleteFirstMessageControllerIntegrationTest extends AbstractControllerIntegrationTest {
+class DeleteFirstMessageControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private static final String VHOST_NAME = "/";
     private static final String EXCHANGE_NAME = "test.ex";
     private static final String QUEUE_NAME = "test.controller.in";
@@ -31,7 +31,7 @@ public class DeleteFirstMessageControllerIntegrationTest extends AbstractControl
     private RabbitMqFacade facade;
 
     @BeforeEach
-    public void init() throws Exception {
+    void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
                 .withQueue(QUEUE_NAME)
@@ -42,12 +42,12 @@ public class DeleteFirstMessageControllerIntegrationTest extends AbstractControl
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         testEnvironment.cleanup();
     }
 
     @Test
-    public void shouldReturnPageOnGet() throws Exception {
+    void shouldReturnPageOnGet() throws Exception {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_NAME);
         List<Message> initialMessageList = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_NAME, 10);
 
@@ -63,7 +63,7 @@ public class DeleteFirstMessageControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void shouldDeleteFirstMessageInQueueOnPost() throws Exception {
+    void shouldDeleteFirstMessageInQueueOnPost() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_NAME, 2);
         List<Message> initialMessageList = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_NAME, 10);
 
@@ -80,7 +80,7 @@ public class DeleteFirstMessageControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void shouldFailToDeleteFirstMessageInQueueWhenMessageWasAlreadyProcessedInParallel() throws Exception {
+    void shouldFailToDeleteFirstMessageInQueueWhenMessageWasAlreadyProcessedInParallel() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_NAME, 2);
         List<Message> initialMessageList = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_NAME, 10);
 

@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class MoveFirstMessagesControllerTest {
+class MoveFirstMessagesControllerTest {
 
     @Mock
     private RabbitMqFacade facade;
@@ -30,7 +30,7 @@ public class MoveFirstMessagesControllerTest {
     private MoveFirstMessageController sut;
 
     @Test
-    public void shouldReturnViewWithVhostAndQueueAndChecksumAsParameterOnGet(){
+    void shouldReturnViewWithVhostAndQueueAndChecksumAsParameterOnGet(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String checksum = "checksum";
@@ -54,7 +54,7 @@ public class MoveFirstMessagesControllerTest {
     }
 
     @Test
-    public void shouldStayOnPageWhenTargetExchangeIsProvidedAndTargetRoutingKeyIsNotProvided(){
+    void shouldStayOnPageWhenTargetExchangeIsProvidedAndTargetRoutingKeyIsNotProvided(){
         final String routingKey1 = "routingKey1";
         final String routingKey2 = "routingKey2";
         final Binding binding1 = mock(Binding.class);
@@ -85,7 +85,7 @@ public class MoveFirstMessagesControllerTest {
     }
 
     @Test
-    public void shouldMoveFirstMessagesAndRedirectToMessagesPageWhenTargetExchangeAndRoutingKeyAreProvidedAndMoveWasSuccessful(){
+    void shouldMoveFirstMessagesAndRedirectToMessagesPageWhenTargetExchangeAndRoutingKeyAreProvidedAndMoveWasSuccessful(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String checksum = "checksum";
@@ -106,7 +106,7 @@ public class MoveFirstMessagesControllerTest {
     }
 
     @Test
-    public void shouldTryToMoveFirstMessagesAndStayOnMoveAllMessagePageWhenTargetExchangeAndRoutingKeyAreProvidedAndMoveFailed(){
+    void shouldTryToMoveFirstMessagesAndStayOnMoveAllMessagePageWhenTargetExchangeAndRoutingKeyAreProvidedAndMoveFailed(){
         final String errorMessage = "error";
         final RuntimeException expectedException = new RuntimeException(errorMessage);
         final String routingKey1 = "routingKey1";

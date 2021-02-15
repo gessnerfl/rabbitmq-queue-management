@@ -7,17 +7,17 @@ import static de.gessnerfl.rabbitmq.queue.management.hamcrest.CustomMatchers.mat
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class OperationIdGeneratorTest {
+class OperationIdGeneratorTest {
 
     private OperationIdGenerator sut;
 
     @BeforeEach
-    public void init(){
+    void init(){
         sut = new OperationIdGenerator();
     }
 
     @Test
-    public void shouldGenerateNewImmutableOperationIds(){
+    void shouldGenerateNewImmutableOperationIds(){
         OperationId operationId1 = sut.generate();
         OperationId operationId2 = sut.generate();
 

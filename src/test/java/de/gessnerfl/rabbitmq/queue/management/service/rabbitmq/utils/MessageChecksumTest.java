@@ -24,7 +24,7 @@ import de.gessnerfl.rabbitmq.queue.management.service.json.JsonSerializer;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class MessageChecksumTest {
+class MessageChecksumTest {
 
   @Mock
   private JsonSerializer jsonSerializer;
@@ -34,7 +34,7 @@ public class MessageChecksumTest {
   
   @SuppressWarnings("rawtypes")
   @Test
-  public void shouldCalculateChecksumFromJsonString(){
+  void shouldCalculateChecksumFromJsonString(){
     final String expectedChecksum = "ca2e3c1843f0125ffa523e372cf16a1919c2e83b52130719c98a19ebf450fb9d";
     final String json = "{ \"foo\": \"bar\" }";
     when(jsonSerializer.toJson(anyMap())).thenReturn(json);

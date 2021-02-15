@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class MessageControllerTest {
+class MessageControllerTest {
 
     @Mock
     private RabbitMqFacade facade;
@@ -25,7 +25,7 @@ public class MessageControllerTest {
     private MessageController sut;
 
     @Test
-    public void shouldReturnViewWithMessagesProvidedInModel(){
+    void shouldReturnViewWithMessagesProvidedInModel(){
         final String vhost = "vhost";
         final String queue = "queue";
         final Model model = mock(Model.class);

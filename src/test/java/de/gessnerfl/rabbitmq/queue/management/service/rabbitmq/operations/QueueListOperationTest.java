@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class QueueListOperationTest {
+class QueueListOperationTest {
     private final static String DEFAULT_VHOST_NAME = "defaultVhost";
     private final static String DEFAULT_QUEUE_NAME = "defaultQueue";
     private final static int DEFAULT_MAX_NO_OF_MESSAGES = 3;
@@ -44,13 +44,13 @@ public class QueueListOperationTest {
     private QueueListOperation sut;
 
     @BeforeEach
-    public void init() {
+    void init() {
         when(connector.connectAsClosable(DEFAULT_VHOST_NAME)).thenReturn(closeableChannelWrapper);
         when(DEFAULT_ENVELOPE.getDeliveryTag()).thenReturn(DEFAULT_DELIVERY_TAG);
     }
 
     @Test
-    public void shouldReturnMessageFromQueueWhenMaxNumberOfRequestedMessagesIsEqualToTheNumberOfAvailableMessages() throws Exception {
+    void shouldReturnMessageFromQueueWhenMaxNumberOfRequestedMessagesIsEqualToTheNumberOfAvailableMessages() throws Exception {
         GetResponse getResponse1 = mockDefaultGetResponse(2);
         GetResponse getResponse2 = mockDefaultGetResponse(1);
         GetResponse getResponse3 = mockDefaultGetResponse(0);
@@ -68,7 +68,7 @@ public class QueueListOperationTest {
     }
 
     @Test
-    public void shouldReturnEmptyListIfNoMessagesAreAvailable() throws Exception {
+    void shouldReturnEmptyListIfNoMessagesAreAvailable() throws Exception {
         when(closeableChannelWrapper.getChannel()).thenReturn(channel);
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(null);
 
@@ -80,7 +80,7 @@ public class QueueListOperationTest {
     }
 
     @Test
-    public void shouldReturnMessageFromQueueWhenMaxNumberOfRequestedMessagesIsLessThanTheNumberOfAvailableMessages() throws Exception {
+    void shouldReturnMessageFromQueueWhenMaxNumberOfRequestedMessagesIsLessThanTheNumberOfAvailableMessages() throws Exception {
         GetResponse getResponse1 = mockDefaultGetResponse(3);
         GetResponse getResponse2 = mockDefaultGetResponse(2);
         GetResponse getResponse3 = mockDefaultGetResponse(1);
@@ -99,7 +99,7 @@ public class QueueListOperationTest {
     }
 
     @Test
-    public void shouldReturnMessageFromQueueWhenMaxNumberOfRequestedMessagesIsGreaterThanTheNumberOfAvailableMessages() throws Exception {
+    void shouldReturnMessageFromQueueWhenMaxNumberOfRequestedMessagesIsGreaterThanTheNumberOfAvailableMessages() throws Exception {
         GetResponse getResponse1 = mockDefaultGetResponse(1);
         GetResponse getResponse2 = mockDefaultGetResponse(0);
 
@@ -116,7 +116,7 @@ public class QueueListOperationTest {
     }
 
     @Test
-    public void shouldSendSingleNackWhenDataIsRetrievedIndependentFromTheNumberOfGetRequests() throws Exception {
+    void shouldSendSingleNackWhenDataIsRetrievedIndependentFromTheNumberOfGetRequests() throws Exception {
         GetResponse getResponse1 = mockDefaultGetResponse(2);
         GetResponse getResponse2 = mockDefaultGetResponse(1);
         GetResponse getResponse3 = mockDefaultGetResponse(0);
@@ -132,7 +132,7 @@ public class QueueListOperationTest {
     }
 
     @Test
-    public void shouldThrowExcpetionWhenConnectionCannotBeEstablished() throws Exception {
+    void shouldThrowExcpetionWhenConnectionCannotBeEstablished() throws Exception {
         ConnectionFailedException expectedException = new ConnectionFailedException(null);
         when(connector.connectAsClosable(DEFAULT_VHOST_NAME)).thenThrow(expectedException);
 
@@ -144,7 +144,7 @@ public class QueueListOperationTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenDataCannotBeFetched() throws Exception {
+    void shouldThrowExceptionWhenDataCannotBeFetched() throws Exception {
         IOException expectedException = new IOException();
 
 
@@ -163,7 +163,7 @@ public class QueueListOperationTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenNackCannotBeSent() throws Exception {
+    void shouldThrowExceptionWhenNackCannotBeSent() throws Exception {
         GetResponse getResponse1 = mockDefaultGetResponse(0);
         IOException expectedException = new IOException();
 

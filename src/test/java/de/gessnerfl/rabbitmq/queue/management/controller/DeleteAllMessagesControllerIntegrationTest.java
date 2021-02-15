@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class DeleteAllMessagesControllerIntegrationTest extends AbstractControllerIntegrationTest {
+class DeleteAllMessagesControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private static final String VHOST_NAME = "/";
     private static final String EXCHANGE_NAME = "test.ex";
     private static final String QUEUE_NAME = "test.controller.in";
@@ -28,7 +28,7 @@ public class DeleteAllMessagesControllerIntegrationTest extends AbstractControll
     private RabbitMqFacade facade;
 
     @BeforeEach
-    public void init() throws Exception {
+    void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
                 .withQueue(QUEUE_NAME)
@@ -39,12 +39,12 @@ public class DeleteAllMessagesControllerIntegrationTest extends AbstractControll
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         testEnvironment.cleanup();
     }
 
     @Test
-    public void shouldReturnPageOnGet() throws Exception {
+    void shouldReturnPageOnGet() throws Exception {
         mockMvc.perform(get("/messages/delete-all").param(Parameters.VHOST, VHOST_NAME).param(Parameters.QUEUE, QUEUE_NAME))
                 .andExpect(status().isOk())
                 .andExpect(view().name(DeleteAllMessagesController.VIEW_NAME))
@@ -53,7 +53,7 @@ public class DeleteAllMessagesControllerIntegrationTest extends AbstractControll
     }
 
     @Test
-    public void shouldPurgeQueueOnPost() throws Exception {
+    void shouldPurgeQueueOnPost() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_NAME, 2);
 
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_NAME, 10), hasSize(2));

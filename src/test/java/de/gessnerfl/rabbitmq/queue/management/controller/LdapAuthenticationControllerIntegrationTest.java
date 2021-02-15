@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integrationtestldap")
 @ContextConfiguration(initializers = { LdapAuthenticationControllerIntegrationTest.Initializer.class } )
-public class LdapAuthenticationControllerIntegrationTest {
+class LdapAuthenticationControllerIntegrationTest {
 
     private static int randomLdapPort = SocketUtils.findAvailableTcpPort(49152, 65535);
     private MockMvc mockMvc;
@@ -48,19 +48,19 @@ public class LdapAuthenticationControllerIntegrationTest {
     }
 
     @BeforeEach
-    public void init(){
+    void init(){
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).addFilter(springSecurityFilterChain).build();
     }
 
     @Test
-    public void shouldRedirectToLoginWhenUserIsNotLoggedIn() throws Exception {
+    void shouldRedirectToLoginWhenUserIsNotLoggedIn() throws Exception {
         mockMvc.perform(get("/index"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("http://localhost/login"));
     }
 
     @Test
-    public void shouldSuccessfullyLoginUserAndRedirectToIndexAndRedirectToLoginPageAfterSuccessfulLogout() throws Exception {
+    void shouldSuccessfullyLoginUserAndRedirectToIndexAndRedirectToLoginPageAfterSuccessfulLogout() throws Exception {
         mockMvc.perform(post("/login")
                 .param("username", "tester")
                 .param("password", "tester"))
@@ -75,7 +75,7 @@ public class LdapAuthenticationControllerIntegrationTest {
     }
 
     @Test
-    public void shouldFailToLoginWhenUserCredentialsAreNotValid() throws Exception {
+    void shouldFailToLoginWhenUserCredentialsAreNotValid() throws Exception {
         mockMvc.perform(post("/login")
                 .param("username", "tester")
                 .param("password", "invalid"))

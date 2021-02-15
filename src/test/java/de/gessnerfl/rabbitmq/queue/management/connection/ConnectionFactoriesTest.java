@@ -14,7 +14,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class ConnectionFactoriesTest {
+class ConnectionFactoriesTest {
     
     private final static String VHOST = "vhost";
     private final static String HOSTNAME = "host";
@@ -29,7 +29,7 @@ public class ConnectionFactoriesTest {
     private ConnectionFactories sut;
     
     @BeforeEach
-    public void init(){
+    void init(){
         when(rabbitMqConfig.getHostname()).thenReturn(HOSTNAME);
         when(rabbitMqConfig.getPort()).thenReturn(PORT);
         when(rabbitMqConfig.getUsername()).thenReturn(USERNAME);
@@ -37,7 +37,7 @@ public class ConnectionFactoriesTest {
     }
 
     @Test
-    public void shouldReturnNewConnectionFactoryIfNotInitialized(){
+    void shouldReturnNewConnectionFactoryIfNotInitialized(){
         ConnectionFactory connectionFactory = sut.getOrCreate(VHOST);
         
         assertNotNull(connectionFactory);
@@ -49,7 +49,7 @@ public class ConnectionFactoriesTest {
     }
     
     @Test
-    public void shouldCreateConnectionFactoryOnlyOnce(){
+    void shouldCreateConnectionFactoryOnlyOnce(){
         sut.getOrCreate(VHOST);
 
         ConnectionFactory connectionFactory = sut.getOrCreate(VHOST);

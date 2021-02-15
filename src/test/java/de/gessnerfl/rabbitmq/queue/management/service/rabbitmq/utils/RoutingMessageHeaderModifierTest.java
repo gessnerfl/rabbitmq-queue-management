@@ -10,19 +10,19 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RoutingMessageHeaderModifierTest {
+class RoutingMessageHeaderModifierTest {
 
     private static final String TEST_COUNTER = "x-test-counter";
     private static final OperationId OPERATION_ID = new OperationId();
     private RoutingMessageHeaderModifier sut;
 
     @BeforeEach
-    public void init(){
+    void init(){
         sut = new RoutingMessageHeaderModifier();
     }
 
     @Test
-    public void shouldSetOperationIdAndIncrementCounterHeaderWhenNoHeadersAreDefined(){
+    void shouldSetOperationIdAndIncrementCounterHeaderWhenNoHeadersAreDefined(){
         AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().contentType("text/plain").build();
 
         AMQP.BasicProperties result = sut.modifyHeaders(properties, OPERATION_ID, TEST_COUNTER);
@@ -33,7 +33,7 @@ public class RoutingMessageHeaderModifierTest {
     }
 
     @Test
-    public void shouldSetOperationIdAndIncrementCounterHeaderWhenHeadersIsDefinedAndCountHeaderIsNotSet(){
+    void shouldSetOperationIdAndIncrementCounterHeaderWhenHeadersIsDefinedAndCountHeaderIsNotSet(){
         Map<String,Object> headers = new HashMap<>();
         headers.put("foo", "bar");
         AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().contentType("text/plain").headers(headers).build();
@@ -46,7 +46,7 @@ public class RoutingMessageHeaderModifierTest {
     }
 
     @Test
-    public void shouldSetOperationIdAndIncrementCounterHeaderWhenHeadersIsDefinedAndCountHeaderIsSet(){
+    void shouldSetOperationIdAndIncrementCounterHeaderWhenHeadersIsDefinedAndCountHeaderIsSet(){
         int initialValue = 2;
         Map<String,Object> headers = new HashMap<>();
         headers.put(TEST_COUNTER, initialValue);
@@ -60,7 +60,7 @@ public class RoutingMessageHeaderModifierTest {
     }
 
     @Test
-    public void shouldSetOperationIdAndIncrementCounterHeaderWhenHeadersIsDefinedAndOperationIdHeaderIsSet(){
+    void shouldSetOperationIdAndIncrementCounterHeaderWhenHeadersIsDefinedAndOperationIdHeaderIsSet(){
         String initialValue = "initialOperationId";
         Map<String,Object> headers = new HashMap<>();
         headers.put(OperationId.HEADER_NAME, initialValue);

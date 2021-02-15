@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class RequeueAllMessagesControllerIntegrationTest extends AbstractControllerIntegrationTest {
+class RequeueAllMessagesControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private static final String VHOST_NAME = "/";
     private static final String EXCHANGE_NAME = "test.ex";
     private static final String QUEUE_1_NAME = "test1.controller.in";
@@ -34,7 +34,7 @@ public class RequeueAllMessagesControllerIntegrationTest extends AbstractControl
     private RabbitMqFacade facade;
 
     @BeforeEach
-    public void init() throws Exception {
+    void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
                 .withQueue(QUEUE_1_DLX_NAME)
@@ -54,12 +54,12 @@ public class RequeueAllMessagesControllerIntegrationTest extends AbstractControl
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         testEnvironment.cleanup();
     }
 
     @Test
-    public void shouldReturnPageOnGet() throws Exception {
+    void shouldReturnPageOnGet() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         //wait until message is dead lettered
@@ -79,7 +79,7 @@ public class RequeueAllMessagesControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void shouldReturnToMessagePageWhenNoMessagesAreAvailableOnQueue() throws Exception {
+    void shouldReturnToMessagePageWhenNoMessagesAreAvailableOnQueue() throws Exception {
         mockMvc.perform(get("/messages/requeue-all")
                     .param(Parameters.VHOST, VHOST_NAME)
                     .param(Parameters.QUEUE, QUEUE_1_NAME))
@@ -88,7 +88,7 @@ public class RequeueAllMessagesControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void shouldReturnToMessagePageWhenFirstMessageInQueueDoesNotSupportRequeuing() throws Exception {
+    void shouldReturnToMessagePageWhenFirstMessageInQueueDoesNotSupportRequeuing() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_2_NAME, 2);
 
         mockMvc.perform(get("/messages/requeue-all")
@@ -99,7 +99,7 @@ public class RequeueAllMessagesControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void shouldRequeueAllMessagesFromSourceToTargetQueueOnPostWhenTargetExchangeAndRoutingKeyAreProvidedOnPost() throws Exception {
+    void shouldRequeueAllMessagesFromSourceToTargetQueueOnPostWhenTargetExchangeAndRoutingKeyAreProvidedOnPost() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         //wait until message is dead lettered

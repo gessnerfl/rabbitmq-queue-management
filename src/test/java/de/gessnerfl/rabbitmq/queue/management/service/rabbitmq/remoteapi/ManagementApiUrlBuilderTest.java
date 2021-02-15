@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class ManagementApiUrlBuilderTest {
+class ManagementApiUrlBuilderTest {
 
     @Mock
     private RabbitMqConfig rabbitMqConfig;
@@ -21,20 +21,20 @@ public class ManagementApiUrlBuilderTest {
     private ManagementApiUrlBuilder sut;
 
     @BeforeEach
-    public void init() {
+    void init() {
         when(rabbitMqConfig.getHostname()).thenReturn("localhost");
         when(rabbitMqConfig.getManagementPort()).thenReturn(15672);
     }
 
     @Test
-    public void shouldReturnHttpUrlWhenManagmentApiIsNotSecured() {
+    void shouldReturnHttpUrlWhenManagmentApiIsNotSecured() {
         when(rabbitMqConfig.isManagemnetPortSecured()).thenReturn(false);
 
         assertEquals("http://localhost:15672/api", sut.buildForConfiguration());
     }
 
     @Test
-    public void shouldReturnHttpsUrlWhenManagementApiIsSecured() {
+    void shouldReturnHttpsUrlWhenManagementApiIsSecured() {
         when(rabbitMqConfig.isManagemnetPortSecured()).thenReturn(true);
 
         assertEquals("https://localhost:15672/api", sut.buildForConfiguration());

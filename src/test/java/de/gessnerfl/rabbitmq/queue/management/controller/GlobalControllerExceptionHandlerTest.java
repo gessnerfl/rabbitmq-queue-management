@@ -8,17 +8,17 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GlobalControllerExceptionHandlerTest {
+class GlobalControllerExceptionHandlerTest {
 
     private GlobalControllerExceptionHandler sut;
 
     @BeforeEach
-    public void init(){
+    void init(){
         sut = new GlobalControllerExceptionHandler();
     }
 
     @Test
-    public void shouldMapExceptionToErrorMessage(){
+    void shouldMapExceptionToErrorMessage(){
         String message = "error message";
         Exception e = new Exception(message);
 

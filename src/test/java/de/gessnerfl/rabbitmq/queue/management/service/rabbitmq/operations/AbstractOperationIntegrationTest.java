@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class AbstractOperationIntegrationTest extends AbstractIntegrationTestWithRabbitMqContainer {
+abstract class AbstractOperationIntegrationTest extends AbstractIntegrationTestWithRabbitMqContainer {
     protected final static String EXCHANGE_NAME = "test.direct";
     protected final static String QUEUE_NAME = "test.queue";
 
@@ -24,12 +24,12 @@ public abstract class AbstractOperationIntegrationTest extends AbstractIntegrati
     private RabbitMqTestEnvironmentBuilderFactory testEnvironmentBuilderFactor;
     protected RabbitMqTestEnvironment testEnvironment;
 
-    public AbstractOperationIntegrationTest() {
+    AbstractOperationIntegrationTest() {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @BeforeEach
-    public void init() throws Exception {
+    void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         builder = builder.withExchange(EXCHANGE_NAME);
         for(String queueName : getQueueNames()){
@@ -40,7 +40,7 @@ public abstract class AbstractOperationIntegrationTest extends AbstractIntegrati
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         testEnvironment.cleanup();
     }
 

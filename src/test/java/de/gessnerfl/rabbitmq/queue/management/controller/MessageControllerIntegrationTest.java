@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
-public class MessageControllerIntegrationTest extends AbstractControllerIntegrationTest {
+class MessageControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private static final String VHOST_NAME = "/";
     private static final String EXCHANGE_NAME = "test.ex";
     private static final String QUEUE_NAME = "test.controller.in";
@@ -28,7 +28,7 @@ public class MessageControllerIntegrationTest extends AbstractControllerIntegrat
     private RabbitMqFacade facade;
 
     @BeforeEach
-    public void init() throws Exception {
+    void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
                 .withQueue(QUEUE_NAME)
@@ -39,12 +39,12 @@ public class MessageControllerIntegrationTest extends AbstractControllerIntegrat
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         testEnvironment.cleanup();
     }
 
     @Test
-    public void shouldReturnViewWhenNoMessagesAreAvailable() throws Exception {
+    void shouldReturnViewWhenNoMessagesAreAvailable() throws Exception {
         mockMvc.perform(get("/messages")
                     .param(Parameters.VHOST, VHOST_NAME)
                     .param(Parameters.QUEUE, QUEUE_NAME))
@@ -57,7 +57,7 @@ public class MessageControllerIntegrationTest extends AbstractControllerIntegrat
     }
 
     @Test
-    public void shouldReturnViewWhenMessagesAreAvailable() throws Exception {
+    void shouldReturnViewWhenMessagesAreAvailable() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_NAME, 2);
 
         mockMvc.perform(get("/messages")

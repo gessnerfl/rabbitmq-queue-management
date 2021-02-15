@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 
-public class MessageDeleteOperationIntegrationTest extends AbstractOperationIntegrationTest {
+class MessageDeleteOperationIntegrationTest extends AbstractOperationIntegrationTest {
     @Autowired
     private QueueListOperation queueListOperation;
     
@@ -21,7 +21,7 @@ public class MessageDeleteOperationIntegrationTest extends AbstractOperationInte
     private MessageDeleteOperation sut;
     
     @Test
-    public void shouldDeleteFirstMessageInQueue() throws Exception {
+    void shouldDeleteFirstMessageInQueue() throws Exception {
         publishMessages(2);
         
         List<Message> firstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 2);
@@ -37,7 +37,7 @@ public class MessageDeleteOperationIntegrationTest extends AbstractOperationInte
     }
     
     @Test
-    public void shouldFailToDeleteFirstMessageInQueueWhenChecksumDoesNotMacht() throws Exception {
+    void shouldFailToDeleteFirstMessageInQueueWhenChecksumDoesNotMacht() throws Exception {
         publishMessages(2);
         
         List<Message> firstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 2);
@@ -58,7 +58,7 @@ public class MessageDeleteOperationIntegrationTest extends AbstractOperationInte
     }
 
     @Test
-    public void shouldFailToDeleteMessageIfMessageWasAlreadyDeletedOrNoMessageExists(){
+    void shouldFailToDeleteMessageIfMessageWasAlreadyDeletedOrNoMessageExists(){
         assertThrows(MessageOperationFailedException.class, () -> {
             List<Message> firstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 2);
             assertThat(firstFetch, empty());
