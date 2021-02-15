@@ -1,18 +1,18 @@
 package de.gessnerfl.rabbitmq.queue.management.controller;
 
 import de.gessnerfl.rabbitmq.queue.management.model.ErrorResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GlobalControllerExceptionHandlerTest {
 
     private GlobalControllerExceptionHandler sut;
 
-    @Before
+    @BeforeEach
     public void init(){
         sut = new GlobalControllerExceptionHandler();
     }

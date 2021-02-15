@@ -3,10 +3,10 @@ package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.MessageProperties;
 import org.apache.commons.codec.Charsets;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;

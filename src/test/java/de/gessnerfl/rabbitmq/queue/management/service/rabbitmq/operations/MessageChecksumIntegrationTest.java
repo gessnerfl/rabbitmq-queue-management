@@ -1,10 +1,10 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rabbitmq.client.AMQP.BasicProperties;

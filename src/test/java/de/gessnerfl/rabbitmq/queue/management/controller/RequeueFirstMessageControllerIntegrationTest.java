@@ -5,17 +5,16 @@ import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,7 +34,7 @@ public class RequeueFirstMessageControllerIntegrationTest extends AbstractContro
     @Autowired
     private RabbitMqFacade facade;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
@@ -55,7 +54,7 @@ public class RequeueFirstMessageControllerIntegrationTest extends AbstractContro
         testEnvironment.setup();
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         testEnvironment.cleanup();
     }

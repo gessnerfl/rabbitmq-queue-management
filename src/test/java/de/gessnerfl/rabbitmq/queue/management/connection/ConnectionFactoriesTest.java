@@ -1,19 +1,19 @@
 package de.gessnerfl.rabbitmq.queue.management.connection;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.config.RabbitMqConfig;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import com.rabbitmq.client.ConnectionFactory;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ConnectionFactoriesTest {
     
     private final static String VHOST = "vhost";
@@ -28,7 +28,7 @@ public class ConnectionFactoriesTest {
     @InjectMocks
     private ConnectionFactories sut;
     
-    @Before
+    @BeforeEach
     public void init(){
         when(rabbitMqConfig.getHostname()).thenReturn(HOSTNAME);
         when(rabbitMqConfig.getPort()).thenReturn(PORT);

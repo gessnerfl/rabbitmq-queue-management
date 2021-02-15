@@ -7,20 +7,21 @@ import de.gessnerfl.rabbitmq.queue.management.connection.Connector;
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.utils.MessageMapper;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class QueueListOperationTest {
     private final static String DEFAULT_VHOST_NAME = "defaultVhost";
     private final static String DEFAULT_QUEUE_NAME = "defaultQueue";
@@ -42,12 +43,10 @@ public class QueueListOperationTest {
     @InjectMocks
     private QueueListOperation sut;
 
-    @Before
+    @BeforeEach
     public void init() {
-        when(closeableChannelWrapper.getChannel()).thenReturn(channel);
         when(connector.connectAsClosable(DEFAULT_VHOST_NAME)).thenReturn(closeableChannelWrapper);
         when(DEFAULT_ENVELOPE.getDeliveryTag()).thenReturn(DEFAULT_DELIVERY_TAG);
-        when(messageMapper.map(any(GetResponse.class))).thenReturn(DEFAULT_MESSAGE);
     }
 
     @Test
@@ -55,7 +54,11 @@ public class QueueListOperationTest {
         GetResponse getResponse1 = mockDefaultGetResponse(2);
         GetResponse getResponse2 = mockDefaultGetResponse(1);
         GetResponse getResponse3 = mockDefaultGetResponse(0);
+
+
+        when(closeableChannelWrapper.getChannel()).thenReturn(channel);
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse1, getResponse2, getResponse3);
+        when(messageMapper.map(any(GetResponse.class))).thenReturn(DEFAULT_MESSAGE);
 
         List<Message> messages = sut.getMessagesFromQueue(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
 
@@ -66,6 +69,7 @@ public class QueueListOperationTest {
 
     @Test
     public void shouldReturnEmptyListIfNoMessagesAreAvailable() throws Exception {
+        when(closeableChannelWrapper.getChannel()).thenReturn(channel);
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(null);
 
         List<Message> messages = sut.getMessagesFromQueue(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
@@ -80,8 +84,12 @@ public class QueueListOperationTest {
         GetResponse getResponse1 = mockDefaultGetResponse(3);
         GetResponse getResponse2 = mockDefaultGetResponse(2);
         GetResponse getResponse3 = mockDefaultGetResponse(1);
-        GetResponse getResponse4 = mockDefaultGetResponse(0);
+        GetResponse getResponse4 = mock(GetResponse.class);
+
+
+        when(closeableChannelWrapper.getChannel()).thenReturn(channel);
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse1, getResponse2, getResponse3, getResponse4);
+        when(messageMapper.map(any(GetResponse.class))).thenReturn(DEFAULT_MESSAGE);
 
         List<Message> messages = sut.getMessagesFromQueue(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
 
@@ -94,7 +102,11 @@ public class QueueListOperationTest {
     public void shouldReturnMessageFromQueueWhenMaxNumberOfRequestedMessagesIsGreaterThanTheNumberOfAvailableMessages() throws Exception {
         GetResponse getResponse1 = mockDefaultGetResponse(1);
         GetResponse getResponse2 = mockDefaultGetResponse(0);
+
+
+        when(closeableChannelWrapper.getChannel()).thenReturn(channel);
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse1, getResponse2);
+        when(messageMapper.map(any(GetResponse.class))).thenReturn(DEFAULT_MESSAGE);
 
         List<Message> messages = sut.getMessagesFromQueue(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
 
@@ -108,7 +120,11 @@ public class QueueListOperationTest {
         GetResponse getResponse1 = mockDefaultGetResponse(2);
         GetResponse getResponse2 = mockDefaultGetResponse(1);
         GetResponse getResponse3 = mockDefaultGetResponse(0);
+
+
+        when(closeableChannelWrapper.getChannel()).thenReturn(channel);
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse1, getResponse2, getResponse3);
+        when(messageMapper.map(any(GetResponse.class))).thenReturn(DEFAULT_MESSAGE);
 
         sut.getMessagesFromQueue(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);
 
@@ -130,6 +146,9 @@ public class QueueListOperationTest {
     @Test
     public void shouldThrowExceptionWhenDataCannotBeFetched() throws Exception {
         IOException expectedException = new IOException();
+
+
+        when(closeableChannelWrapper.getChannel()).thenReturn(channel);
         when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenThrow(expectedException);
 
         try {
@@ -146,9 +165,12 @@ public class QueueListOperationTest {
     @Test
     public void shouldThrowExceptionWhenNackCannotBeSent() throws Exception {
         GetResponse getResponse1 = mockDefaultGetResponse(0);
-        when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse1);
         IOException expectedException = new IOException();
+
+        when(closeableChannelWrapper.getChannel()).thenReturn(channel);
+        when(channel.basicGet(DEFAULT_QUEUE_NAME, false)).thenReturn(getResponse1);
         doThrow(expectedException).when(channel).basicNack(DEFAULT_DELIVERY_TAG, true, true);
+        when(messageMapper.map(any(GetResponse.class))).thenReturn(DEFAULT_MESSAGE);
 
         try {
             sut.getMessagesFromQueue(DEFAULT_VHOST_NAME, DEFAULT_QUEUE_NAME, DEFAULT_MAX_NO_OF_MESSAGES);

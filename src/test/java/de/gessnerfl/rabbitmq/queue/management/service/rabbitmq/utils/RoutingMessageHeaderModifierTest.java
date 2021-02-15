@@ -2,14 +2,13 @@ package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.utils;
 
 import com.rabbitmq.client.AMQP;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.OperationId;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RoutingMessageHeaderModifierTest {
 
@@ -17,7 +16,7 @@ public class RoutingMessageHeaderModifierTest {
     private static final OperationId OPERATION_ID = new OperationId();
     private RoutingMessageHeaderModifier sut;
 
-    @Before
+    @BeforeEach
     public void init(){
         sut = new RoutingMessageHeaderModifier();
     }

@@ -4,8 +4,8 @@ import de.gessnerfl.rabbitmq.queue.management.AbstractIntegrationTestWithRabbitM
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public abstract class AbstractOperationIntegrationTest extends AbstractIntegrati
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    @Before
+    @BeforeEach
     public void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         builder = builder.withExchange(EXCHANGE_NAME);
@@ -39,7 +39,7 @@ public abstract class AbstractOperationIntegrationTest extends AbstractIntegrati
         testEnvironment.setup();
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         testEnvironment.cleanup();
     }

@@ -1,7 +1,7 @@
 package de.gessnerfl.rabbitmq.queue.management.service.security;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 
 public class JwtTokenProviderTest {
@@ -11,7 +11,7 @@ public class JwtTokenProviderTest {
 
     private JwtTokenProvider sut;
 
-    @Before
+    @BeforeEach
     public void init() {
         jwtConfig = new JWTConfig();
         jwtConfig.getToken().setSigningKey(SIGNING_KEY);

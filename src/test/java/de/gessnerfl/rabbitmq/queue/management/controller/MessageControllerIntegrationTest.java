@@ -1,16 +1,13 @@
 package de.gessnerfl.rabbitmq.queue.management.controller;
 
-import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
@@ -30,7 +27,7 @@ public class MessageControllerIntegrationTest extends AbstractControllerIntegrat
     @Autowired
     private RabbitMqFacade facade;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
@@ -41,7 +38,7 @@ public class MessageControllerIntegrationTest extends AbstractControllerIntegrat
         testEnvironment.setup();
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         testEnvironment.cleanup();
     }

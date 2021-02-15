@@ -2,7 +2,7 @@ package de.gessnerfl.rabbitmq.queue.management.controller;
 
 
 import de.gessnerfl.rabbitmq.queue.management.AbstractIntegrationTestWithRabbitMqContainer;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -15,7 +15,7 @@ public abstract class AbstractControllerIntegrationTest extends AbstractIntegrat
     @Autowired
     protected WebApplicationContext webApplicationContext;
 
-    @Before
+    @BeforeEach
     public void initMockMvc(){
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }

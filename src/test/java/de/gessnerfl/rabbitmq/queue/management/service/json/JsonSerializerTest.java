@@ -1,20 +1,18 @@
 package de.gessnerfl.rabbitmq.queue.management.service.json;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
-
-import de.gessnerfl.rabbitmq.queue.management.service.json.JsonSerializer;
 
 public class JsonSerializerTest {
     private final static String JSON = "{\"myString\":\"test\",\"myNumber\":123}";
 
     private JsonSerializer sut;
 
-    @Before
+    @BeforeEach
     public void init() {
         sut = new JsonSerializer(new Gson());
     }

@@ -1,16 +1,17 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static de.gessnerfl.rabbitmq.queue.management.hamcrest.CustomMatchers.matchesOperationId;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class OperationIdGeneratorTest {
 
     private OperationIdGenerator sut;
 
-    @Before
+    @BeforeEach
     public void init(){
         sut = new OperationIdGenerator();
     }

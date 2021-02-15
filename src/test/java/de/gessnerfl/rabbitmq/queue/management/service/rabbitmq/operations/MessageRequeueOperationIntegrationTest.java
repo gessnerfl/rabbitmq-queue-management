@@ -5,8 +5,10 @@ import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
-import org.junit.*;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -15,19 +17,23 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DirtiesContext
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integrationtest")
+@Testcontainers
 @ContextConfiguration(initializers = {MessageRequeueOperationIntegrationTest.Initializer.class})
 public class MessageRequeueOperationIntegrationTest {
     private final static String EXCHANGE_NAME = "test.direct";
@@ -38,7 +44,7 @@ public class MessageRequeueOperationIntegrationTest {
     private static final int MANAGEMENT_HTTP_PORT = 15672;
     private static final int AMQP_PORT = 5672;
 
-    @ClassRule
+    @Container
     public static GenericContainer rabbitMqContainer = new GenericContainer("rabbitmq:3.8-management-alpine").withExposedPorts(MANAGEMENT_HTTP_PORT, AMQP_PORT);
 
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -60,7 +66,7 @@ public class MessageRequeueOperationIntegrationTest {
 
     private RabbitMqTestEnvironment testEnvironment;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         builder = builder.withExchange(EXCHANGE_NAME);
@@ -72,7 +78,7 @@ public class MessageRequeueOperationIntegrationTest {
         testEnvironment.setup();
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         testEnvironment.cleanup();
     }
