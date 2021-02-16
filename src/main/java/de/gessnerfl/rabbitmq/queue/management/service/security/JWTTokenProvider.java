@@ -15,17 +15,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.text.ParseException;
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class JwtTokenProvider {
+public class JWTTokenProvider {
 
     public static final String CLAIM_NAME_ROLES = "roles";
     private final JWTConfig jwtConfig;
     private JWSAlgorithm cachedJwsAlgorithm;
 
-    public JwtTokenProvider(JWTConfig jwtConfig) {
+    public JWTTokenProvider(JWTConfig jwtConfig) {
         this.jwtConfig = jwtConfig;
     }
 
@@ -48,7 +46,7 @@ public class JwtTokenProvider {
 
             return signedJWT.serialize();
         }catch (JOSEException e){
-            throw new JwtTokenCreationFailedException("Failed to create JWT token", e);
+            throw new JWTTokenCreationFailedException("Failed to create JWT token", e);
         }
     }
 
@@ -63,7 +61,7 @@ public class JwtTokenProvider {
         var keyLength = jwtConfig.getToken().getSigningKey().length();
 
         if(keyLength < 32){
-            throw new InvalidJwtSigningKeyException();
+            throw new InvalidJWTSigningKeyException();
         }else if(keyLength < 48){
             return JWSAlgorithm.HS256;
         } else if (keyLength < 64) {
@@ -79,7 +77,7 @@ public class JwtTokenProvider {
             var claimsSet = jwt.getJWTClaimsSet();
             return new User(claimsSet.getSubject(), "", claimsSet.getStringListClaim(CLAIM_NAME_ROLES).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
         } catch (ParseException e) {
-            throw new InvalidJwtTokenException("Failed to parse roles form JWT claim set", e);
+            throw new InvalidJWTTokenException("Failed to parse roles form JWT claim set", e);
         }
     }
 
@@ -103,7 +101,7 @@ public class JwtTokenProvider {
                 throw new BadCredentialsException("Signature of JWT token not valid");
             }
         } catch (JOSEException e) {
-            throw new InvalidJwtSigningKeyException();
+            throw new InvalidJWTSigningKeyException();
         }
     }
 

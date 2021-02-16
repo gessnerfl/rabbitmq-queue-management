@@ -8,14 +8,9 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
@@ -24,7 +19,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -34,7 +28,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.doReturn;
 
-class JwtTokenProviderTest {
+class JWTTokenProviderTest {
 
     private static final String SIGNING_KEY_512BIT = "Ymnj2HMDpax#TY2zpnYBFnHedDwpN%Wpn7%%p^STRnVetsE8bsA4zxcze%8YnSNU";
     private static final String SIGNING_KEY_384BIT = "qa2VAe4amG8FtKJ!tnPt6sz&b6cQjm&vAcc8rK^b&v&mx538";
@@ -51,7 +45,7 @@ class JwtTokenProviderTest {
 
     private JWTConfig.JwtTokenConfig jwtTokenConfig;
 
-    private JwtTokenProvider sut;
+    private JWTTokenProvider sut;
 
     @BeforeEach
     void init(){
@@ -59,7 +53,7 @@ class JwtTokenProviderTest {
         var config = new JWTConfig();
         config.setToken(jwtTokenConfig);
 
-        sut = new JwtTokenProvider(config);
+        sut = new JWTTokenProvider(config);
     }
 
     @Test
@@ -87,7 +81,7 @@ class JwtTokenProviderTest {
     void shouldFailToDetermineJwsAlgorithmForSigningWhenSigningKeyIsTooShort(){
         when(jwtTokenConfig.getSigningKey()).thenReturn(RandomStringUtils.randomAlphanumeric(31));
 
-        assertThrows(InvalidJwtSigningKeyException.class, () ->  sut.getJwsAlgorithm());
+        assertThrows(InvalidJWTSigningKeyException.class, () ->  sut.getJwsAlgorithm());
     }
 
     @ParameterizedTest
@@ -106,7 +100,7 @@ class JwtTokenProviderTest {
         assertEquals(ISSUER, claims.getIssuer());
         assertThat(claims.getAudience(), contains(AUDIENCE));
         assertThat(claims.getExpirationTime(), greaterThan(new Date()));
-        assertThat(claims.getStringListClaim(JwtTokenProvider.CLAIM_NAME_ROLES), containsInAnyOrder(ROLE_1, ROLE_2));
+        assertThat(claims.getStringListClaim(JWTTokenProvider.CLAIM_NAME_ROLES), containsInAnyOrder(ROLE_1, ROLE_2));
     }
 
     @Test
@@ -117,7 +111,7 @@ class JwtTokenProviderTest {
         var sut = spy(this.sut);
         doReturn(JWSAlgorithm.HS512).when(sut).getJwsAlgorithm();
 
-        assertThrows(JwtTokenCreationFailedException.class, () -> sut.createToken(userDetails));
+        assertThrows(JWTTokenCreationFailedException.class, () -> sut.createToken(userDetails));
     }
 
     @ParameterizedTest
@@ -168,7 +162,7 @@ class JwtTokenProviderTest {
                 .audience(AUDIENCE)
                 .issueTime(now)
                 .expirationTime(expirationTime)
-                .claim(JwtTokenProvider.CLAIM_NAME_ROLES, "invalid")
+                .claim(JWTTokenProvider.CLAIM_NAME_ROLES, "invalid")
                 .build();
 
         SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
@@ -182,7 +176,7 @@ class JwtTokenProviderTest {
         try {
             sut.getUserDetailsFromToken(token);
             fail();
-        } catch (InvalidJwtTokenException e) {
+        } catch (InvalidJWTTokenException e) {
             assertThat(e.getMessage(), containsString("Failed to parse roles"));
         }
     }
@@ -293,7 +287,7 @@ class JwtTokenProviderTest {
 
         assertNotNull(token);
 
-        assertThrows(InvalidJwtSigningKeyException.class, () -> sut.parseAndVerifyToken(token));
+        assertThrows(InvalidJWTSigningKeyException.class, () -> sut.parseAndVerifyToken(token));
     }
 
     private UserDetails mockDefaultUserDetails() {

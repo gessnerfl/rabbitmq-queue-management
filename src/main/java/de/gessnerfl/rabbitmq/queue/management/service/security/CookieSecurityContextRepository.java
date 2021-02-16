@@ -23,11 +23,11 @@ public class CookieSecurityContextRepository implements SecurityContextRepositor
 
     private static final String EMPTY_CREDENTIALS = "";
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JWTTokenProvider jwtTokenProvider;
     private final Logger logger;
 
     @Autowired
-    public CookieSecurityContextRepository(JwtTokenProvider jwtTokenProvider, Logger logger) {
+    public CookieSecurityContextRepository(JWTTokenProvider jwtTokenProvider, Logger logger) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.logger = logger;
     }
@@ -36,11 +36,11 @@ public class CookieSecurityContextRepository implements SecurityContextRepositor
     public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
         var request = requestResponseHolder.getRequest();
         var response = requestResponseHolder.getResponse();
-        requestResponseHolder.setResponse(new SaveToCookieResponseWrapper(request, response));
+        requestResponseHolder.setResponse(new SaveToCookieResponseWrapper(request, response, jwtTokenProvider, LoggerFactory.getLogger(SaveToCookieResponseWrapper.class)));
 
         var context = SecurityContextHolder.createEmptyContext();
-        readUserInfoFromCookie(request).ifPresent(userInfo ->
-                context.setAuthentication(new UsernamePasswordAuthenticationToken(userInfo, EMPTY_CREDENTIALS, userInfo.getAuthorities())));
+        readUserInfoFromCookie(request).ifPresent(userDetails ->
+                context.setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, EMPTY_CREDENTIALS, userDetails.getAuthorities())));
 
         return context;
     }
@@ -59,7 +59,7 @@ public class CookieSecurityContextRepository implements SecurityContextRepositor
     }
 
     private Optional<UserDetails> readUserInfoFromCookie(HttpServletRequest request) {
-        return readCookieFromRequest(request).map(Cookie::getName).map(jwtTokenProvider::getUserDetailsFromToken);
+        return readCookieFromRequest(request).map(Cookie::getValue).map(jwtTokenProvider::getUserDetailsFromToken);
     }
 
     private Optional<Cookie> readCookieFromRequest(HttpServletRequest request) {
@@ -78,13 +78,16 @@ public class CookieSecurityContextRepository implements SecurityContextRepositor
         return maybeCookie;
     }
 
-    private class SaveToCookieResponseWrapper extends SaveContextOnUpdateOrErrorResponseWrapper {
-        private final Logger logger = LoggerFactory.getLogger(SaveToCookieResponseWrapper.class);
+    static class SaveToCookieResponseWrapper extends SaveContextOnUpdateOrErrorResponseWrapper {
+        private final Logger logger;
         private final HttpServletRequest request;
+        private final JWTTokenProvider jwtTokenProvider;
 
-        SaveToCookieResponseWrapper(HttpServletRequest request, HttpServletResponse response) {
+        SaveToCookieResponseWrapper(HttpServletRequest request, HttpServletResponse response, JWTTokenProvider jwtTokenProvider, Logger logger) {
             super(response, true);
             this.request = request;
+            this.jwtTokenProvider = jwtTokenProvider;
+            this.logger = logger;
         }
 
         @Override
@@ -92,17 +95,17 @@ public class CookieSecurityContextRepository implements SecurityContextRepositor
             HttpServletResponse response = (HttpServletResponse) getResponse();
             Authentication authentication = securityContext.getAuthentication();
             if (authentication == null) {
-                logger.debug("No securityContext.authentication, skip saveContext");
+                logger.debug("No user authenticated, skip saveContext");
                 return;
             }
 
             if (LdapAuthWebSecurityConfig.ANONYMOUS_USER.equals(authentication.getPrincipal())) {
-                logger.debug("Anonymous User SecurityContext, skip saveContext");
+                logger.debug("Anonymous User logged in, skip saveContext");
                 return;
             }
 
             if (!(authentication.getPrincipal() instanceof UserDetails)) {
-                logger.warn("securityContext.authentication.principal of unexpected type {}, skip saveContext", authentication.getPrincipal().getClass().getCanonicalName());
+                logger.warn("Principal of unsupported type {}, skip saveContext", authentication.getPrincipal().getClass().getCanonicalName());
                 return;
             }
 

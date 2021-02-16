@@ -2,7 +2,7 @@ package de.gessnerfl.rabbitmq.queue.management.javaconfig;
 
 import de.gessnerfl.rabbitmq.queue.management.service.security.CookieSecurityContextRepository;
 import de.gessnerfl.rabbitmq.queue.management.service.security.JWTConfig;
-import de.gessnerfl.rabbitmq.queue.management.service.security.JwtTokenProvider;
+import de.gessnerfl.rabbitmq.queue.management.service.security.JWTTokenProvider;
 import de.gessnerfl.rabbitmq.queue.management.service.security.LdapAuthenticationConfig;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,8 +88,8 @@ public class LdapAuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JwtTokenProvider jwtTokenProvider(){
-        return new JwtTokenProvider(jwtConfig);
+    public JWTTokenProvider jwtTokenProvider(){
+        return new JWTTokenProvider(jwtConfig);
     }
 
 }
