@@ -1,21 +1,21 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-public class OperationsTest {
+@ExtendWith(MockitoExtension.class)
+class OperationsTest {
     private final static String VHOST = "vhost";
     private final static String QUEUE_NAME = "queue";
     private final static int MAX_NUMBER_MESSAGE = 10;
@@ -36,7 +36,7 @@ public class OperationsTest {
     private Operations sut;
     
     @Test
-    public void shouldDelegateListOperation(){
+    void shouldDelegateListOperation(){
         Message message = mock(Message.class);
         List<Message> messages = Arrays.asList(message);
         
@@ -50,7 +50,7 @@ public class OperationsTest {
     }
     
     @Test
-    public void shouldDelegateDeleteOperation(){
+    void shouldDelegateDeleteOperation(){
         sut.deleteFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM);
         
         verify(messageDeleteOperation).deleteFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM);
@@ -58,7 +58,7 @@ public class OperationsTest {
     }
     
     @Test
-    public void shouldDelegateMoveAllMessagesOperation(){
+    void shouldDelegateMoveAllMessagesOperation(){
         sut.moveAllMessagesInQueue(VHOST, QUEUE_NAME, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
         
         verify(messageMoveOperation).moveAllMessages(VHOST, QUEUE_NAME, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
@@ -66,7 +66,7 @@ public class OperationsTest {
     }
 
     @Test
-    public void shouldDelegateMoveSingleMessageOperation(){
+    void shouldDelegateMoveSingleMessageOperation(){
         sut.moveFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
 
         verify(messageMoveOperation).moveFirstMessage(VHOST, QUEUE_NAME, CHECKSUM, TARGET_EXCHANGE, TARGET_ROUTING_KEY);
@@ -74,7 +74,7 @@ public class OperationsTest {
     }
 
     @Test
-    public void shouldDelegateRequeueAllMessagesOperation(){
+    void shouldDelegateRequeueAllMessagesOperation(){
         sut.requeueAllMessagesInQueue(VHOST, QUEUE_NAME);
 
         verify(messageRequeueOperation).requeueAllMessages(VHOST, QUEUE_NAME);
@@ -82,7 +82,7 @@ public class OperationsTest {
     }
 
     @Test
-    public void shouldDelegateRequeueSingleMessageOperation(){
+    void shouldDelegateRequeueSingleMessageOperation(){
         sut.requeueFirstMessageInQueue(VHOST, QUEUE_NAME, CHECKSUM);
 
         verify(messageRequeueOperation).requeueFirstMessage(VHOST, QUEUE_NAME, CHECKSUM);

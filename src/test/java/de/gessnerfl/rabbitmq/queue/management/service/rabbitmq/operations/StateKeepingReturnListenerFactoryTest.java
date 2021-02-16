@@ -1,23 +1,23 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-public class StateKeepingReturnListenerFactoryTest {
+class StateKeepingReturnListenerFactoryTest {
 
     private StateKeepingReturnListenerFactory sut;
 
-    @Before
-    public void init(){
+    @BeforeEach
+    void init(){
         sut = new StateKeepingReturnListenerFactory();
     }
 
     @Test
-    public void shouldCreateNewInsanceOfStateKeepingReturnListener(){
+    void shouldCreateNewInsanceOfStateKeepingReturnListener(){
         OperationId operationId = mock(OperationId.class);
         Logger logger = mock(Logger.class);
 

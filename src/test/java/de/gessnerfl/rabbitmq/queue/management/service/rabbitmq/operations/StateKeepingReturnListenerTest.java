@@ -3,19 +3,19 @@ package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.MessageProperties;
 import org.apache.commons.codec.Charsets;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class StateKeepingReturnListenerTest {
+class StateKeepingReturnListenerTest {
 
     @Test
-    public void shouldSetStateToReceivedAndLogInfoWhenHandleReturnIsExecuted() throws Exception {
+    void shouldSetStateToReceivedAndLogInfoWhenHandleReturnIsExecuted() throws Exception {
         final Logger logger = mock(Logger.class);
         final OperationId operation = mock(OperationId.class);
         final int replyCode = 1;

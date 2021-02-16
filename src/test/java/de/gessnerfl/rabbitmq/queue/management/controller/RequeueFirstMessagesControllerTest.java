@@ -2,22 +2,22 @@ package de.gessnerfl.rabbitmq.queue.management.controller;
 
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class RequeueFirstMessagesControllerTest {
+@ExtendWith(MockitoExtension.class)
+class RequeueFirstMessagesControllerTest {
 
     @Mock
     private RabbitMqFacade facade;
@@ -28,7 +28,7 @@ public class RequeueFirstMessagesControllerTest {
     private RequeueFirstMessageController sut;
 
     @Test
-    public void shouldReturnViewWithVhostAndQueueAndTargetExchangeAndTargetRoutingKeyAsParameterOnGet(){
+    void shouldReturnViewWithVhostAndQueueAndTargetExchangeAndTargetRoutingKeyAsParameterOnGet(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String checksum = "checksum";
@@ -62,7 +62,7 @@ public class RequeueFirstMessagesControllerTest {
     }
 
     @Test
-    public void shouldReturnToMessagePageOnGetWhenNoMessagesAreAvailable(){
+    void shouldReturnToMessagePageOnGetWhenNoMessagesAreAvailable(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String checksum = "checksum";
@@ -85,7 +85,7 @@ public class RequeueFirstMessagesControllerTest {
     }
 
     @Test
-    public void shouldReturnToMessagePageOnGetWhenFirstMessageDoesNotSupportRequeuing(){
+    void shouldReturnToMessagePageOnGetWhenFirstMessageDoesNotSupportRequeuing(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String checksum = "checksum";
@@ -110,7 +110,7 @@ public class RequeueFirstMessagesControllerTest {
     }
 
     @Test
-    public void shouldReturnToMessagePageOnGetWhenChecksumOfFirstMessageDoesNotMatch(){
+    void shouldReturnToMessagePageOnGetWhenChecksumOfFirstMessageDoesNotMatch(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String checksum = "checksum";
@@ -135,7 +135,7 @@ public class RequeueFirstMessagesControllerTest {
     }
 
     @Test
-    public void shouldRequeueFirstMessagesAndRedirectToMessagesPageWhenRequeueWasSuccessful(){
+    void shouldRequeueFirstMessagesAndRedirectToMessagesPageWhenRequeueWasSuccessful(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String checksum = "checksum";
@@ -156,7 +156,7 @@ public class RequeueFirstMessagesControllerTest {
     }
 
     @Test
-    public void shouldTryToRequeueFirstMessagesAndStayOnRequeueFirstMessagePageWhenRequeueFailed(){
+    void shouldTryToRequeueFirstMessagesAndStayOnRequeueFirstMessagePageWhenRequeueFailed(){
         final String errorMessage = "error";
         final RuntimeException expectedException = new RuntimeException(errorMessage);
         final String vhost = "vhost";

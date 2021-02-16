@@ -7,21 +7,22 @@ import com.rabbitmq.client.LongString;
 import de.gessnerfl.rabbitmq.queue.management.model.BasicProperties;
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import org.hamcrest.Matchers;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class MessageMapperTest {
+@ExtendWith(MockitoExtension.class)
+class MessageMapperTest {
     private final static byte[] DEFAULT_PAYLOAD = "defaultPayload".getBytes(StandardCharsets.UTF_8);
 
     @Mock
@@ -31,7 +32,7 @@ public class MessageMapperTest {
     private MessageMapper sut;
 
     @Test
-    public void shouldMapBasicMessageFields(){
+    void shouldMapBasicMessageFields(){
         String checksum = "checksum";
         Envelope envelope = mock(Envelope.class);
         AMQP.BasicProperties basicProperties = mock(AMQP.BasicProperties.class);
@@ -49,7 +50,7 @@ public class MessageMapperTest {
 
 
     @Test
-    public void shouldMapAmqpBasicProperties() {
+    void shouldMapAmqpBasicProperties() {
         String contentType = "contentType";
         String contentEncoding = "contentEncoding";
         String headerKey = "headerKey";
@@ -110,7 +111,7 @@ public class MessageMapperTest {
     }
 
     @Test
-    public void shouldMapRabbitMqSpecificTypesInAmqpBasicPropertiesHeaders() {
+    void shouldMapRabbitMqSpecificTypesInAmqpBasicPropertiesHeaders() {
         String headerKey = "headerKey";
         String headerValue = "headerValue";
         LongString longStringValue = mock(LongString.class);
@@ -134,7 +135,7 @@ public class MessageMapperTest {
     }
 
     @Test
-    public void shouldMapRabbitMqSpecificTypesInAmqpBasicPropertiesHeadersDeepInLists() {
+    void shouldMapRabbitMqSpecificTypesInAmqpBasicPropertiesHeadersDeepInLists() {
         String headerKey = "headerKey";
         String listValue = "listValue";
         List<String> list = Arrays.asList(listValue);
@@ -159,7 +160,7 @@ public class MessageMapperTest {
     }
 
     @Test
-    public void shouldMapRabbitMqSpecificTypesInAmqpBasicPropertiesHeadersDeepInMap() {
+    void shouldMapRabbitMqSpecificTypesInAmqpBasicPropertiesHeadersDeepInMap() {
         String headerKey = "headerKey";
         String subHeaderKey = "subHeaderKey";
         String subHeaderValue = "subHeaderValue";

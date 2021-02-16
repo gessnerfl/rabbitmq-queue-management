@@ -1,24 +1,24 @@
 package de.gessnerfl.rabbitmq.queue.management.controller;
 
 import de.gessnerfl.rabbitmq.queue.management.model.ErrorResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class GlobalControllerExceptionHandlerTest {
+class GlobalControllerExceptionHandlerTest {
 
     private GlobalControllerExceptionHandler sut;
 
-    @Before
-    public void init(){
+    @BeforeEach
+    void init(){
         sut = new GlobalControllerExceptionHandler();
     }
 
     @Test
-    public void shouldMapExceptionToErrorMessage(){
+    void shouldMapExceptionToErrorMessage(){
         String message = "error message";
         Exception e = new Exception(message);
 

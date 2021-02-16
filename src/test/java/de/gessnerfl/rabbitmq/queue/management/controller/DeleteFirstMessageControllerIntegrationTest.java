@@ -5,20 +5,20 @@ import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class DeleteFirstMessageControllerIntegrationTest extends AbstractControllerIntegrationTest {
+class DeleteFirstMessageControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private static final String VHOST_NAME = "/";
     private static final String EXCHANGE_NAME = "test.ex";
     private static final String QUEUE_NAME = "test.controller.in";
@@ -30,8 +30,8 @@ public class DeleteFirstMessageControllerIntegrationTest extends AbstractControl
     @Autowired
     private RabbitMqFacade facade;
 
-    @Before
-    public void init() throws Exception {
+    @BeforeEach
+    void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
                 .withQueue(QUEUE_NAME)
@@ -41,13 +41,13 @@ public class DeleteFirstMessageControllerIntegrationTest extends AbstractControl
         testEnvironment.setup();
     }
 
-    @After
-    public void cleanup() {
+    @AfterEach
+    void cleanup() {
         testEnvironment.cleanup();
     }
 
     @Test
-    public void shouldReturnPageOnGet() throws Exception {
+    void shouldReturnPageOnGet() throws Exception {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_NAME);
         List<Message> initialMessageList = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_NAME, 10);
 
@@ -63,7 +63,7 @@ public class DeleteFirstMessageControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void shouldDeleteFirstMessageInQueueOnPost() throws Exception {
+    void shouldDeleteFirstMessageInQueueOnPost() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_NAME, 2);
         List<Message> initialMessageList = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_NAME, 10);
 
@@ -80,7 +80,7 @@ public class DeleteFirstMessageControllerIntegrationTest extends AbstractControl
     }
 
     @Test
-    public void shouldFailToDeleteFirstMessageInQueueWhenMessageWasAlreadyProcessedInParallel() throws Exception {
+    void shouldFailToDeleteFirstMessageInQueueWhenMessageWasAlreadyProcessedInParallel() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_NAME, 2);
         List<Message> initialMessageList = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_NAME, 10);
 

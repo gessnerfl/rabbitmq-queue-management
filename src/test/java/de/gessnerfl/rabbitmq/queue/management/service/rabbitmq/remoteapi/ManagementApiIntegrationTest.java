@@ -9,18 +9,19 @@ import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 import static de.gessnerfl.rabbitmq.queue.management.hamcrest.CustomMatchers.matchesInitialQueueStateNullOrRunning;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRabbitMqContainer {
+class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRabbitMqContainer {
 
     private final static String VHOST = "/";
     private final static String EXCHANGE_NAME = "test.direct";
@@ -40,8 +41,8 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRab
     @Autowired
     private ManagementApi sut;
 
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
                 .withExchange(DEAD_LETTER_EXCHANGE_NAME)
@@ -59,13 +60,13 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRab
         testEnvironment.setup();
     }
 
-    @After
-    public void cleanup() {
+    @AfterEach
+    void cleanup() {
         testEnvironment.cleanup();
     }
 
     @Test
-    public void shouldGetAllExchanges() {
+    void shouldGetAllExchanges() {
         List<Exchange> exchanges = sut.getExchanges(VHOST);
 
         assertThat(exchanges, not(empty()));
@@ -90,7 +91,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRab
     }
 
     @Test
-    public void shouldGetAllQueues() {
+    void shouldGetAllQueues() {
         List<Queue> queues = sut.getQueues(VHOST);
 
         assertThat(queues, not(empty()));
@@ -130,7 +131,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRab
     }
 
     @Test
-    public void shouldGetBindingsOfExchanged() {
+    void shouldGetBindingsOfExchanged() {
         List<Binding> bindings = sut.getExchangeSourceBindings(VHOST, EXCHANGE_NAME);
 
         assertThat(bindings, hasSize(1));
@@ -144,7 +145,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRab
     }
 
     @Test
-    public void shouldGetBindingsOfQueue() {
+    void shouldGetBindingsOfQueue() {
         List<Binding> bindings = sut.getQueueBindings(VHOST, QUEUE_NAME);
 
         assertThat(bindings, hasSize(2));
@@ -167,7 +168,7 @@ public class ManagementApiIntegrationTest extends AbstractIntegrationTestWithRab
     }
 
     @Test
-    public void shouldPurgeQueueContent() {
+    void shouldPurgeQueueContent() {
         testEnvironment.publishMessage(EXCHANGE_NAME, ROUTING_KEY);
         testEnvironment.publishMessage(EXCHANGE_NAME, ROUTING_KEY);
 

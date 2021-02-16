@@ -1,29 +1,29 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 
-public class QueueListOperationIntegrationTest extends AbstractOperationIntegrationTest {
+class QueueListOperationIntegrationTest extends AbstractOperationIntegrationTest {
     private final static int MAX_NUMBER_OF_MESSAGES = QueueListOperation.DEFAULT_FETCH_COUNT;
 
     @Autowired
     private QueueListOperation sut;
 
     @Test
-    public void shouldReturnAllMessagesWhenNumberOfExistingMessagesIsExactlyTheSameAsTheMaxNumbertoBeRetrieved()
+    void shouldReturnAllMessagesWhenNumberOfExistingMessagesIsExactlyTheSameAsTheMaxNumbertoBeRetrieved()
             throws IOException {
         int expectedNumberOfMessages = QueueListOperation.DEFAULT_FETCH_COUNT;
         publishMessages(expectedNumberOfMessages);
@@ -38,7 +38,7 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
     }
 
     @Test
-    public void shouldReturnAllMessagesWhenNumberOfExistingMessagesIsLessThenTheMaxNumberToBeRetrieved()
+    void shouldReturnAllMessagesWhenNumberOfExistingMessagesIsLessThenTheMaxNumberToBeRetrieved()
             throws IOException {
         int expectedNumberOfMessages = QueueListOperation.DEFAULT_FETCH_COUNT - 1;
         publishMessages(expectedNumberOfMessages);
@@ -53,7 +53,7 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
     }
 
     @Test
-    public void shouldReturnSubsetOfMessagesWhenNumberOfExistingMessagesIsGreaterThanTheMaxNumbertoBeRetrieved()
+    void shouldReturnSubsetOfMessagesWhenNumberOfExistingMessagesIsGreaterThanTheMaxNumbertoBeRetrieved()
             throws IOException {
         int expectedNumberOfMessages = QueueListOperation.DEFAULT_FETCH_COUNT + 1;
         publishMessages(expectedNumberOfMessages);
@@ -68,7 +68,7 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
     }
 
     @Test
-    public void shouldNotChangeTheOrderOfMessages() throws Exception {
+    void shouldNotChangeTheOrderOfMessages() throws Exception {
         publishMessages(2);
 
         List<Message> firstFetch = sut.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 1);
@@ -81,7 +81,7 @@ public class QueueListOperationIntegrationTest extends AbstractOperationIntegrat
     }
 
     @Test
-    public void shouldReturnEmptyListIfNoMessageIsAvailable(){
+    void shouldReturnEmptyListIfNoMessageIsAvailable(){
         List<Message> firstFetch = sut.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 1);
         
         assertThat(firstFetch, empty());

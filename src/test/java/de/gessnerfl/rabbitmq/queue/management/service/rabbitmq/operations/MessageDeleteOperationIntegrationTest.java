@@ -1,20 +1,19 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 
-public class MessageDeleteOperationIntegrationTest extends AbstractOperationIntegrationTest {
+class MessageDeleteOperationIntegrationTest extends AbstractOperationIntegrationTest {
     @Autowired
     private QueueListOperation queueListOperation;
     
@@ -22,7 +21,7 @@ public class MessageDeleteOperationIntegrationTest extends AbstractOperationInte
     private MessageDeleteOperation sut;
     
     @Test
-    public void shouldDeleteFirstMessageInQueue() throws Exception {
+    void shouldDeleteFirstMessageInQueue() throws Exception {
         publishMessages(2);
         
         List<Message> firstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 2);
@@ -38,7 +37,7 @@ public class MessageDeleteOperationIntegrationTest extends AbstractOperationInte
     }
     
     @Test
-    public void shouldFailToDeleteFirstMessageInQueueWhenChecksumDoesNotMacht() throws Exception {
+    void shouldFailToDeleteFirstMessageInQueueWhenChecksumDoesNotMacht() throws Exception {
         publishMessages(2);
         
         List<Message> firstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 2);
@@ -58,11 +57,13 @@ public class MessageDeleteOperationIntegrationTest extends AbstractOperationInte
         assertEquals(firstFetch.get(0).getChecksum(), secondFetch.get(0).getChecksum());
     }
 
-    @Test(expected=MessageOperationFailedException.class)
-    public void shouldFailToDeleteMessageIfMessageWasAlreadyDeletedOrNoMessageExists(){
+    @Test
+    void shouldFailToDeleteMessageIfMessageWasAlreadyDeletedOrNoMessageExists(){
         List<Message> firstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 2);
         assertThat(firstFetch, empty());
-        
-        sut.deleteFirstMessageInQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, "anyChecksum");
+
+        assertThrows(MessageOperationFailedException.class, () -> {
+            sut.deleteFirstMessageInQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, "anyChecksum");
+        });
     }
 }

@@ -1,16 +1,15 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Binding;
@@ -18,9 +17,10 @@ import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations.Operations;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApi;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-public class RabbitMqFacadeTest {
+@ExtendWith(MockitoExtension.class)
+class RabbitMqFacadeTest {
     private final static String VHOST = "vhost";
     private final static String QUEUE = "queue";
     private final static int MAX_NUMBER_MESSAGE = 10;
@@ -37,7 +37,7 @@ public class RabbitMqFacadeTest {
     private RabbitMqFacade sut;
 
     @Test
-    public void shouldDelegateCallToGetExchanges() {
+    void shouldDelegateCallToGetExchanges() {
         Exchange exchange = mock(Exchange.class);
         List<Exchange> exchanges = Arrays.asList(exchange);
         when(managementApi.getExchanges(VHOST)).thenReturn(exchanges);
@@ -49,7 +49,7 @@ public class RabbitMqFacadeTest {
     }
 
     @Test
-    public void shouldDelegateCallToGetQueues() {
+    void shouldDelegateCallToGetQueues() {
         Queue queue = mock(Queue.class);
         List<Queue> queues = Arrays.asList(queue);
         when(managementApi.getQueues(VHOST)).thenReturn(queues);
@@ -61,7 +61,7 @@ public class RabbitMqFacadeTest {
     }
 
     @Test
-    public void shouldDelegateCallToGetExchangeBindings() {
+    void shouldDelegateCallToGetExchangeBindings() {
         Binding binding = mock(Binding.class);
         List<Binding> bindings = Arrays.asList(binding);
         when(managementApi.getExchangeSourceBindings(VHOST, EXCHANGE)).thenReturn(bindings);
@@ -73,7 +73,7 @@ public class RabbitMqFacadeTest {
     }
 
     @Test
-    public void shouldDelegateCallToGetQueueBindings() {
+    void shouldDelegateCallToGetQueueBindings() {
         Binding binding = mock(Binding.class);
         List<Binding> bindings = Arrays.asList(binding);
         when(managementApi.getQueueBindings(VHOST, QUEUE)).thenReturn(bindings);
@@ -85,7 +85,7 @@ public class RabbitMqFacadeTest {
     }
 
     @Test
-    public void shouldDelegateCallToGetQueueMessages() {
+    void shouldDelegateCallToGetQueueMessages() {
         Message message = mock(Message.class);
         List<Message> messages = Arrays.asList(message);
         when(operations.getMessagesOfQueue(VHOST, QUEUE, MAX_NUMBER_MESSAGE)).thenReturn(messages);
@@ -97,7 +97,7 @@ public class RabbitMqFacadeTest {
     }
 
     @Test
-    public void shouldDelegateCallToPurgeQueue(){
+    void shouldDelegateCallToPurgeQueue(){
         sut.purgeQueue(VHOST, QUEUE);
 
         verify(managementApi).purgeQueue(VHOST, QUEUE);
@@ -105,7 +105,7 @@ public class RabbitMqFacadeTest {
     }
 
     @Test
-    public void shouldDelegateCallToDeleteFirstMessageInQueue() {
+    void shouldDelegateCallToDeleteFirstMessageInQueue() {
         sut.deleteFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
         
         verify(operations).deleteFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
@@ -113,7 +113,7 @@ public class RabbitMqFacadeTest {
     }
 
     @Test
-    public void shouldDelegateCallToMoveAllMessagesInQueue() {
+    void shouldDelegateCallToMoveAllMessagesInQueue() {
         sut.moveAllMessagesInQueue(VHOST, QUEUE, EXCHANGE, ROUTING_KEY);
         
         verify(operations).moveAllMessagesInQueue(VHOST, QUEUE, EXCHANGE, ROUTING_KEY);
@@ -121,7 +121,7 @@ public class RabbitMqFacadeTest {
     }
 
     @Test
-    public void shouldDelegateCallToMoveFirstMessageInQueue() {
+    void shouldDelegateCallToMoveFirstMessageInQueue() {
         sut.moveFirstMessageInQueue(VHOST, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
 
         verify(operations).moveFirstMessageInQueue(VHOST, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
@@ -129,7 +129,7 @@ public class RabbitMqFacadeTest {
     }
 
     @Test
-    public void shouldDelegateCallToRequeueAllMessagesInQueue() {
+    void shouldDelegateCallToRequeueAllMessagesInQueue() {
         sut.requeueAllMessagesInQueue(VHOST, QUEUE);
 
         verify(operations).requeueAllMessagesInQueue(VHOST, QUEUE);
@@ -137,7 +137,7 @@ public class RabbitMqFacadeTest {
     }
 
     @Test
-    public void shouldDelegateCallToRequeueFirstMessageInQueue() {
+    void shouldDelegateCallToRequeueFirstMessageInQueue() {
         sut.requeueFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
 
         verify(operations).requeueFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);

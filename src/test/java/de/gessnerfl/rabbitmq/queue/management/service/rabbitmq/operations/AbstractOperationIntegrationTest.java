@@ -4,8 +4,8 @@ import de.gessnerfl.rabbitmq.queue.management.AbstractIntegrationTestWithRabbitM
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class AbstractOperationIntegrationTest extends AbstractIntegrationTestWithRabbitMqContainer {
+abstract class AbstractOperationIntegrationTest extends AbstractIntegrationTestWithRabbitMqContainer {
     protected final static String EXCHANGE_NAME = "test.direct";
     protected final static String QUEUE_NAME = "test.queue";
 
@@ -24,12 +24,12 @@ public abstract class AbstractOperationIntegrationTest extends AbstractIntegrati
     private RabbitMqTestEnvironmentBuilderFactory testEnvironmentBuilderFactor;
     protected RabbitMqTestEnvironment testEnvironment;
 
-    public AbstractOperationIntegrationTest() {
+    AbstractOperationIntegrationTest() {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    @Before
-    public void init() throws Exception {
+    @BeforeEach
+    void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         builder = builder.withExchange(EXCHANGE_NAME);
         for(String queueName : getQueueNames()){
@@ -39,8 +39,8 @@ public abstract class AbstractOperationIntegrationTest extends AbstractIntegrati
         testEnvironment.setup();
     }
 
-    @After
-    public void cleanup() {
+    @AfterEach
+    void cleanup() {
         testEnvironment.cleanup();
     }
 

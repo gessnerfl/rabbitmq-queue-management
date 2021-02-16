@@ -1,26 +1,27 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.operations;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 
-public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegrationTest {
+class MessageMoveOperationIntegrationTest extends AbstractOperationIntegrationTest {
     private final static String TARGET_QUEUE_NAME = "test.move.target";
 
     @Autowired
     private QueueListOperation queueListOperation;
 
     @Autowired
-    public MessageMoveOperation sut;
+    MessageMoveOperation sut;
 
     @Override
     protected List<String> getQueueNames() {
@@ -28,7 +29,7 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
     }
 
     @Test
-    public void shouldMoveMessage() throws Exception {
+    void shouldMoveMessage() throws Exception {
         publishMessages(1);
 
         List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 5);
@@ -47,7 +48,7 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
     }
 
     @Test
-    public void shouldFailToMoveMessageWhenExchangeIsNotValid() throws Exception {
+    void shouldFailToMoveMessageWhenExchangeIsNotValid() throws Exception {
         publishMessages(1);
 
         List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 5);
@@ -70,7 +71,7 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
     }
 
     @Test
-    public void shouldFailToMoveMessageWhenNoQueueIsBoundToTheGivenRoutingKey() throws Exception {
+    void shouldFailToMoveMessageWhenNoQueueIsBoundToTheGivenRoutingKey() throws Exception {
         publishMessages(1);
 
         List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 5);
@@ -94,7 +95,7 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
 
 
     @Test
-    public void shouldIncrementMoveCountHeaderWithEveryMove() throws Exception {
+    void shouldIncrementMoveCountHeaderWithEveryMove() throws Exception {
         publishMessages(1);
 
         List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 5);
@@ -123,7 +124,7 @@ public class MessageMoveOperationIntegrationTest extends AbstractOperationIntegr
     }
 
     @Test
-    public void shouldMoveAllMessages() throws Exception {
+    void shouldMoveAllMessages() throws Exception {
         publishMessages(2);
 
         List<Message> sourceFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 5);

@@ -5,8 +5,10 @@ import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
-import org.junit.*;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -15,21 +17,25 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DirtiesContext
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integrationtest")
+@Testcontainers
 @ContextConfiguration(initializers = {MessageRequeueOperationIntegrationTest.Initializer.class})
-public class MessageRequeueOperationIntegrationTest {
+class MessageRequeueOperationIntegrationTest {
     private final static String EXCHANGE_NAME = "test.direct";
     private final static String QUEUE_NAME = "test.requeue.target";
     private final static String DLX_QUEUE_NAME = "test.requeue.target.dlx";
@@ -38,8 +44,8 @@ public class MessageRequeueOperationIntegrationTest {
     private static final int MANAGEMENT_HTTP_PORT = 15672;
     private static final int AMQP_PORT = 5672;
 
-    @ClassRule
-    public static GenericContainer rabbitMqContainer = new GenericContainer("rabbitmq:3.8-management-alpine").withExposedPorts(MANAGEMENT_HTTP_PORT, AMQP_PORT);
+    @Container
+    static GenericContainer rabbitMqContainer = new GenericContainer("rabbitmq:3.8-management-alpine").withExposedPorts(MANAGEMENT_HTTP_PORT, AMQP_PORT);
 
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
@@ -60,8 +66,8 @@ public class MessageRequeueOperationIntegrationTest {
 
     private RabbitMqTestEnvironment testEnvironment;
 
-    @Before
-    public void init() throws Exception {
+    @BeforeEach
+    void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         builder = builder.withExchange(EXCHANGE_NAME);
 
@@ -72,13 +78,13 @@ public class MessageRequeueOperationIntegrationTest {
         testEnvironment.setup();
     }
 
-    @After
-    public void cleanup() {
+    @AfterEach
+    void cleanup() {
         testEnvironment.cleanup();
     }
 
     @Test
-    public void shouldRequeueMessageWhenMessageWasDeadLettered() throws Exception {
+    void shouldRequeueMessageWhenMessageWasDeadLettered() throws Exception {
         //publish message to
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_NAME);
 
@@ -110,7 +116,7 @@ public class MessageRequeueOperationIntegrationTest {
     }
 
     @Test
-    public void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndHeaderIsNotAvailable(){
+    void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndHeaderIsNotAvailable(){
         testEnvironment.publishMessage(EXCHANGE_NAME, DLX_QUEUE_NAME);
 
         List<Message> dlxQueueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
@@ -130,7 +136,7 @@ public class MessageRequeueOperationIntegrationTest {
     }
 
     @Test
-    public void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderIsNotAvailable(){
+    void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderIsNotAvailable(){
         HashMap<String, Object> headers = new HashMap<>();
         headers.put("test", "test");
         testEnvironment.publishMessage(EXCHANGE_NAME, DLX_QUEUE_NAME, headers);
@@ -152,7 +158,7 @@ public class MessageRequeueOperationIntegrationTest {
     }
 
     @Test
-    public void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderDoesNotContainEntry(){
+    void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderDoesNotContainEntry(){
         List<Map<String,Object>> xdeath = Collections.emptyList();
         HashMap<String, Object> headers = new HashMap<>();
         headers.put(MessageRequeueOperation.X_DEATH_HEADER_KEY_NAME, xdeath);
@@ -175,7 +181,7 @@ public class MessageRequeueOperationIntegrationTest {
     }
 
     @Test
-    public void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderDoesNotContainExchangeName(){
+    void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderDoesNotContainExchangeName(){
         List<Map<String,Object>> xdeath = Collections.singletonList(new HashMap<>());
         HashMap<String, Object> headers = new HashMap<>();
         headers.put(MessageRequeueOperation.X_DEATH_HEADER_KEY_NAME, xdeath);
@@ -198,7 +204,7 @@ public class MessageRequeueOperationIntegrationTest {
     }
 
     @Test
-    public void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderDoesNotContainRoutingKey(){
+    void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderDoesNotContainRoutingKey(){
         HashMap<String, Object> xdeathEntry = new HashMap<>();
         xdeathEntry.put(MessageRequeueOperation.X_DEATH_EXCHANGE_KEY_NAME, LongStringHelper.asLongString("test"));
         List<Map<String,Object>> xdeath = Collections.singletonList(xdeathEntry);
@@ -223,7 +229,7 @@ public class MessageRequeueOperationIntegrationTest {
     }
 
     @Test
-    public void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderRoutingKeysAreEmpty(){
+    void shouldFailToRequeueMessageWhenMessageWasNotDeadLetteredAndXDeathHeaderRoutingKeysAreEmpty(){
         HashMap<String, Object> xdeathEntry = new HashMap<>();
         xdeathEntry.put(MessageRequeueOperation.X_DEATH_EXCHANGE_KEY_NAME, LongStringHelper.asLongString("test"));
         xdeathEntry.put(MessageRequeueOperation.X_DEATH_ROUTING_KEYS_KEY_NAME, Collections.emptyList());
@@ -249,7 +255,7 @@ public class MessageRequeueOperationIntegrationTest {
     }
 
     @Test
-    public void shouldIncrementRequeueCounterWithEveryExecution() throws Exception {
+    void shouldIncrementRequeueCounterWithEveryExecution() throws Exception {
         //publish message to
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_NAME);
 
@@ -282,7 +288,7 @@ public class MessageRequeueOperationIntegrationTest {
     }
 
     @Test
-    public void shouldRequeueAllMessagesWhenMessageWasDeadLettered() throws Exception {
+    void shouldRequeueAllMessagesWhenMessageWasDeadLettered() throws Exception {
         //publish message to
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_NAME);
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_NAME);

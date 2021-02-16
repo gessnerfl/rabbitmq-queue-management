@@ -1,9 +1,9 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.utils;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,21 +11,20 @@ import static org.mockito.Mockito.when;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.MessageProperties;
 
 import de.gessnerfl.rabbitmq.queue.management.service.json.JsonSerializer;
-import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.utils.MessageChecksum;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-public class MessageChecksumTest {
+@ExtendWith(MockitoExtension.class)
+class MessageChecksumTest {
 
   @Mock
   private JsonSerializer jsonSerializer;
@@ -35,7 +34,7 @@ public class MessageChecksumTest {
   
   @SuppressWarnings("rawtypes")
   @Test
-  public void shouldCalculateChecksumFromJsonString(){
+  void shouldCalculateChecksumFromJsonString(){
     final String expectedChecksum = "ca2e3c1843f0125ffa523e372cf16a1919c2e83b52130719c98a19ebf450fb9d";
     final String json = "{ \"foo\": \"bar\" }";
     when(jsonSerializer.toJson(anyMap())).thenReturn(json);

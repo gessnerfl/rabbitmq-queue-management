@@ -1,20 +1,20 @@
 package de.gessnerfl.rabbitmq.queue.management.controller;
 
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class DeleteAllMessagesControllerTest {
+@ExtendWith(MockitoExtension.class)
+class DeleteAllMessagesControllerTest {
 
     @Mock
     private RabbitMqFacade facade;
@@ -25,7 +25,7 @@ public class DeleteAllMessagesControllerTest {
     private DeleteAllMessagesController sut;
 
     @Test
-    public void shouldReturnMainViewWithVhostAndQueueAsParameterOnGet(){
+    void shouldReturnMainViewWithVhostAndQueueAsParameterOnGet(){
         final String vhost = "vhost";
         final String queue = "queue";
         final Model model = mock(Model.class);
@@ -40,7 +40,7 @@ public class DeleteAllMessagesControllerTest {
     }
 
     @Test
-    public void shouldDeleteAllMessagesAndRedirectToMessagesPageWhenDeletionWasSuccessful(){
+    void shouldDeleteAllMessagesAndRedirectToMessagesPageWhenDeletionWasSuccessful(){
         final String vhost = "vhost";
         final String queue = "queue";
         final Model model = mock(Model.class);
@@ -58,7 +58,7 @@ public class DeleteAllMessagesControllerTest {
     }
 
     @Test
-    public void shouldTryToDeleteAllMessagesAndStayOnDeleteAllMessagePageWhenDeletionFailed(){
+    void shouldTryToDeleteAllMessagesAndStayOnDeleteAllMessagePageWhenDeletionFailed(){
         final String errorMessage = "error";
         final RuntimeException expectedException = new RuntimeException(errorMessage);
         final String vhost = "vhost";

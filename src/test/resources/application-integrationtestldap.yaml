@@ -12,6 +12,9 @@ de:
             root: dc=gessnerfl,dc=de
             port: 389
             ldif: classpath:test-users.ldif
+        jwt:
+          token:
+            signingKey: bM95WuJZz49AZcJ3BT3qzZ8vJUvepWwZyVuFyYTj9GUrzXgGevVqYFMFVHyR3kyP
     rabbitmq:
       hostname: localhost
       port: 5672

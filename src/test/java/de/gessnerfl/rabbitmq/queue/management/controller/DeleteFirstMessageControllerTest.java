@@ -1,20 +1,20 @@
 package de.gessnerfl.rabbitmq.queue.management.controller;
 
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class DeleteFirstMessageControllerTest {
+@ExtendWith(MockitoExtension.class)
+class DeleteFirstMessageControllerTest {
 
     @Mock
     private RabbitMqFacade facade;
@@ -25,7 +25,7 @@ public class DeleteFirstMessageControllerTest {
     private DeleteFirstMessageController sut;
 
     @Test
-    public void shouldReturnMainViewWithVhostAndQueueAndChecksumAsParameterOnGet(){
+    void shouldReturnMainViewWithVhostAndQueueAndChecksumAsParameterOnGet(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String checksum = "checksum";
@@ -42,7 +42,7 @@ public class DeleteFirstMessageControllerTest {
     }
 
     @Test
-    public void shouldDeleteFirstMessagesAndRedirectToMessagesPageWhenDeletionWasSuccessful(){
+    void shouldDeleteFirstMessagesAndRedirectToMessagesPageWhenDeletionWasSuccessful(){
         final String vhost = "vhost";
         final String queue = "queue";
         final String checksum = "checksum";
@@ -61,7 +61,7 @@ public class DeleteFirstMessageControllerTest {
     }
 
     @Test
-    public void shouldTryToDeleteFirstMessagesAndStayOnDeleteFirstMessagePageWhenDeletionFailed(){
+    void shouldTryToDeleteFirstMessagesAndStayOnDeleteFirstMessagePageWhenDeletionFailed(){
         final String errorMessage = "error";
         final RuntimeException expectedException = new RuntimeException(errorMessage);
         final String vhost = "vhost";

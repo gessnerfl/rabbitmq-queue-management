@@ -1,16 +1,13 @@
 package de.gessnerfl.rabbitmq.queue.management.controller;
 
-import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
@@ -18,7 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
-public class MessageControllerIntegrationTest extends AbstractControllerIntegrationTest {
+class MessageControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private static final String VHOST_NAME = "/";
     private static final String EXCHANGE_NAME = "test.ex";
     private static final String QUEUE_NAME = "test.controller.in";
@@ -30,8 +27,8 @@ public class MessageControllerIntegrationTest extends AbstractControllerIntegrat
     @Autowired
     private RabbitMqFacade facade;
 
-    @Before
-    public void init() throws Exception {
+    @BeforeEach
+    void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
                 .withQueue(QUEUE_NAME)
@@ -41,13 +38,13 @@ public class MessageControllerIntegrationTest extends AbstractControllerIntegrat
         testEnvironment.setup();
     }
 
-    @After
-    public void cleanup() {
+    @AfterEach
+    void cleanup() {
         testEnvironment.cleanup();
     }
 
     @Test
-    public void shouldReturnViewWhenNoMessagesAreAvailable() throws Exception {
+    void shouldReturnViewWhenNoMessagesAreAvailable() throws Exception {
         mockMvc.perform(get("/messages")
                     .param(Parameters.VHOST, VHOST_NAME)
                     .param(Parameters.QUEUE, QUEUE_NAME))
@@ -60,7 +57,7 @@ public class MessageControllerIntegrationTest extends AbstractControllerIntegrat
     }
 
     @Test
-    public void shouldReturnViewWhenMessagesAreAvailable() throws Exception {
+    void shouldReturnViewWhenMessagesAreAvailable() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_NAME, 2);
 
         mockMvc.perform(get("/messages")

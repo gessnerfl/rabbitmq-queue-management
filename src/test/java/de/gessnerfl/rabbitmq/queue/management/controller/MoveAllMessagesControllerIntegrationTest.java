@@ -4,21 +4,21 @@ import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class MoveAllMessagesControllerIntegrationTest extends AbstractControllerIntegrationTest {
+class MoveAllMessagesControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private static final String VHOST_NAME = "/";
     private static final String EXCHANGE_NAME = "test.ex";
     private static final String QUEUE_1_NAME = "test1.controller.in";
@@ -31,8 +31,8 @@ public class MoveAllMessagesControllerIntegrationTest extends AbstractController
     @Autowired
     private RabbitMqFacade facade;
 
-    @Before
-    public void init() throws Exception {
+    @BeforeEach
+    void init() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         testEnvironment = builder.withExchange(EXCHANGE_NAME)
                 .withQueue(QUEUE_1_NAME)
@@ -45,13 +45,13 @@ public class MoveAllMessagesControllerIntegrationTest extends AbstractController
         testEnvironment.setup();
     }
 
-    @After
-    public void cleanup() {
+    @AfterEach
+    void cleanup() {
         testEnvironment.cleanup();
     }
 
     @Test
-    public void shouldReturnPageOnGet() throws Exception {
+    void shouldReturnPageOnGet() throws Exception {
         mockMvc.perform(get("/messages/move-all")
                     .param(Parameters.VHOST, VHOST_NAME)
                     .param(Parameters.QUEUE, QUEUE_1_NAME))
@@ -62,7 +62,7 @@ public class MoveAllMessagesControllerIntegrationTest extends AbstractController
     }
 
     @Test
-    public void shouldProvideScreenToSelectRoutingKeyWhenTargetExchangeIsProvidedAndTargetRoutingKeyIsNotProvidedOnPost() throws Exception {
+    void shouldProvideScreenToSelectRoutingKeyWhenTargetExchangeIsProvidedAndTargetRoutingKeyIsNotProvidedOnPost() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, 10), hasSize(2));
@@ -84,7 +84,7 @@ public class MoveAllMessagesControllerIntegrationTest extends AbstractController
     }
 
     @Test
-    public void shouldMoveAllMessagesFromSourceToTargetQueueOnPostWhenTargetExchangeAndRoutingKeyAreProvidedOnPost() throws Exception {
+    void shouldMoveAllMessagesFromSourceToTargetQueueOnPostWhenTargetExchangeAndRoutingKeyAreProvidedOnPost() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, 10), hasSize(2));

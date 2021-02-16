@@ -1,23 +1,22 @@
 package de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.config;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.config.ManagementApiConfig;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.FeignBuilderFactory;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApi;
 import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.remoteapi.ManagementApiUrlBuilder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import feign.Feign;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ManagementApiConfigTest {
+@ExtendWith(MockitoExtension.class)
+class ManagementApiConfigTest {
 
     @Mock
     private ManagementApiUrlBuilder managementApiUrlBuilder;
@@ -28,7 +27,7 @@ public class ManagementApiConfigTest {
     private ManagementApiConfig sut;
 
     @Test
-    public void shouldCreateNewInstance() {
+    void shouldCreateNewInstance() {
         String url = "bar";
         when(managementApiUrlBuilder.buildForConfiguration()).thenReturn(url);
 
