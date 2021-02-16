@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.savedrequest.CookieRequestCache;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -59,7 +58,7 @@ public class LdapAuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .deleteCookies(JWT_TOKEN_COOKIE_NAME);
 
-        http.exceptionHandling().accessDeniedPage("/login");
+        http.exceptionHandling().accessDeniedPage(LOGIN_FORM_URL);
     }
 
     @Override
