@@ -1,9 +1,6 @@
 package de.gessnerfl.rabbitmq.queue.management.javaconfig;
 
-import de.gessnerfl.rabbitmq.queue.management.service.security.CookieSecurityContextRepository;
-import de.gessnerfl.rabbitmq.queue.management.service.security.JWTConfig;
-import de.gessnerfl.rabbitmq.queue.management.service.security.JWTTokenProvider;
-import de.gessnerfl.rabbitmq.queue.management.service.security.LdapAuthenticationConfig;
+import de.gessnerfl.rabbitmq.queue.management.service.security.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -20,7 +17,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @ConditionalOnProperty(prefix = "de.gessnerfl.security.authentication", name = "enabled", havingValue = "true")
 public class LdapAuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
     public static final String ANONYMOUS_USER = "anonymousUser";
-    public static final String JWT_TOKEN_COOKIE_NAME = "RMQ_MGMT_JWT_TOKEN";
+    public static final String JWT_TOKEN_COOKIE_NAME = "rmqqm-token";
+    public static final String TARGET_AFTER_SUCCESSFUL_LOGIN_PARAM = "target-url";
+    public static final String LOGIN_FORM_URL = "/login";
 
     private final LdapAuthenticationConfig ldapAuthenticationConfig;
     private final JWTConfig jwtConfig;
@@ -33,13 +32,13 @@ public class LdapAuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        http.anonymous().principal(ANONYMOUS_USER);
-        http.requestCache().requestCache(new CookieRequestCache());
-        http.securityContext().securityContextRepository(cookieSecurityContextRepository());
-
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.authorizeRequests()
+        http.csrf().disable()
+            .anonymous().principal(ANONYMOUS_USER).and()
+            .requestCache().disable()
+            .securityContext().securityContextRepository(cookieSecurityContextRepository()).and()
+            .exceptionHandling().authenticationEntryPoint(loginWithTargetUrlAuthenticationEntryPoint()).and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+            .authorizeRequests()
                 .antMatchers("/css/**").permitAll()
                 .antMatchers("/gfx/**").permitAll()
                 .antMatchers("/webjars/**").permitAll()
@@ -47,7 +46,8 @@ public class LdapAuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().fullyAuthenticated()
                 .and()
                 .formLogin()
-                .loginPage("/login")
+                .loginPage(LOGIN_FORM_URL)
+                .successHandler(redirectToOriginalUrlAuthenticationSuccessHandler())
                 .failureUrl("/login-error")
                 .permitAll()
                 .and()
@@ -73,12 +73,12 @@ public class LdapAuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .userSearchFilter(ldapAuthenticationConfig.getUserSearchFilter())
                 .userDnPatterns(ldapAuthenticationConfig.getUserDnPatterns().toArray(new String[ldapAuthenticationConfig.getUserDnPatterns().size()]))
                 .contextSource()
-                .managerDn(ldapAuthenticationConfig.getContextSource().getManagerDn())
-                .managerPassword(ldapAuthenticationConfig.getContextSource().getManagerPassword())
-                .root(ldapAuthenticationConfig.getContextSource().getRoot())
-                .port(ldapAuthenticationConfig.getContextSource().getPort())
-                .url(ldapAuthenticationConfig.getContextSource().getUrl())
-                .ldif(ldapAuthenticationConfig.getContextSource().getLdif());
+                    .managerDn(ldapAuthenticationConfig.getContextSource().getManagerDn())
+                    .managerPassword(ldapAuthenticationConfig.getContextSource().getManagerPassword())
+                    .root(ldapAuthenticationConfig.getContextSource().getRoot())
+                    .port(ldapAuthenticationConfig.getContextSource().getPort())
+                    .url(ldapAuthenticationConfig.getContextSource().getUrl())
+                    .ldif(ldapAuthenticationConfig.getContextSource().getLdif());
     }
 
     @Bean
@@ -92,4 +92,13 @@ public class LdapAuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new JWTTokenProvider(jwtConfig);
     }
 
+    @Bean
+    public RedirectToOriginalUrlAuthenticationSuccessHandler redirectToOriginalUrlAuthenticationSuccessHandler(){
+        return new RedirectToOriginalUrlAuthenticationSuccessHandler();
+    }
+
+    @Bean
+    public LoginWithTargetUrlAuthenticationEntryPoint loginWithTargetUrlAuthenticationEntryPoint(){
+        return new LoginWithTargetUrlAuthenticationEntryPoint();
+    }
 }

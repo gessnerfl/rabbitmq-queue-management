@@ -3,6 +3,8 @@ package de.gessnerfl.rabbitmq.queue.management.service.security;
 import de.gessnerfl.rabbitmq.queue.management.javaconfig.LdapAuthWebSecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -173,8 +175,9 @@ class CookieSecurityContextRepositoryTest {
         }
     }
 
-    @Test
-    void shouldSetCookieWhenSaveContextIsRequestedAndUserIsAuthenticatedAndTokenIsCreatedSuccessfully(){
+    @ParameterizedTest
+    @ValueSource(strings = {"", "/foo"})
+    void shouldSetCookieWhenSaveContextIsRequestedAndUserIsAuthenticatedAndTokenIsCreatedSuccessfully(String contextPath){
         var request = mock(HttpServletRequest.class);
         var response = mock(HttpServletResponse.class);
         var wrappedResponse = new CookieSecurityContextRepository.SaveToCookieResponseWrapper(request, response, jwtTokenProvider, logger);
@@ -184,6 +187,7 @@ class CookieSecurityContextRepositoryTest {
         var userDetails = mock(UserDetails.class);
 
         when(request.isSecure()).thenReturn(true);
+        when(request.getContextPath()).thenReturn(contextPath);
         when(context.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(jwtTokenProvider.createToken(userDetails)).thenReturn(token);
@@ -197,6 +201,7 @@ class CookieSecurityContextRepositoryTest {
         var cookie = cookieArgumentCaptor.getValue();
         assertEquals(LdapAuthWebSecurityConfig.JWT_TOKEN_COOKIE_NAME, cookie.getName());
         assertEquals(token, cookie.getValue());
+        assertEquals(contextPath.equals("") ? "/" : contextPath, cookie.getPath());
         assertTrue(cookie.getSecure());
         assertTrue(cookie.isHttpOnly());
     }

@@ -56,7 +56,7 @@ class LdapAuthenticationControllerIntegrationTest {
     void shouldRedirectToLoginWhenUserIsNotLoggedIn() throws Exception {
         mockMvc.perform(get("/index"))
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrl("http://localhost/login"));
+                .andExpect(redirectedUrl("http://localhost/login?target-url=/index"));
     }
 
     @Test

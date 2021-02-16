@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.context.HttpRequestResponseHolder;
 import org.springframework.security.web.context.SaveContextOnUpdateOrErrorResponseWrapper;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -114,8 +115,14 @@ public class CookieSecurityContextRepository implements SecurityContextRepositor
             var cookie = new Cookie(LdapAuthWebSecurityConfig.JWT_TOKEN_COOKIE_NAME, jwtToken);
             cookie.setSecure(request.isSecure());
             cookie.setHttpOnly(true);
+            cookie.setPath(getCookiePath(request));
             response.addCookie(cookie);
             logger.debug("SecurityContext for principal '{}' saved in Cookie", userDetails.getUsername());
+        }
+
+        private static String getCookiePath(HttpServletRequest request) {
+            String contextPath = request.getContextPath();
+            return StringUtils.hasText(contextPath) ? contextPath : "/";
         }
     }
 }
