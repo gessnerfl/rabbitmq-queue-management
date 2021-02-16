@@ -43,18 +43,18 @@ class JwtTokenProviderTest {
     private static final String ISSUER = "issuer";
     private static final String AUDIENCE = "audience";
     private static final Duration VALIDITY = Duration.ofMinutes(1);
-    public static final String USERNAME = "user@example.com";
-    public static final String ROLE_1 = "role1";
-    public static final String ROLE_2 = "role2";
-    public static final Collection ROLES = Arrays.asList(new SimpleGrantedAuthority(ROLE_1), new SimpleGrantedAuthority(ROLE_2));
-    public static final String EXPIRED_OR_INVALID_JWT_TOKEN_MESSAGE = "Expired or invalid JWT token";
+    private static final String USERNAME = "user@example.com";
+    private static final String ROLE_1 = "role1";
+    private static final String ROLE_2 = "role2";
+    private static final Collection ROLES = Arrays.asList(new SimpleGrantedAuthority(ROLE_1), new SimpleGrantedAuthority(ROLE_2));
+    private static final String EXPIRED_OR_INVALID_JWT_TOKEN_MESSAGE = "Expired or invalid JWT token";
 
     private JWTConfig.JwtTokenConfig jwtTokenConfig;
 
     private JwtTokenProvider sut;
 
     @BeforeEach
-    public void init(){
+    void init(){
         jwtTokenConfig = mock(JWTConfig.JwtTokenConfig.class);
         var config = new JWTConfig();
         config.setToken(jwtTokenConfig);
@@ -84,7 +84,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    public void shouldFailToDetermineJwsAlgorithmForSigningWhenSigningKeyIsTooShort(){
+    void shouldFailToDetermineJwsAlgorithmForSigningWhenSigningKeyIsTooShort(){
         when(jwtTokenConfig.getSigningKey()).thenReturn(RandomStringUtils.randomAlphanumeric(31));
 
         assertThrows(InvalidJwtSigningKeyException.class, () ->  sut.getJwsAlgorithm());
@@ -92,7 +92,7 @@ class JwtTokenProviderTest {
 
     @ParameterizedTest
     @ValueSource(strings = {SIGNING_KEY_256BIT, SIGNING_KEY_384BIT, SIGNING_KEY_512BIT})
-    public void shouldSuccessfullyCreateAndReadToken(String signingKey) throws Exception {
+    void shouldSuccessfullyCreateAndReadToken(String signingKey) throws Exception {
         var userDetails = mockDefaultUserDetails();
         mockDefaultConfig(signingKey);
 
@@ -110,7 +110,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    public void shouldFailToCreateTokenWhenVSigningFails(){
+    void shouldFailToCreateTokenWhenVSigningFails(){
         var userDetails = mockDefaultUserDetails();
         mockDefaultConfig(SIGNING_KEY_256BIT);
 
@@ -122,7 +122,7 @@ class JwtTokenProviderTest {
 
     @ParameterizedTest
     @ValueSource(strings = {SIGNING_KEY_256BIT, SIGNING_KEY_384BIT, SIGNING_KEY_512BIT})
-    public void shouldExtractUserDetailsFromToken(String signingKey){
+    void shouldExtractUserDetailsFromToken(String signingKey){
         var userDetails = mockDefaultUserDetails();
         mockDefaultConfig(signingKey);
 
@@ -138,7 +138,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    public void shouldExtractUserDetailsFromTokenWhenUserDoesNotHaveAnyRolesAssigned(){
+    void shouldExtractUserDetailsFromTokenWhenUserDoesNotHaveAnyRolesAssigned(){
         var userDetails = mock(UserDetails.class);
         when(userDetails.getUsername()).thenReturn(USERNAME);
         mockDefaultConfig(SIGNING_KEY_256BIT);
@@ -155,7 +155,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    public void shouldFailToExtractUserDetailsWhenRolesAreNotAStringList() throws Exception{
+    void shouldFailToExtractUserDetailsWhenRolesAreNotAStringList() throws Exception{
         var signingKey = SIGNING_KEY_256BIT;
         mockDefaultConfig(signingKey);
 
@@ -188,7 +188,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    public void shouldFailToVerifyTokenWhenTokenIsNotValid(){
+    void shouldFailToVerifyTokenWhenTokenIsNotValid(){
         try {
             sut.parseAndVerifyToken("invalid-token");
             fail();
@@ -198,7 +198,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    public void shouldFailToVerifyTokenWhenTokenWasSignedWithADifferentKey() {
+    void shouldFailToVerifyTokenWhenTokenWasSignedWithADifferentKey() {
         when(jwtTokenConfig.getSigningKey()).thenReturn(SIGNING_KEY_256BIT, SIGNING_KEY_256BIT, SIGNING_KEY_512BIT);
         when(jwtTokenConfig.getAudience()).thenReturn(AUDIENCE);
         when(jwtTokenConfig.getIssuer()).thenReturn(ISSUER);
@@ -208,7 +208,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    public void shouldFailToVerifyTokenWhenTokenWasIssuedByADifferentIssuer(){
+    void shouldFailToVerifyTokenWhenTokenWasIssuedByADifferentIssuer(){
         when(jwtTokenConfig.getSigningKey()).thenReturn(SIGNING_KEY_256BIT);
         when(jwtTokenConfig.getAudience()).thenReturn(AUDIENCE);
         when(jwtTokenConfig.getIssuer()).thenReturn(ISSUER, "other-issuer");
@@ -218,7 +218,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    public void shouldFailToVerifyTokenWhenTokenWasIssuedForADifferentAudience(){
+    void shouldFailToVerifyTokenWhenTokenWasIssuedForADifferentAudience(){
         when(jwtTokenConfig.getSigningKey()).thenReturn(SIGNING_KEY_256BIT);
         when(jwtTokenConfig.getAudience()).thenReturn(AUDIENCE, "other-audience");
         when(jwtTokenConfig.getIssuer()).thenReturn(ISSUER);
@@ -228,7 +228,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    public void shouldFailToVerifyTokenWhenTokenIsExpired(){
+    void shouldFailToVerifyTokenWhenTokenIsExpired(){
         when(jwtTokenConfig.getSigningKey()).thenReturn(SIGNING_KEY_256BIT);
         when(jwtTokenConfig.getAudience()).thenReturn(AUDIENCE, "other-audience");
         when(jwtTokenConfig.getIssuer()).thenReturn(ISSUER);
@@ -252,7 +252,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    public void shouldFailToVerifyTokenWhenTokenDoesNotContainRoleClaim() throws Exception {
+    void shouldFailToVerifyTokenWhenTokenDoesNotContainRoleClaim() throws Exception {
         var signingKey = SIGNING_KEY_256BIT;
         mockDefaultConfig(signingKey);
 
@@ -281,7 +281,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    public void shouldFailToVerifyTokenWhenConfigureSigningKeyIsNotValid(){
+    void shouldFailToVerifyTokenWhenConfigureSigningKeyIsNotValid(){
         var userDetails = mockDefaultUserDetails();
 
         when(jwtTokenConfig.getSigningKey()).thenReturn(SIGNING_KEY_256BIT, SIGNING_KEY_256BIT, "invalid-key");
