@@ -15,34 +15,25 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.text.ParseException;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class JwtTokenProvider {
 
     public static final String CLAIM_NAME_ROLES = "roles";
     private final JWTConfig jwtConfig;
-    private final String secretKeyBase64Encoded;
-    private final JWSAlgorithm jwsAlgorithm;
+    private JWSAlgorithm cachedJwsAlgorithm;
 
     public JwtTokenProvider(JWTConfig jwtConfig) {
         this.jwtConfig = jwtConfig;
-        this.secretKeyBase64Encoded = jwtConfig.getToken().getSecretKeyBase64Encoded();
-        var keyLength = secretKeyBase64Encoded.length();
-
-        if(keyLength < 48){
-            this.jwsAlgorithm = JWSAlgorithm.HS256;
-        } else if (keyLength < 64) {
-            this.jwsAlgorithm = JWSAlgorithm.HS384;
-        } else {
-            this.jwsAlgorithm = JWSAlgorithm.HS512;
-        }
     }
 
     public String createToken(UserDetails user) {
         try {
             Date now = new Date();
             Date expirationTime = new Date(now.getTime() + jwtConfig.getToken().getValidity().toMillis());
-            JWSSigner signer = new MACSigner(secretKeyBase64Encoded);
+            JWSSigner signer = new MACSigner(jwtConfig.getToken().getSigningKey());
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .subject(user.getUsername())
                     .issuer(jwtConfig.getToken().getIssuer())
@@ -52,12 +43,33 @@ public class JwtTokenProvider {
                     .claim(CLAIM_NAME_ROLES, user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                     .build();
 
-            SignedJWT signedJWT = new SignedJWT(new JWSHeader(jwsAlgorithm), claimsSet);
+            SignedJWT signedJWT = new SignedJWT(new JWSHeader(getJwsAlgorithm()), claimsSet);
             signedJWT.sign(signer);
 
             return signedJWT.serialize();
         }catch (JOSEException e){
             throw new JwtTokenCreationFailedException("Failed to create JWT token", e);
+        }
+    }
+
+    JWSAlgorithm getJwsAlgorithm(){
+        if(cachedJwsAlgorithm == null){
+            cachedJwsAlgorithm = determineJwsAlgorithmFromKey();
+        }
+        return cachedJwsAlgorithm;
+    }
+
+    private JWSAlgorithm determineJwsAlgorithmFromKey(){
+        var keyLength = jwtConfig.getToken().getSigningKey().length();
+
+        if(keyLength < 32){
+            throw new InvalidJwtSigningKeyException();
+        }else if(keyLength < 48){
+            return JWSAlgorithm.HS256;
+        } else if (keyLength < 64) {
+            return JWSAlgorithm.HS384;
+        } else {
+            return JWSAlgorithm.HS512;
         }
     }
 
@@ -67,32 +79,42 @@ public class JwtTokenProvider {
             var claimsSet = jwt.getJWTClaimsSet();
             return new User(claimsSet.getSubject(), "", claimsSet.getStringListClaim(CLAIM_NAME_ROLES).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
         } catch (ParseException e) {
-            throw new InvalidJwtTokenException("Failed to parse claims from JWT token", e);
+            throw new InvalidJwtTokenException("Failed to parse roles form JWT claim set", e);
         }
     }
 
-    private SignedJWT parseAndVerifyToken(String token) {
+    SignedJWT parseAndVerifyToken(String token) {
         try {
-            SignedJWT jwt = SignedJWT.parse(token);
+            var jwt = SignedJWT.parse(token);
+            var claimSet = jwt.getJWTClaimsSet();
+
             verifySignature(jwt);
-            verifyClaims(jwt);
+            verifyClaims(claimSet);
             return jwt;
-        }catch (ParseException | JOSEException | BadJWTException e) {
-            throw new BadCredentialsException("Expired or invalid JWT token", e);
+        }catch (ParseException e) {
+            throw new BadCredentialsException("Failed to parse JWT token; token is not valid", e);
         }
     }
 
-    private void verifySignature(SignedJWT jwt) throws JOSEException {
-        JWSVerifier verifier = new MACVerifier(secretKeyBase64Encoded);
-        if(!jwt.verify(verifier)){
-            throw new BadCredentialsException("Signature of JWT token not valid");
+    private void verifySignature(SignedJWT jwt) {
+        try {
+            var verifier = new MACVerifier(jwtConfig.getToken().getSigningKey());
+            if(!jwt.verify(verifier)){
+                throw new BadCredentialsException("Signature of JWT token not valid");
+            }
+        } catch (JOSEException e) {
+            throw new InvalidJwtSigningKeyException();
         }
     }
 
-    private void verifyClaims(SignedJWT jwt) throws ParseException, BadJWTException {
+    private void verifyClaims(JWTClaimsSet claimsSet) {
         String issuer = jwtConfig.getToken().getIssuer();
         String audience = jwtConfig.getToken().getAudience();
         var verifier = new DefaultJWTClaimsVerifier(audience, new JWTClaimsSet.Builder().issuer(issuer).build(), new HashSet<>(Arrays.asList("exp", "sub", CLAIM_NAME_ROLES)));
-        verifier.verify(jwt.getJWTClaimsSet());
+        try {
+            verifier.verify(claimsSet);
+        } catch (BadJWTException e) {
+            throw new BadCredentialsException("Expired or invalid JWT token", e);
+        }
     }
 }

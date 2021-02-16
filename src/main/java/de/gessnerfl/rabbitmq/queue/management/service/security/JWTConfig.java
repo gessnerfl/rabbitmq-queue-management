@@ -9,9 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Base64;
 
 @Component
 @ConfigurationProperties(prefix = "de.gessnerfl.security.authentication.jwt")
@@ -42,10 +40,6 @@ public class JWTConfig {
 
         public String getSigningKey() {
             return signingKey;
-        }
-
-        public String getSecretKeyBase64Encoded() {
-            return Base64.getEncoder().encodeToString(signingKey.getBytes(StandardCharsets.UTF_8));
         }
 
         public void setSigningKey(String signingKey) {
