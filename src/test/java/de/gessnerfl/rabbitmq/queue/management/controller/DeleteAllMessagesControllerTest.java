@@ -48,7 +48,7 @@ class DeleteAllMessagesControllerTest {
 
         String result = sut.deleteAllMessages(vhost, queue, model, redirectAttributes);
 
-        assertEquals(Pages.MESSAGES.redirectTo(), result);
+        assertEquals(Pages.MESSAGES.getRedirectString(), result);
 
         verify(facade).purgeQueue(vhost, queue);
         verify(redirectAttributes).addAttribute(Parameters.VHOST, vhost);

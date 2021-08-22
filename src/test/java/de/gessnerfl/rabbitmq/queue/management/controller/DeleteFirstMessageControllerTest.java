@@ -51,7 +51,7 @@ class DeleteFirstMessageControllerTest {
 
         String result = sut.deleteFirstMessage(vhost, queue, checksum, model, redirectAttributes);
 
-        assertEquals(Pages.MESSAGES.redirectTo(), result);
+        assertEquals(Pages.MESSAGES.getRedirectString(), result);
 
         verify(facade).deleteFirstMessageInQueue(vhost, queue, checksum);
         verify(redirectAttributes).addAttribute(Parameters.VHOST, vhost);

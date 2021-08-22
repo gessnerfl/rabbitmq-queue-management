@@ -54,7 +54,7 @@ public class MoveFirstMessageController {
 
         try {
             facade.moveFirstMessageInQueue(vhost, queue, checksum, targetExchange, targetRoutingKey);
-            return Pages.MESSAGES.redirectTo(vhost,queue, redirectAttributes);
+            return Pages.MESSAGES.appendRedirectAttributesAndGetRedirectString(vhost,queue, redirectAttributes);
         } catch (Exception e) {
             logger.error("Failed to move message with checksum {} from queue {} of vhost {} to target exchange {} and routing key {}", checksum, queue, vhost, targetExchange, targetRoutingKey, e);
             List<String> routingKeys = getRoutingKeysForExchange(vhost, targetExchange);

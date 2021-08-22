@@ -36,7 +36,7 @@ public class RequeueFirstMessageController {
                                              RedirectAttributes redirectAttributes){
         List<Message> messages = facade.getMessagesOfQueue(vhost, queue, 1);
         if(messages.isEmpty() || !messages.get(0).isRequeueAllowed() || !checksum.equals(messages.get(0).getChecksum())){
-            return Pages.MESSAGES.redirectTo(vhost,queue, redirectAttributes);
+            return Pages.MESSAGES.appendRedirectAttributesAndGetRedirectString(vhost,queue, redirectAttributes);
         }
         Message message = messages.get(0);
         ParameterAppender.of(model)
@@ -58,7 +58,7 @@ public class RequeueFirstMessageController {
                                       RedirectAttributes redirectAttributes){
         try {
             facade.requeueFirstMessageInQueue(vhost, queue, checksum);
-            return Pages.MESSAGES.redirectTo(vhost,queue, redirectAttributes);
+            return Pages.MESSAGES.appendRedirectAttributesAndGetRedirectString(vhost,queue, redirectAttributes);
         } catch (Exception e) {
             logger.error("Failed to requeue first message with checksum {} of queue {} of vhost{} to target exchange {} and routing key{}", checksum, queue, vhost, targetExchange, targetRoutingKey, e);
             ParameterAppender.of(model)

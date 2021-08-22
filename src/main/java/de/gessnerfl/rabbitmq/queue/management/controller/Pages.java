@@ -16,13 +16,13 @@ public enum Pages {
         return path;
     }
 
-    public String redirectTo(){
+    public String getRedirectString(){
         return "redirect:" + path;
     }
 
-    public String redirectTo(String vhost, String queue, RedirectAttributes redirectAttributes){
+    public String appendRedirectAttributesAndGetRedirectString(String vhost, String queue, RedirectAttributes redirectAttributes){
         redirectAttributes.addAttribute(Parameters.VHOST, vhost);
         redirectAttributes.addAttribute(Parameters.QUEUE, queue);
-        return redirectTo();
+        return getRedirectString();
     }
 }

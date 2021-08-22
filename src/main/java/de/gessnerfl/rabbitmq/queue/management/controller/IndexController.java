@@ -17,7 +17,7 @@ public class IndexController {
 
     @GetMapping("/")
     public String redirectToIndex(){
-        return Pages.INDEX.redirectTo();
+        return Pages.INDEX.getRedirectString();
     }
 
     @GetMapping("/index")

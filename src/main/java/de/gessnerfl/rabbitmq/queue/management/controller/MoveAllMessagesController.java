@@ -55,7 +55,7 @@ public class MoveAllMessagesController {
 
         try {
             facade.moveAllMessagesInQueue(vhost, queue, targetExchange, targetRoutingKey);
-            return Pages.MESSAGES.redirectTo(vhost,queue, redirectAttributes);
+            return Pages.MESSAGES.appendRedirectAttributesAndGetRedirectString(vhost,queue, redirectAttributes);
         } catch (Exception e) {
             logger.error("Failed to move all messages from queue {} of vhost {} to exchange {} with routing key {}", queue, vhost, targetExchange, targetRoutingKey, e);
             ParameterAppender.of(model)

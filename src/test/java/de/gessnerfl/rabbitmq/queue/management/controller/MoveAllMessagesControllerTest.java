@@ -91,7 +91,7 @@ class MoveAllMessagesControllerTest {
 
         String result = sut.moveAllMessages(vhost, queue, targetExchange, targetRoutingKey, model, redirectAttributes);
 
-        assertEquals(Pages.MESSAGES.redirectTo(), result);
+        assertEquals(Pages.MESSAGES.getRedirectString(), result);
 
         verify(facade).moveAllMessagesInQueue(vhost, queue, targetExchange, targetRoutingKey);
         verify(redirectAttributes).addAttribute(Parameters.VHOST, vhost);

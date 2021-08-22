@@ -96,7 +96,7 @@ class MoveFirstMessagesControllerTest {
 
         String result = sut.moveFirstMessage(vhost, queue, checksum, targetExchange, targetRoutingKey, model, redirectAttributes);
 
-        assertEquals(Pages.MESSAGES.redirectTo(), result);
+        assertEquals(Pages.MESSAGES.getRedirectString(), result);
 
         verify(facade).moveFirstMessageInQueue(vhost, queue, checksum, targetExchange, targetRoutingKey);
         verify(redirectAttributes).addAttribute(Parameters.VHOST, vhost);

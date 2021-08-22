@@ -71,7 +71,7 @@ class RequeueAllMessagesControllerTest {
 
         String result = sut.getRequeueAllMessagePage(vhost, queue, model, redirectAttributes);
 
-        assertEquals(Pages.MESSAGES.redirectTo(), result);
+        assertEquals(Pages.MESSAGES.getRedirectString(), result);
 
         verify(facade).getMessagesOfQueue(vhost, queue, 1);
         verify(redirectAttributes).addAttribute(Parameters.VHOST, vhost);
@@ -95,7 +95,7 @@ class RequeueAllMessagesControllerTest {
 
         String result = sut.getRequeueAllMessagePage(vhost, queue, model, redirectAttributes);
 
-        assertEquals(Pages.MESSAGES.redirectTo(), result);
+        assertEquals(Pages.MESSAGES.getRedirectString(), result);
 
         verify(facade).getMessagesOfQueue(vhost, queue, 1);
         verify(redirectAttributes).addAttribute(Parameters.VHOST, vhost);
@@ -115,7 +115,7 @@ class RequeueAllMessagesControllerTest {
 
         String result = sut.requeueAllMessages(vhost, queue, targetExchange, targetRoutingKey, model, redirectAttributes);
 
-        assertEquals(Pages.MESSAGES.redirectTo(), result);
+        assertEquals(Pages.MESSAGES.getRedirectString(), result);
 
         verify(facade).requeueAllMessagesInQueue(vhost, queue);
         verify(redirectAttributes).addAttribute(Parameters.VHOST, vhost);

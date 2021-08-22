@@ -75,7 +75,7 @@ class RequeueFirstMessagesControllerTest {
 
         String result = sut.getRequeueFirstMessagePage(vhost, queue, checksum, model, redirectAttributes);
 
-        assertEquals(Pages.MESSAGES.redirectTo(), result);
+        assertEquals(Pages.MESSAGES.getRedirectString(), result);
 
         verify(facade).getMessagesOfQueue(vhost, queue, 1);
         verify(redirectAttributes).addAttribute(Parameters.VHOST, vhost);
@@ -100,7 +100,7 @@ class RequeueFirstMessagesControllerTest {
 
         String result = sut.getRequeueFirstMessagePage(vhost, queue, checksum, model, redirectAttributes);
 
-        assertEquals(Pages.MESSAGES.redirectTo(), result);
+        assertEquals(Pages.MESSAGES.getRedirectString(), result);
 
         verify(facade).getMessagesOfQueue(vhost, queue, 1);
         verify(redirectAttributes).addAttribute(Parameters.VHOST, vhost);
@@ -125,7 +125,7 @@ class RequeueFirstMessagesControllerTest {
 
         String result = sut.getRequeueFirstMessagePage(vhost, queue, "other-checksum", model, redirectAttributes);
 
-        assertEquals(Pages.MESSAGES.redirectTo(), result);
+        assertEquals(Pages.MESSAGES.getRedirectString(), result);
 
         verify(facade).getMessagesOfQueue(vhost, queue, 1);
         verify(redirectAttributes).addAttribute(Parameters.VHOST, vhost);
@@ -146,7 +146,7 @@ class RequeueFirstMessagesControllerTest {
 
         String result = sut.requeueFirstMessage(vhost, queue, checksum, targetExchange, targetRoutingKey, model, redirectAttributes);
 
-        assertEquals(Pages.MESSAGES.redirectTo(), result);
+        assertEquals(Pages.MESSAGES.getRedirectString(), result);
 
         verify(facade).requeueFirstMessageInQueue(vhost, queue, checksum);
         verify(redirectAttributes).addAttribute(Parameters.VHOST, vhost);

@@ -28,11 +28,11 @@ public class LoginController {
     public String getLogin(HttpServletRequest request) {
         if (!authenticationConfig.isEnabled()){
             LOGGER.info("Authentication not enabled. Redirect to index page");
-            return Pages.INDEX.redirectTo();
+            return Pages.INDEX.getRedirectString();
         }
         if (securityContextService.isUserAuthenticated()) {
             LOGGER.info("User is already authenticated. Redirect to index page");
-            return Pages.INDEX.redirectTo();
+            return Pages.INDEX.getRedirectString();
         }
         return "login";
     }
