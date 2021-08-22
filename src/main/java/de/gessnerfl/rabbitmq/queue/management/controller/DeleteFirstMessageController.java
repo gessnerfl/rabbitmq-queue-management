@@ -46,7 +46,8 @@ public class DeleteFirstMessageController {
                                      RedirectAttributes redirectAttributes){
         try {
             facade.deleteFirstMessageInQueue(vhost, queue, checksum);
-            return Pages.MESSAGES.appendRedirectAttributesAndGetRedirectString(vhost,queue, redirectAttributes);
+            BasicRedirectAttributes.appendTo(redirectAttributes).vhost(vhost).queue(queue);
+            return Pages.MESSAGES.getRedirectString();
         } catch (Exception e) {
             logger.error("Failed to delete first message with checksum {} from queue {} of vhost {}", checksum, queue, vhost, e);
             ParameterAppender.of(model)

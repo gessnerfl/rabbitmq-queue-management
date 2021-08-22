@@ -20,9 +20,4 @@ public enum Pages {
         return "redirect:" + path;
     }
 
-    public String appendRedirectAttributesAndGetRedirectString(String vhost, String queue, RedirectAttributes redirectAttributes){
-        redirectAttributes.addAttribute(Parameters.VHOST, vhost);
-        redirectAttributes.addAttribute(Parameters.QUEUE, queue);
-        return getRedirectString();
-    }
 }

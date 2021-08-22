@@ -35,7 +35,8 @@ public class RequeueAllMessagesController {
                                            RedirectAttributes redirectAttributes){
         List<Message> messages = facade.getMessagesOfQueue(vhost, queue, 1);
         if(messages.isEmpty() || !messages.get(0).isRequeueAllowed()){
-            return Pages.MESSAGES.appendRedirectAttributesAndGetRedirectString(vhost,queue, redirectAttributes);
+            BasicRedirectAttributes.appendTo(redirectAttributes).vhost(vhost).queue(queue);
+            return Pages.MESSAGES.getRedirectString();
         }
         Message message = messages.get(0);
         ParameterAppender.of(model)
@@ -55,7 +56,8 @@ public class RequeueAllMessagesController {
                                      RedirectAttributes redirectAttributes){
         try {
             facade.requeueAllMessagesInQueue(vhost, queue);
-            return Pages.MESSAGES.appendRedirectAttributesAndGetRedirectString(vhost,queue, redirectAttributes);
+            BasicRedirectAttributes.appendTo(redirectAttributes).vhost(vhost).queue(queue);
+            return Pages.MESSAGES.getRedirectString();
         } catch (Exception e) {
             logger.error("Failed to requeue all messages from queue {} of vhost {} to target exchange {} and routing key {}", queue, vhost, targetExchange, targetRoutingKey, e);
             ParameterAppender.of(model)
