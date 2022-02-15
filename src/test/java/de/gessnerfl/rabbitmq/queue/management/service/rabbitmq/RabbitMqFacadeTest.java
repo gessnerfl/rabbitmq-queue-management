@@ -101,7 +101,7 @@ class RabbitMqFacadeTest {
         sut.purgeQueue(VHOST, QUEUE);
 
         verify(managementApi).purgeQueue(VHOST, QUEUE);
-        verifyZeroInteractions(managementApi, operations);
+        verifyNoMoreInteractions(managementApi, operations);
     }
 
     @Test
@@ -109,7 +109,7 @@ class RabbitMqFacadeTest {
         sut.deleteFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
         
         verify(operations).deleteFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
-        verifyZeroInteractions(managementApi, operations);
+        verifyNoMoreInteractions(managementApi, operations);
     }
 
     @Test
@@ -117,7 +117,7 @@ class RabbitMqFacadeTest {
         sut.moveAllMessagesInQueue(VHOST, QUEUE, EXCHANGE, ROUTING_KEY);
         
         verify(operations).moveAllMessagesInQueue(VHOST, QUEUE, EXCHANGE, ROUTING_KEY);
-        verifyZeroInteractions(managementApi, operations);
+        verifyNoMoreInteractions(managementApi, operations);
     }
 
     @Test
@@ -125,7 +125,7 @@ class RabbitMqFacadeTest {
         sut.moveFirstMessageInQueue(VHOST, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
 
         verify(operations).moveFirstMessageInQueue(VHOST, QUEUE, CHECKSUM, EXCHANGE, ROUTING_KEY);
-        verifyZeroInteractions(managementApi, operations);
+        verifyNoMoreInteractions(managementApi, operations);
     }
 
     @Test
@@ -133,7 +133,7 @@ class RabbitMqFacadeTest {
         sut.requeueAllMessagesInQueue(VHOST, QUEUE);
 
         verify(operations).requeueAllMessagesInQueue(VHOST, QUEUE);
-        verifyZeroInteractions(managementApi, operations);
+        verifyNoMoreInteractions(managementApi, operations);
     }
 
     @Test
@@ -141,6 +141,6 @@ class RabbitMqFacadeTest {
         sut.requeueFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
 
         verify(operations).requeueFirstMessageInQueue(VHOST, QUEUE, CHECKSUM);
-        verifyZeroInteractions(managementApi, operations);
+        verifyNoMoreInteractions(managementApi, operations);
     }
 }

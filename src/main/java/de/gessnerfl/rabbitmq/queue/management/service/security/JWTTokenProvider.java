@@ -110,7 +110,7 @@ public class JWTTokenProvider {
         String audience = jwtConfig.getToken().getAudience();
         var verifier = new DefaultJWTClaimsVerifier(audience, new JWTClaimsSet.Builder().issuer(issuer).build(), new HashSet<>(Arrays.asList("exp", "sub", CLAIM_NAME_ROLES)));
         try {
-            verifier.verify(claimsSet);
+            verifier.verify(claimsSet, null);
         } catch (BadJWTException e) {
             throw new BadCredentialsException("Expired or invalid JWT token", e);
         }
