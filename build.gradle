@@ -25,9 +25,6 @@ project.version = scmVersion.version
 ext.scmUrl = 'git@github.com:gessnerfl/rabbitmq-queue-management.git'
 ext.projectUrl = 'https://github.com/gessnerfl/rabbitmq-queue-management'
 
-//compileJava.options.fork = true
-//compileJava.options.forkOptions.executable = '/usr/java/openjdk/jdk-17/bin/java'
-
 sourceCompatibility = 17
 targetCompatibility = 17
 
@@ -82,14 +79,14 @@ test {
   useJUnitPlatform()
 }
 
-//jacocoTestReport {
-//  dependsOn test
-//  reports {
-//    xml.enabled true
-//    csv.enabled false
-//    html.enabled true
-//  }
-//}
+jacocoTestReport {
+  dependsOn test
+  reports {
+    xml.enabled true
+    csv.enabled false
+    html.enabled true
+  }
+}
 
 sonarqube {
   properties {
