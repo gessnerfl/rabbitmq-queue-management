@@ -104,6 +104,7 @@ de:
       managemnetPortSecured: false     #Indicator if the management interface is accessible via http (false) or https (true)
       username: guest                  #Username for connection to rabbitmq host
       password: guest                  #Password for connection to rabbitmq host
+      useSsl: false                    #Enable SSL/TLS for the connection to RabbitMQ
 ```
 
 ## LDAP Authentication
