@@ -17,6 +17,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 17
+          distribution: corretto
       - name: Build with Gradle
         run: ./gradlew build jacocoTestReport sonarqube --info
         env:
