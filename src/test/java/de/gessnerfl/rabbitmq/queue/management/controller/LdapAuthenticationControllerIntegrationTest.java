@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(initializers = { LdapAuthenticationControllerIntegrationTest.Initializer.class } )
 class LdapAuthenticationControllerIntegrationTest {
 
-    private static int randomLdapPort = SocketUtils.findAvailableTcpPort(49152, 65535);
+    private static final int RANDOM_LDAP_PORT = SocketUtils.findAvailableTcpPort(49152, 65535);
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -42,7 +42,7 @@ class LdapAuthenticationControllerIntegrationTest {
     static class Initializer
             implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            TestPropertyValues.of("de.gessnerfl.security.authentication.ldap.contextSource.port=" + randomLdapPort)
+            TestPropertyValues.of("de.gessnerfl.security.authentication.ldap.contextSource.port=" + RANDOM_LDAP_PORT)
                     .applyTo(configurableApplicationContext.getEnvironment());
         }
     }

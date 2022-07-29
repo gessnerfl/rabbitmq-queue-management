@@ -6,6 +6,8 @@ import org.apache.commons.codec.Charsets;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,7 +25,7 @@ class StateKeepingReturnListenerTest {
         final String exchange = "exchange";
         final String routingKey = "routingKey";
         final AMQP.BasicProperties properties = MessageProperties.BASIC;
-        final byte[] body = "body".getBytes(Charsets.UTF_8);
+        final byte[] body = "body".getBytes(StandardCharsets.UTF_8);
 
         StateKeepingReturnListener sut = new StateKeepingReturnListener(operation, logger);
         assertFalse(sut.isReceived());
