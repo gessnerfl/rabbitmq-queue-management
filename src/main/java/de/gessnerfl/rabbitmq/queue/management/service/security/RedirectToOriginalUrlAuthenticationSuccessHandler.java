@@ -23,7 +23,7 @@ public class RedirectToOriginalUrlAuthenticationSuccessHandler  extends SimpleUr
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         var targetUrl = super.determineTargetUrl(request, response, authentication);
         if (UrlUtils.isAbsoluteUrl(targetUrl)) {
-            LOGGER.warn("Absolute target URL {} identified and suppressed", targetUrl);
+            LOGGER.warn("Absolute target URL {} identified and suppressed", targetUrl.replaceAll("[\n\r\t]", "_"));
             return DEFAULT_TARGET_URL;
         }
         return targetUrl;
