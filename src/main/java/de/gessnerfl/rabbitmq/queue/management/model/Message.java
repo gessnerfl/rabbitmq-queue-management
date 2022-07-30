@@ -28,11 +28,11 @@ public class Message {
     this.checksum = checksum;
 
     if(properties.getHeaders() != null && properties.getHeaders().get(X_DEATH_HEADER) != null){
-      List xDeathList = (List) (properties.getHeaders().get(X_DEATH_HEADER));
+      List<Map<String,Object>> xDeathList = (List<Map<String,Object>>) (properties.getHeaders().get(X_DEATH_HEADER));
       if(!xDeathList.isEmpty()) {
-        Map xdeath = (Map) xDeathList.get(0);
-        String exchange = (String) xdeath.get(XDEATH_HEADER_EXCHANGE_FIELD);
-        String routingKey = (String) (xdeath.get(XDEATH_HEADER_ROUTING_KEYS_FIELD) != null && !((List) xdeath.get(XDEATH_HEADER_ROUTING_KEYS_FIELD)).isEmpty() ? ((List) xdeath.get(XDEATH_HEADER_ROUTING_KEYS_FIELD)).get(0) : null);
+        Map<String,Object> xdeath = xDeathList.get(0);
+        String exchange = (String)xdeath.get(XDEATH_HEADER_EXCHANGE_FIELD);
+        String routingKey = (String) (xdeath.get(XDEATH_HEADER_ROUTING_KEYS_FIELD) != null && !((List<?>) xdeath.get(XDEATH_HEADER_ROUTING_KEYS_FIELD)).isEmpty() ? ((List<?>) xdeath.get(XDEATH_HEADER_ROUTING_KEYS_FIELD)).get(0) : null);
         if (StringUtils.hasText(exchange) && StringUtils.hasText(routingKey)) {
           requeueDetails = new RequeueDetails(exchange, routingKey);
         }
