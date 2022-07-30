@@ -78,6 +78,9 @@ public class MessageOperationExecutor {
             }
         } catch (MessageOperationFailedException e) {
             throw e;
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+            throw new MessageOperationFailedException(e);
         } catch (Exception e) {
             throw new MessageOperationFailedException(e);
         }
@@ -108,6 +111,9 @@ public class MessageOperationExecutor {
             }
         } catch (MessageOperationFailedException e) {
             throw e;
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+            throw new MessageOperationFailedException(e);
         } catch (Exception e) {
             throw new MessageOperationFailedException(e);
         }
