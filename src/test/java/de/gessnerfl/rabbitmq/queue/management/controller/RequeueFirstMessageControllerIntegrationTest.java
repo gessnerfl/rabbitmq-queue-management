@@ -10,15 +10,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private static final String VHOST_NAME = "/";
@@ -27,6 +27,8 @@ class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerInt
     private static final String QUEUE_1_DLX_NAME = "test1-dlx.controller.in";
     private static final int MESSAGE_TTL_OF_QUEUE1 = 100;
     private static final String QUEUE_2_NAME = "test2.controller.in";
+    public static final int MESSAGE_WAIT_OPERATION_TIME = 50;
+    public static final int MESSAGE_LIMIT = 10;
 
     @Autowired
     private RabbitMqTestEnvironmentBuilderFactory testEnvironmentBuilderFactor;
@@ -65,13 +67,13 @@ class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerInt
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         //wait until message is dead lettered
-        await().atMost(Duration.ofMillis(MESSAGE_TTL_OF_QUEUE1 + 50))
-                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10).size() == 2);
+        await().atMost(MESSAGE_TTL_OF_QUEUE1 + MESSAGE_WAIT_OPERATION_TIME, TimeUnit.MILLISECONDS)
+                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT).size() == 2);
 
-        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, 10), empty());
-        List<Message> initialMessages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10);
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, MESSAGE_LIMIT), empty());
+        List<Message> initialMessages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT);
         assertThat(initialMessages, hasSize(2));
-        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_2_NAME, 10), empty());
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_2_NAME, MESSAGE_LIMIT), empty());
 
         mockMvc.perform(get("/messages/requeue-first")
                     .param(Parameters.VHOST, VHOST_NAME)
@@ -97,7 +99,7 @@ class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerInt
     @Test
     void shouldReturnToMessagePageWhenFirstMessageInQueueDoesNotSupportRequeuing() throws Exception {
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_2_NAME, 2);
-        List<Message> initialMessages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_2_NAME, 10);
+        List<Message> initialMessages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_2_NAME, MESSAGE_LIMIT);
 
         mockMvc.perform(get("/messages/requeue-first")
                     .param(Parameters.VHOST, VHOST_NAME)
@@ -112,11 +114,11 @@ class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerInt
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         //wait until message is dead lettered
-        await().atMost(Duration.ofMillis(MESSAGE_TTL_OF_QUEUE1 + 50))
-                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10).size() == 2);
+        await().atMost(MESSAGE_TTL_OF_QUEUE1 + MESSAGE_WAIT_OPERATION_TIME, TimeUnit.MILLISECONDS)
+                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT).size() == 2);
 
-        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, 10), empty());
-        List<Message> initialMessages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10);
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, MESSAGE_LIMIT), empty());
+        List<Message> initialMessages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT);
         assertThat(initialMessages, hasSize(2));
 
         mockMvc.perform(post("/messages/requeue-first")
@@ -128,8 +130,8 @@ class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerInt
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/messages?vhost=%2F&queue=test1-dlx.controller.in"));
 
-        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, 10), hasSize(1));
-        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10), hasSize(1));
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, MESSAGE_LIMIT), hasSize(1));
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT), hasSize(1));
     }
 
     @Test
@@ -137,15 +139,15 @@ class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerInt
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         //wait until message is dead lettered
-        await().atMost(Duration.ofMillis(MESSAGE_TTL_OF_QUEUE1 + 50))
-                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10).size() == 2);
+        await().atMost(MESSAGE_TTL_OF_QUEUE1 + MESSAGE_WAIT_OPERATION_TIME, TimeUnit.MILLISECONDS)
+                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT).size() == 2);
 
-        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, 10), empty());
-        List<Message> initialMessages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10);
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, MESSAGE_LIMIT), empty());
+        List<Message> initialMessages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT);
         assertThat(initialMessages, hasSize(2));
 
         facade.deleteFirstMessageInQueue(VHOST_NAME, QUEUE_1_DLX_NAME, initialMessages.get(0).getChecksum());
-        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10), hasSize(1));
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT), hasSize(1));
 
         mockMvc.perform(post("/messages/requeue-first")
                     .param(Parameters.VHOST, VHOST_NAME)
@@ -162,7 +164,7 @@ class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerInt
                 .andExpect(model().attribute(Parameters.TARGET_ROUTING_KEY, QUEUE_1_NAME))
                 .andExpect(model().attribute(Parameters.ERROR_MESSAGE, notNullValue(String.class)));
 
-        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, 10), empty());
-        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10), hasSize(1));
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, MESSAGE_LIMIT), empty());
+        assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT), hasSize(1));
     }
 }
