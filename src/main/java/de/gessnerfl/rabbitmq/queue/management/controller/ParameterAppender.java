@@ -58,8 +58,4 @@ public class ParameterAppender {
         return this;
     }
 
-    public ParameterAppender messages(List<Message> messages){
-        model.addAttribute(Parameters.MESSAGES, messages);
-        return this;
-    }
 }

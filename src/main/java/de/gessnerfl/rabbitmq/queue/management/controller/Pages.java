@@ -7,12 +7,8 @@ public enum Pages {
 
     private String path;
 
-    private Pages(String path){
+    Pages(String path){
         this.path=path;
-    }
-
-    public String path(){
-        return path;
     }
 
     public String getRedirectString(){
