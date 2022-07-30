@@ -60,8 +60,8 @@ public class MessageMapper {
             return value.toString();
         }else if(value instanceof Map){
             Map<String,Object> result = new HashMap<>();
-            Set<Map.Entry> entrySet = ((Map) value).entrySet();
-            for(Map.Entry e : entrySet){
+            Set<Map.Entry<?,?>> entrySet = ((Map) value).entrySet();
+            for(Map.Entry<?,?> e : entrySet){
                 result.put(e.getKey().toString(), mapRabbitMqSpecificType(e.getValue()));
             }
             return result;

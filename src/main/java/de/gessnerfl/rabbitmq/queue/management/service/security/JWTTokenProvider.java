@@ -107,7 +107,7 @@ public class JWTTokenProvider {
     private void verifyClaims(JWTClaimsSet claimsSet) {
         String issuer = jwtConfig.getToken().getIssuer();
         String audience = jwtConfig.getToken().getAudience();
-        var verifier = new DefaultJWTClaimsVerifier(audience, new JWTClaimsSet.Builder().issuer(issuer).build(), new HashSet<>(Arrays.asList("exp", "sub", CLAIM_NAME_ROLES)));
+        var verifier = new DefaultJWTClaimsVerifier<>(audience, new JWTClaimsSet.Builder().issuer(issuer).build(), new HashSet<>(Arrays.asList("exp", "sub", CLAIM_NAME_ROLES)));
         try {
             verifier.verify(claimsSet, null);
         } catch (BadJWTException e) {

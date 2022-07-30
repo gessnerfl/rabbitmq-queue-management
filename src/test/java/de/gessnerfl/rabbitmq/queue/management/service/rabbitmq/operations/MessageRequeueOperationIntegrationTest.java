@@ -22,12 +22,13 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @DirtiesContext
 @ExtendWith(SpringExtension.class)
@@ -89,7 +90,8 @@ class MessageRequeueOperationIntegrationTest {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_NAME);
 
         //wait until message is dead lettered
-        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+        await().atMost(Duration.ofMillis(MESSAGE_TTL_OF_QUEUE + 10))
+                .until(() -> queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10).size() == 1);
 
         List<Message> queueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 10);
         List<Message> dlxQueueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
@@ -106,7 +108,8 @@ class MessageRequeueOperationIntegrationTest {
         assertThat(dlxQueueMessagesSecondFetch, empty());
 
         //wait until message is again dead lettered
-        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+        await().atMost(Duration.ofMillis(MESSAGE_TTL_OF_QUEUE + 10))
+                .until(() -> queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10).size() == 1);
 
         List<Message> queueMessagesThirdFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 10);
         List<Message> dlxQueueMessagesThirdFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
@@ -260,7 +263,8 @@ class MessageRequeueOperationIntegrationTest {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_NAME);
 
         //wait until message is dead lettered
-        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+        await().atMost(Duration.ofMillis(MESSAGE_TTL_OF_QUEUE + 10))
+                .until(() -> queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10).size() == 1);
 
         List<Message> dlxQueueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
         assertThat(dlxQueueMessagesFirstFetch, hasSize(1));
@@ -269,7 +273,8 @@ class MessageRequeueOperationIntegrationTest {
         sut.requeueFirstMessage(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, dlxQueueMessagesFirstFetch.get(0).getChecksum());
 
         //wait until message is again dead lettered
-        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+        await().atMost(Duration.ofMillis(MESSAGE_TTL_OF_QUEUE + 10))
+                .until(() -> queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10).size() == 1);
 
         List<Message> dlxQueueMessagesSecondFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
         assertThat(dlxQueueMessagesSecondFetch, hasSize(1));
@@ -279,7 +284,8 @@ class MessageRequeueOperationIntegrationTest {
         sut.requeueFirstMessage(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, dlxQueueMessagesSecondFetch.get(0).getChecksum());
 
         //wait until message is again dead lettered
-        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+        await().atMost(Duration.ofMillis(MESSAGE_TTL_OF_QUEUE + 10))
+                .until(() -> queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10).size() == 1);
 
         List<Message> dlxQueueMessagesThirdFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
         assertThat(dlxQueueMessagesThirdFetch, hasSize(1));
@@ -294,7 +300,8 @@ class MessageRequeueOperationIntegrationTest {
         testEnvironment.publishMessage(EXCHANGE_NAME, QUEUE_NAME);
 
         //wait until message is dead lettered
-        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+        await().atMost(Duration.ofMillis(MESSAGE_TTL_OF_QUEUE + 10))
+                .until(() -> queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10).size() == 2);
 
         List<Message> queueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 10);
         List<Message> dlxQueueMessagesFirstFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);
@@ -311,7 +318,8 @@ class MessageRequeueOperationIntegrationTest {
         assertThat(dlxQueueMessagesSecondFetch, empty());
 
         //wait until message is again dead lettered
-        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE+10);
+        await().atMost(Duration.ofMillis(MESSAGE_TTL_OF_QUEUE + 10))
+                .until(() -> queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10).size() == 2);
 
         List<Message> queueMessagesThirdFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, QUEUE_NAME, 10);
         List<Message> dlxQueueMessagesThirdFetch = queueListOperation.getMessagesFromQueue(RabbitMqTestEnvironment.VHOST, DLX_QUEUE_NAME, 10);

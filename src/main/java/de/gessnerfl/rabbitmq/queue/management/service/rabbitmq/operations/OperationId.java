@@ -8,7 +8,7 @@ public class OperationId {
     private final String value;
 
     public OperationId() {
-        this.value = UUID.randomUUID().toString().replaceAll("-", "");
+        this.value = UUID.randomUUID().toString().replace("-", "");
     }
 
     public String getValue() {

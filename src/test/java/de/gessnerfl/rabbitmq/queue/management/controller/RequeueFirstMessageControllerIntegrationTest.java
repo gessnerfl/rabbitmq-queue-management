@@ -10,14 +10,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerIntegrationTest {
     private static final String VHOST_NAME = "/";
@@ -64,7 +65,8 @@ class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerInt
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         //wait until message is dead lettered
-        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE1 + 50);
+        await().atMost(Duration.ofMillis(MESSAGE_TTL_OF_QUEUE1 + 50))
+                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10).size() == 2);
 
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, 10), empty());
         List<Message> initialMessages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10);
@@ -110,7 +112,8 @@ class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerInt
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         //wait until message is dead lettered
-        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE1 + 50);
+        await().atMost(Duration.ofMillis(MESSAGE_TTL_OF_QUEUE1 + 50))
+                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10).size() == 2);
 
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, 10), empty());
         List<Message> initialMessages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10);
@@ -134,7 +137,8 @@ class RequeueFirstMessageControllerIntegrationTest extends AbstractControllerInt
         testEnvironment.publishMessages(EXCHANGE_NAME, QUEUE_1_NAME, 2);
 
         //wait until message is dead lettered
-        TimeUnit.MILLISECONDS.sleep(MESSAGE_TTL_OF_QUEUE1 + 50);
+        await().atMost(Duration.ofMillis(MESSAGE_TTL_OF_QUEUE1 + 50))
+                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10).size() == 2);
 
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, 10), empty());
         List<Message> initialMessages = facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, 10);
