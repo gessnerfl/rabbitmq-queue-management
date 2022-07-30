@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/messages/move-all")
@@ -74,7 +73,7 @@ public class MoveAllMessagesController {
                 .stream()
                 .map(Binding::getRoutingKey)
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
         ParameterAppender.of(model)
                 .vhost(vhost)
                 .queue(queue)

@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class JWTTokenProvider {
 
@@ -38,7 +37,7 @@ public class JWTTokenProvider {
                     .audience(jwtConfig.getToken().getAudience())
                     .issueTime(now)
                     .expirationTime(expirationTime)
-                    .claim(CLAIM_NAME_ROLES, user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                    .claim(CLAIM_NAME_ROLES, user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                     .build();
 
             SignedJWT signedJWT = new SignedJWT(new JWSHeader(getJwsAlgorithm()), claimsSet);
@@ -75,7 +74,7 @@ public class JWTTokenProvider {
         try {
             var jwt = parseAndVerifyToken(token);
             var claimsSet = jwt.getJWTClaimsSet();
-            return new User(claimsSet.getSubject(), "", claimsSet.getStringListClaim(CLAIM_NAME_ROLES).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+            return new User(claimsSet.getSubject(), "", claimsSet.getStringListClaim(CLAIM_NAME_ROLES).stream().map(SimpleGrantedAuthority::new).toList());
         } catch (ParseException e) {
             throw new InvalidJWTTokenException("Failed to parse roles form JWT claim set", e);
         }
