@@ -1,7 +1,11 @@
 package de.gessnerfl.rabbitmq.queue.management.controller;
 
+import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Queue;
+import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironment;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilder;
 import de.gessnerfl.rabbitmq.queue.management.util.RabbitMqTestEnvironmentBuilderFactory;
+import org.hamcrest.CustomMatcher;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,9 +44,25 @@ public class IndexControllerIntegrationTest extends AbstractControllerIntegratio
         try {
             mockMvc.perform(get("/index"))
                     .andExpect(status().isOk())
-                    .andExpect(model().attribute("queues", containsInAnyOrder(QUEUE_1_NAME, QUEUE_2_NAME)));
+                    .andExpect(model().attribute("queues", containsInAnyOrder(matchesQueue(QUEUE_1_NAME), matchesQueue(QUEUE_2_NAME))));
         } finally {
             testEnvironment.cleanup();
         }
+    }
+
+    private Matcher<Queue> matchesQueue(String name) {
+        return matchesQueue(name, RabbitMqTestEnvironment.VHOST);
+    }
+
+    private Matcher<Queue> matchesQueue(String name, String vhost) {
+        return new CustomMatcher<Queue>("matches when name and vhost of queue matches") {
+            @Override
+            public boolean matches(Object actual) {
+                if (actual instanceof Queue) {
+                    return ((Queue) actual).getName().equals(name) && ((Queue) actual).getVhost().equals(vhost);
+                }
+                return false;
+            }
+        };
     }
 }
