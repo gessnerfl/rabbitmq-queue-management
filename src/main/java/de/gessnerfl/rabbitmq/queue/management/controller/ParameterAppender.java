@@ -1,6 +1,5 @@
 package de.gessnerfl.rabbitmq.queue.management.controller;
 
-import de.gessnerfl.rabbitmq.queue.management.model.Message;
 import de.gessnerfl.rabbitmq.queue.management.model.remoteapi.Exchange;
 import org.springframework.ui.Model;
 
