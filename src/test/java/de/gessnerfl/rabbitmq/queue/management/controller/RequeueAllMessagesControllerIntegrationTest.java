@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
@@ -25,7 +24,7 @@ class RequeueAllMessagesControllerIntegrationTest extends AbstractControllerInte
     private static final String EXCHANGE_NAME = "test.ex";
     private static final String QUEUE_1_NAME = "test1.controller.in";
     private static final String QUEUE_1_DLX_NAME = "test1-dlx.controller.in";
-    private static final int MESSAGE_TTL_OF_QUEUE1 = 150;
+    private static final int MESSAGE_TTL_OF_QUEUE1 = 250;
     private static final String QUEUE_2_NAME = "test2.controller.in";
     public static final int MESSAGE_OPERATION_WAIT_TIME = 150;
     public static final int MESSAGE_LIMIT = 10;
@@ -68,7 +67,9 @@ class RequeueAllMessagesControllerIntegrationTest extends AbstractControllerInte
 
         //wait until message is dead lettered
         await().atMost(MESSAGE_TTL_OF_QUEUE1 + MESSAGE_OPERATION_WAIT_TIME, TimeUnit.MILLISECONDS)
-                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT).size() == 2);
+                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT).size() == 2 &&
+                        facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, MESSAGE_LIMIT).isEmpty() &&
+                        facade.getMessagesOfQueue(VHOST_NAME, QUEUE_2_NAME, MESSAGE_LIMIT).isEmpty());
 
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, MESSAGE_LIMIT), empty());
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT), hasSize(2));
@@ -109,7 +110,8 @@ class RequeueAllMessagesControllerIntegrationTest extends AbstractControllerInte
 
         //wait until message is dead lettered
         await().atMost(MESSAGE_TTL_OF_QUEUE1 + MESSAGE_OPERATION_WAIT_TIME, TimeUnit.MILLISECONDS)
-                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT).size() == 2);
+                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT).size() == 2 &&
+                        facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, MESSAGE_LIMIT).isEmpty());
 
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, MESSAGE_LIMIT), empty());
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT), hasSize(2));
@@ -124,7 +126,8 @@ class RequeueAllMessagesControllerIntegrationTest extends AbstractControllerInte
 
         //Wait until message is requeued
         await().atMost(MESSAGE_OPERATION_WAIT_TIME, TimeUnit.MILLISECONDS)
-                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, MESSAGE_LIMIT).size() == 2 && facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT).isEmpty());
+                .until(() -> facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, MESSAGE_LIMIT).size() == 2 &&
+                        facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT).isEmpty());
 
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_NAME, MESSAGE_LIMIT), hasSize(2));
         assertThat(facade.getMessagesOfQueue(VHOST_NAME, QUEUE_1_DLX_NAME, MESSAGE_LIMIT), empty());
