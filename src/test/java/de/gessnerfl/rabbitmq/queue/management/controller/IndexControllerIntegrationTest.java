@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class IndexControllerIntegrationTest extends AbstractControllerIntegrationTest {
+class IndexControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     public static final String EXCHANGE_NAME = "exchange";
     public static final String QUEUE_1_NAME = "queue1";
@@ -22,14 +22,14 @@ public class IndexControllerIntegrationTest extends AbstractControllerIntegratio
     private RabbitMqTestEnvironmentBuilderFactory testEnvironmentBuilderFactor;
 
     @Test
-    public void shouldRedirectToIndexPageOnRoot() throws Exception {
+    void shouldRedirectToIndexPageOnRoot() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/index"));
     }
 
     @Test
-    public void shouldReturnListOfQueuesOnIndexPage() throws Exception {
+    void shouldReturnListOfQueuesOnIndexPage() throws Exception {
         RabbitMqTestEnvironmentBuilder builder = testEnvironmentBuilderFactor.create();
         var testEnvironment = builder.withExchange(EXCHANGE_NAME)
                 .withQueue(QUEUE_1_NAME)
