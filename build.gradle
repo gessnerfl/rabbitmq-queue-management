@@ -40,7 +40,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-devtools'
   implementation('org.springframework.boot:spring-boot-starter-validation')
 
-  implementation 'com.nimbusds:nimbus-jose-jwt:9.23'
+  implementation 'com.nimbusds:nimbus-jose-jwt:9.24'
 
   implementation 'io.github.openfeign:feign-core:11.9.1'
   implementation 'io.github.openfeign:feign-gson:11.9.1'
