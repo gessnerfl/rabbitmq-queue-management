@@ -39,8 +39,8 @@
 					<div class="d-flex w-100 border-bottom border-info mb-1">
 						<h5 class="mb-1 flex-grow-1">Message&nbsp;<span th:text="${it.count}"></span></h5>
 						<span>
-                        <span class="badge badge-light" th:if="${m.isMoved()}"><span class="badge badge-pill badge-light border border-secondary" th:text="${m.getMovedCount() + 'x'}"></span>&nbsp;moved</span>
-                        <span class="badge badge-light" th:if="${m.isRequeued()}"><span class="badge badge-pill badge-light border border-secondary" th:text="${m.getRequeueCount() + 'x'}"></span>&nbsp;re-queued</span>
+                        <span class="badge bg-light text-dark" th:if="${m.isMoved()}"><span class="badge rounded-pill border border-secondary text-dark" th:text="${m.getMovedCount() + 'x'}"></span>&nbsp;moved</span>
+                        <span class="badge bg-light text-dark" th:if="${m.isRequeued()}"><span class="badge rounded-pill border border-secondary text-dark" th:text="${m.getRequeueCount() + 'x'}"></span>&nbsp;re-queued</span>
                     </span>
 					</div>
 					<div class="mb-1">
@@ -91,5 +91,6 @@
 	  });
 	});
 </script>
+<script th:src="@{/webjars/bootstrap/5.2.0/dist/js/bootstrap.min.js}"></script>
 </body>
 </html>
