@@ -7,6 +7,10 @@ body .login-form {
     padding-top: 40px;
 }
 
+.bg-navbar {
+    background-color: #343a40;
+}
+
 .amqp-message .amqp-message-content > .row > div {
     border-bottom: 1px solid #e0e0e0;
     padding: 5px 15px;
