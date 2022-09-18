@@ -17,11 +17,11 @@
 <div class="container main">
 	<div class="row">
 		<div class="col-12 mb-4">
-			<h1><span class="text-secondary">Queue</span>&nbsp;<span th:text="${queue}"></span><span class="text-secondary">| Virtual host</span>&nbsp;<span th:text="${vhost}"></span></h1>
+			<h1><span class="text-secondary">Queue</span>&nbsp;<span th:text="${queue}"></span><span class="text-secondary"> | Virtual host</span>&nbsp;<span th:text="${vhost}"></span></h1>
 
 			<div class="card">
 				<div class="card-body">
-					<h4 class="card-title">Move all Messages</h4>
+					<h4 class="card-title">Move all messages</h4>
 
 					<div class="alert alert-danger" role="alert" th:if="${errorMessage != null}">
 						<p class="mb-0"><b><i class="oi oi-warning"></i>&nbsp;Error:</b>&nbsp;<span th:text="${errorMessage}"></span></p>
@@ -32,8 +32,8 @@
 						<h5>Step 1/2 - Select Target Exchange</h5>
 						<input type="hidden" name="vhost" th:value="${vhost}" />
 						<input type="hidden" name="queue" th:value="${queue}" />
-						<div class="form-group">
-							<label for="targetExchangeSelect">Target Exchange:</label>
+						<div class="form-group mb-3">
+							<label for="targetExchangeSelect" class="mb-2">Target Exchange:</label>
 							<select  class="form-control" id="targetExchangeSelect" name="targetExchange">
 								<option th:each="e : ${exchanges}" th:value="${e.name}" th:text="${e.name}"></option>
 							</select>
@@ -48,12 +48,12 @@
 						<input type="hidden" name="vhost" th:value="${vhost}" />
 						<input type="hidden" name="queue" th:value="${queue}" />
 						<input type="hidden" name="targetExchange" th:value="${targetExchange}" />
-						<div class="form-group">
-							<label for="targetExchangeText">Target Exchange:</label>
+						<div class="form-group mb-3">
+							<label for="targetExchangeText" class="mb-2">Target Exchange:</label>
 							<input  class="form-control" id="targetExchangeText" type="text" name="targetExchangeText" th:value="${targetExchange}" disabled="disabled" />
 						</div>
-						<div class="form-group">
-							<label for="targetRoutingKeySelect">Target Routing Key:</label>
+						<div class="form-group mb-3">
+							<label for="targetRoutingKeySelect" class="mb-2">Target Routing Key:</label>
 							<select class="form-control"  id="targetRoutingKeySelect" name="targetRoutingKey">
 								<option th:each="rk : ${routingKeys}" th:value="${rk}" th:text="${rk}">	</option>
 							</select>

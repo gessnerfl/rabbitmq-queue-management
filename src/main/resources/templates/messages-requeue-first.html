@@ -17,22 +17,21 @@
 <div class="container main">
 	<div class="row">
 		<div class="col-12 mb-4">
-			<h1><span class="text-secondary">Queue</span>&nbsp;<span th:text="${queue}"></span><span class="text-secondary">| Virtual host</span>&nbsp;<span th:text="${vhost}"></span></h1>
+			<h1><span class="text-secondary">Queue</span>&nbsp;<span th:text="${queue}"></span><span class="text-secondary"> | Virtual host</span>&nbsp;<span th:text="${vhost}"></span></h1>
 
 			<div class="card">
 				<div class="card-body">
-					<h4 class="card-title">Requeue first Messages</h4>
+					<h4 class="card-title">Requeue first message</h4>
 
 					<div class="alert alert-danger" role="alert" th:if="${errorMessage != null}">
 						<p class="mb-0"><b><i class="oi oi-warning"></i>&nbsp;Error:</b>&nbsp;<span th:text="${errorMessage}"></span></p>
 					</div>
 
 					<p>Requeue first message of queue <b th:text="${queue}"></b></p>
-					<p><b>Checksum:</b></p>
-					<pre th:text="${checksum}"></pre>
 
-					<h6>Target Routing:</h6>
 					<dl class="row">
+						<dt class="col-sm-6">Checksum</dt>
+						<dd class="col-sm-6" th:text="${checksum}"></dd>
 						<dt class="col-sm-6">Target Exchange</dt>
 						<dd class="col-sm-6" th:text="${targetExchange}"></dd>
 						<dt class="col-sm-6">Target Routing Key</dt>

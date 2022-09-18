@@ -13,12 +13,14 @@
 </head>
 
 <body class="bg-light">
-<nav class="navbar navbar-default navbar-expand-lg navbar-expand-m navbar-fixed-top navbar-dark bg-dark">
-	<span class="navbar-brand"><img alt="RabbitMQ Icon" src="@{/gfx/rmq.png}" width="24px" height="24px" style="display: inline-block"/>&nbsp;RabbitMQ :: Queue Management</span>
+<nav class="navbar navbar-expand-lg navbar-expand-m navbar-fixed-top navbar-dark bg-navbar">
+	<div class="container-fluid">
+		<span class="navbar-brand"><img alt="RabbitMQ Icon" th:src="@{/gfx/rmq.png}" width="24px" height="24px" style="display: inline-block"/>&nbsp;RabbitMQ :: Queue Management</span>
+	</div>
 </nav>
 
 <main class="login-form">
-	<div class="cotainer">
+	<div class="container">
 		<div class="row justify-content-center">
 			<div class="col-md-8">
 				<div class="card">
@@ -30,15 +32,15 @@
 								<span th:text="${login_error_msg}">Invalid username or password</span>
 							</div>
 
-							<div class="form-group row">
-								<label for="username" class="col-md-4 col-form-label text-md-right">Username</label>
+							<div class="form-group row mb-3">
+								<label for="username" class="col-md-4 col-form-label text-md-right mb-2">Username</label>
 								<div class="col-md-6">
 									<input type="text" id="username" class="form-control" name="username" required autofocus>
 								</div>
 							</div>
 
-							<div class="form-group row">
-								<label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
+							<div class="form-group row mb-3">
+								<label for="password" class="col-md-4 col-form-label text-md-right mb-2">Password</label>
 								<div class="col-md-6">
 									<input type="password" id="password" class="form-control" name="password" required>
 								</div>

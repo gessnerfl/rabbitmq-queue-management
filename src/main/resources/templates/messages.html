@@ -18,14 +18,14 @@
 <div class="container main">
 	<div class="row">
 		<div class="col-12 mb-4">
-			<h1><span class="text-secondary">Queue</span>&nbsp;<span th:text="${queue}"></span><span class="text-secondary">| Virtual host</span>&nbsp;<span th:text="${vhost}"></span></h1>
+			<h1><span class="text-secondary">Queue</span>&nbsp;<span th:text="${queue}"></span><span class="text-secondary"> | Virtual host</span>&nbsp;<span th:text="${vhost}"></span></h1>
 			<h2>Messages:</h2>
 			<div th:if="${#lists.isEmpty(messages)}">
 				<div class="alert alert-info" role="alert">Queue is empty</div>
 			</div>
 
 			<div class="btn-toolbar mt-2 mb-2" th:if="${not #lists.isEmpty(messages)}">
-				<div class="btn-group mr-2" role="group">
+				<div class="btn-group me-2" role="group">
 					<a th:if="${messages[0].isRequeueAllowed()}" class="btn btn-sm btn-primary" th:href="@{/messages/requeue-all(queue=${queue},vhost=${vhost})}"><span class="oi oi-loop-square" aria-hidden="true"></span>&nbsp;Requeue All</a>
 					<a class="btn btn-sm btn-primary" th:href="@{/messages/move-all(queue=${queue},vhost=${vhost})}"><span class="oi oi-share" aria-hidden="true"></span>&nbsp;Move All</a>
 				</div>
@@ -62,10 +62,14 @@
 								<div class="col-8"><pre class="mb-0"><code th:text="${m.formatBody()}">{{ renderBody(m) }}</code></pre></div>
 							</div>
 						</div>
-						<div class="btn-group float-right" role="group" th:if="${it.first}">
-							<a th:if="${m.isRequeueAllowed()}" class="btn btn-sm btn-primary" th:href="@{/messages/requeue-first(queue=${queue},vhost=${vhost},checksum=${m.checksum})}"><span class="oi oi-loop-square" aria-hidden="true"></span>&nbsp;Requeue</a>
-							<a class="btn btn-sm btn-primary" th:href="@{/messages/move-first(queue=${queue},vhost=${vhost},checksum=${m.checksum})}"><span class="oi oi-share" aria-hidden="true"></span>&nbsp;Move</a>
-							<a class="btn btn-sm btn-danger" th:href="@{/messages/delete-first(queue=${queue},vhost=${vhost},checksum=${m.checksum})}"><span class="oi oi-trash" aria-hidden="true"></span>&nbsp;Delete</a>
+						<div class="btn-toolbar float-end" role="group" th:if="${it.first}">
+							<div class="btn-group me-2">
+								<a th:if="${m.isRequeueAllowed()}" class="btn btn-sm btn-primary" th:href="@{/messages/requeue-first(queue=${queue},vhost=${vhost},checksum=${m.checksum})}"><span class="oi oi-loop-square" aria-hidden="true"></span>&nbsp;Requeue</a>
+								<a class="btn btn-sm btn-primary" th:href="@{/messages/move-first(queue=${queue},vhost=${vhost},checksum=${m.checksum})}"><span class="oi oi-share" aria-hidden="true"></span>&nbsp;Move</a>
+							</div>
+							<div class="btn-group" role="group">
+								<a class="btn btn-sm btn-danger" th:href="@{/messages/delete-first(queue=${queue},vhost=${vhost},checksum=${m.checksum})}"><span class="oi oi-trash" aria-hidden="true"></span>&nbsp;Delete</a>
+							</div>
 						</div>
 					</div>
 				</li>

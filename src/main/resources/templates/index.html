@@ -23,7 +23,7 @@
 				<strong>Warning!</strong> No queues are available. Check your configuration
 			</div>
 			<table th:if="${not #lists.isEmpty(queues)}" class="table table-bordered table-sm mt-4">
-				<thead class="thead-light">
+				<thead class="table-queues">
 				<tr>
 					<th rowspan="2">Vhost</th>
 					<th rowspan="2">Name</th>
@@ -41,16 +41,16 @@
 				<tbody>
 				<tr th:each="queue : ${queues}">
 					<td th:text="${queue.vhost}"></td>
-					<td><a th:href="@{/messages(queue=${queue.name},vhost=${queue.vhost})}" th:text="${queue.name}">}</a></td>
+					<td><a th:href="@{/messages(queue=${queue.name},vhost=${queue.vhost})}" th:text="${queue.name}" class="text-decoration-none">}</a></td>
 					<td th:text="${queue.state}"></td>
 					<td th:text="${queue.consumers}"></td>
 					<td th:text="${queue.messages}"></td>
 					<td th:text="${queue.messagesReady}"></td>
 					<td th:text="${queue.messagesUnacknowledged}"></td>
 					<td>
-						<span th:if="${queue.durable}" class="badge badge-success">D</span>
-						<span th:if="${queue.isDeadLetterExchangeConfigured()}" class="badge badge-secondary">DLX</span>
-						<span th:if="${queue.isDeadLetterRoutingKeyConfigured()}" class="badge badge-secondary">DLK</span>
+						<span th:if="${queue.durable}" class="badge bg-success">D</span>
+						<span th:if="${queue.isDeadLetterExchangeConfigured()}" class="badge bg-secondary">DLX</span>
+						<span th:if="${queue.isDeadLetterRoutingKeyConfigured()}" class="badge bg-secondary">DLK</span>
 					</td>
 				</tr>
 				</tbody>
