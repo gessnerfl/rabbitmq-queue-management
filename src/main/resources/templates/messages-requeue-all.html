@@ -3,7 +3,7 @@
 <head>
 	<link rel="stylesheet" th:href="@{/webjars/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css}"/>
 	<link rel="stylesheet" th:href="@{/css/customization.css}"/>
-	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.6.0/dist/css/bootstrap.min.css}"/>
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/dist/css/bootstrap.min.css}"/>
 
 	<title>RabbitMQ :: Queue Management</title>
 
@@ -17,11 +17,11 @@
 <div class="container main">
 	<div class="row">
 		<div class="col-12 mb-4">
-			<h1><span class="text-secondary">Queue</span>&nbsp;<span th:text="${queue}"></span><span class="text-secondary">| Virtual host</span>&nbsp;<span th:text="${vhost}"></span></h1>
+			<h1><span class="text-secondary">Queue</span>&nbsp;<span th:text="${queue}"></span><span class="text-secondary"> | Virtual host</span>&nbsp;<span th:text="${vhost}"></span></h1>
 
 			<div class="card">
 				<div class="card-body">
-					<h4 class="card-title">Requeue all Messages</h4>
+					<h4 class="card-title">Requeue all messages</h4>
 
 					<div class="alert alert-danger" role="alert" th:if="${errorMessage != null}">
 						<p class="mb-0"><b><i class="oi oi-warning"></i>&nbsp;Error:</b>&nbsp;<span th:text="${errorMessage}"></span></p>
@@ -29,7 +29,7 @@
 
 					<p>Requeue all message of queue <b th:text="${queue}"></b></p>
 
-					<h6>Target Routing based on First Message</h6>
+					<div class="alert alert-warning"><strong>Warning! </strong>Target routing for all is based on the first message</div>
 					<dl class="row">
 						<dt class="col-sm-6">Target Exchange</dt>
 						<dd class="col-sm-6" th:text="${targetExchange}"></dd>
@@ -48,11 +48,11 @@
 							<button type="submit" class="btn btn-primary">Yes</button>
 						</div>
 					</form>
-
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+<script th:src="@{/webjars/bootstrap/5.2.0/dist/js/bootstrap.min.js}"></script>
 </body>
 </html>
