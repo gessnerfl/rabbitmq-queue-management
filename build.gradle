@@ -42,7 +42,7 @@ dependencies {
 
   implementation 'com.nimbusds:nimbus-jose-jwt:9.25.1'
 
-  implementation 'io.github.openfeign:feign-core:11.9.1'
+  implementation 'io.github.openfeign:feign-core:11.10'
   implementation 'io.github.openfeign:feign-gson:11.9.1'
   implementation 'io.github.openfeign:feign-slf4j:11.9.1'
 
