@@ -3,7 +3,7 @@
 <head>
 	<link rel="stylesheet" th:href="@{/webjars/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css}"/>
 	<link rel="stylesheet" th:href="@{/css/customization.css}"/>
-	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.6.0/dist/css/bootstrap.min.css}"/>
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/dist/css/bootstrap.min.css}"/>
 
 	<title>RabbitMQ :: Queue Management</title>
 
@@ -17,13 +17,13 @@
 <div class="container main">
 	<div class="row">
 		<div class="col-12 mb-4">
-			<h1><span class="text-secondary">Queue</span>&nbsp;<span th:text="${queue}"></span><span class="text-secondary">| Virtual host</span>&nbsp;<span th:text="${vhost}"></span></h1>
+			<h1><span class="text-secondary">Queue</span>&nbsp;<span th:text="${queue}"></span><span class="text-secondary"> | Virtual host</span>&nbsp;<span th:text="${vhost}"></span></h1>
 			<div class="alert alert-danger" role="alert" th:if="${errorMessage != null}">
 				<p class="mb-0"><b><i class="oi oi-warning"></i>&nbsp;Error:</b>&nbsp;<span th:text="${errorMessage}"></span></p>
 			</div>
 
 			<div class="alert alert-danger" role="alert">
-				<h4 class="alert-heading">Delete All Messages:</h4>
+				<h4 class="alert-heading">Delete all messages:</h4>
 				<p>Do you really want to delete all messages in queue <b th:text="${queue}"></b>?</p>
 				<hr>
 				<form class="form-inline" th:action="@{/messages/delete-all}" method="post">
@@ -38,5 +38,6 @@
 		</div>
 	</div>
 </div>
+<script th:src="@{/webjars/bootstrap/5.2.0/dist/js/bootstrap.min.js}"></script>
 </body>
 </html>

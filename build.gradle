@@ -1,6 +1,6 @@
 plugins {
   id 'pl.allegro.tech.build.axion-release' version '1.14.1'
-  id 'org.springframework.boot' version '2.7.3'
+  id 'org.springframework.boot' version '2.7.4'
   id "org.sonarqube" version "3.4.0.2513"
 }
 
@@ -40,11 +40,11 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-devtools'
   implementation('org.springframework.boot:spring-boot-starter-validation')
 
-  implementation 'com.nimbusds:nimbus-jose-jwt:9.25.1'
+  implementation 'com.nimbusds:nimbus-jose-jwt:9.25.4'
 
-  implementation 'io.github.openfeign:feign-core:11.9.1'
-  implementation 'io.github.openfeign:feign-gson:11.9.1'
-  implementation 'io.github.openfeign:feign-slf4j:11.9.1'
+  implementation 'io.github.openfeign:feign-core:11.10'
+  implementation 'io.github.openfeign:feign-gson:11.10'
+  implementation 'io.github.openfeign:feign-slf4j:11.10'
 
   implementation 'com.google.code.gson:gson:2.9.1'
   implementation 'commons-codec:commons-codec:1.15'
