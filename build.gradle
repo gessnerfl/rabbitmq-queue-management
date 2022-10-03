@@ -119,5 +119,9 @@ jib{
   to {
     image = 'gessnerfl/rabbitmq-queue-management'
     tags = [scmVersion.version, 'latest']
+    auth {
+      username = DOCKERHUB_USERNAME
+      password = DOCKERHUB_TOKEN
+    }
   }
 }
