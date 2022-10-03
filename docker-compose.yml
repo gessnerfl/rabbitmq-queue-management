@@ -10,7 +10,7 @@ services:
       - "5672:5672"
 
   app:
-    image: gessnerfl/rabbitmq-queue-management:latest
+    image: gessnerfl/rabbitmq-queue-management:1.2.2
     container_name: rabbitmq-queue-management
     hostname: rabbitmq-queue-management
     ports:
