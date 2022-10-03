@@ -60,7 +60,9 @@ jobs:
           asset_content_type: application/java-archive
 
       - name: Setup Login to DockerHub
-        run: echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}\nDOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }}" > ./gradle.properties
+        run: |
+             sed -i 's/docker_hub_username/${{ secrets.DOCKERHUB_USERNAME }}/' ./gradle.properties
+             sed -i 's/docker_hub_token/${{ secrets.DOCKERHUB_TOKEN }}/' ./gradle.properties
 
       - name: Build and Push docker images
         run: ./gradlew jib
