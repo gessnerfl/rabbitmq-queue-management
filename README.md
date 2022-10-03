@@ -23,6 +23,11 @@ To use the application the **RabbitMQ Management Plugin** has to be activated.
 The application is based on Spring Boot. For more details please also consult the Spring Boot Documentation 
 (http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle).
 
+The application is also provided as docker image on docker hub [gessnerfl/rabbitmq-queue-management](https://hub.docker.com/r/gessnerfl/rabbitmq-queue-management/).
+To change configuration parameters the corresponding configuration values have to be specified as environment variables for the docker container.
+For details check the Spring Boot (http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-external-config)
+and docker documentation (https://docs.docker.com/engine/reference/run/#env-environment-variables).
+
 ## Operations
 The following paragraphs describe the different implementations in more details.
 
