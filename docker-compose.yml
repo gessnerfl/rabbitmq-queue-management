@@ -6,16 +6,27 @@ services:
     container_name: rabbitmq
     hostname: rabbitmq
     ports:
-      - 15672:15672
-      - 5672:5672
+      - "15672:15672"
+      - "5672:5672"
+
+  app:
+    image: gessnerfl/rabbitmq-queue-management:latest
+    container_name: rabbitmq-queue-management
+    hostname: rabbitmq-queue-management
+    ports:
+      - "8780:8780"
+    environment:
+      DE_GESSNERFL_RABBITMQ_HOSTNAME: rabbitmq
+      DE_GESSNERFL_RABBITMQ_USERNAME: tester
+      DE_GESSNERFL_RABBITMQ_PASSWORD: Test1234
 
   openldap:
     image: osixia/openldap:1.4.0
     container_name: openldap
     hostname: openldap
     ports:
-      - 389:389
-      - 636:636
+      - "389:389"
+      - "636:636"
     environment:
       LDAP_ORGANISATION: "gessnerfl"
       LDAP_DOMAIN: "gessnerfl.de"
