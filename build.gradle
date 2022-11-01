@@ -101,7 +101,7 @@ sonarqube {
 
 jib{
   from {
-    image = 'amazoncorretto:17.0.4-al2'
+    image = 'amazoncorretto:17.0.5-al2'
     container {
       ports = ["8780", "8781"]
       creationTime='USE_CURRENT_TIMESTAMP'
