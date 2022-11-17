@@ -61,7 +61,7 @@ dependencies {
   testImplementation 'org.springframework.security:spring-security-test'
   testImplementation 'org.hamcrest:hamcrest-core:2.2'
   testImplementation 'org.awaitility:awaitility:4.2.0'
-  testImplementation 'org.testcontainers:testcontainers:1.17.5'
+  testImplementation 'org.testcontainers:testcontainers:1.17.6'
   testImplementation 'org.testcontainers:junit-jupiter:1.17.5'
   testImplementation 'org.apache.commons:commons-lang3:3.12.0'
 }
