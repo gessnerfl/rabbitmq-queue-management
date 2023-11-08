@@ -1,6 +1,7 @@
 package de.gessnerfl.rabbitmq.queue.management.controller;
 
 import de.gessnerfl.rabbitmq.queue.management.javaconfig.LdapAuthWebSecurityConfig;
+import jakarta.servlet.Filter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,12 +14,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.TestSocketUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.SocketUtils;
 import org.springframework.web.context.WebApplicationContext;
-
-import javax.servlet.Filter;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(initializers = { LdapAuthenticationControllerIntegrationTest.Initializer.class } )
 class LdapAuthenticationControllerIntegrationTest {
 
-    private static final int RANDOM_LDAP_PORT = SocketUtils.findAvailableTcpPort(49152, 65535);
+    private static final int RANDOM_LDAP_PORT = TestSocketUtils.findAvailableTcpPort();
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext webApplicationContext;

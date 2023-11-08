@@ -1,12 +1,11 @@
 package de.gessnerfl.rabbitmq.queue.management.service.security;
 
 import de.gessnerfl.rabbitmq.queue.management.javaconfig.LdapAuthWebSecurityConfig;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.util.UrlUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public class RedirectToOriginalUrlAuthenticationSuccessHandler  extends SimpleUrlAuthenticationSuccessHandler {
     private static final String DEFAULT_TARGET_URL = "/";
