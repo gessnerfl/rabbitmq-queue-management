@@ -7,7 +7,7 @@ de:
           user-search-base: ou=people
           user-search-filter: (uid={0})
           group-search-base: ou=groups
-          group-search-filter: member={0}
+          group-search-filter: (member={0})
           context-source:
             root: dc=gessnerfl,dc=de
             port: 389

@@ -22,8 +22,6 @@ import org.springframework.security.web.context.HttpRequestResponseHolder;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -59,7 +57,6 @@ class CookieSecurityContextRepositoryTest {
         assertEquals(userDetails, result.getAuthentication().getPrincipal());
         assertEquals("", result.getAuthentication().getCredentials());
         assertEquals(roles, result.getAuthentication().getAuthorities());
-        assertThat(requestResponseHolder.getResponse(), instanceOf(CookieSecurityContextRepository.SaveToCookieResponseWrapper.class));
         verify(jwtTokenProvider).getUserDetailsFromToken(token);
         verifyNoMoreInteractions(jwtTokenProvider);
     }
@@ -75,7 +72,6 @@ class CookieSecurityContextRepositoryTest {
         var result = sut.loadContext(requestResponseHolder);
 
         assertNull(result.getAuthentication());
-        assertThat(requestResponseHolder.getResponse(), instanceOf(CookieSecurityContextRepository.SaveToCookieResponseWrapper.class));
         verifyNoInteractions(jwtTokenProvider);
     }
 
@@ -92,7 +88,6 @@ class CookieSecurityContextRepositoryTest {
         var result = sut.loadContext(requestResponseHolder);
 
         assertNull(result.getAuthentication());
-        assertThat(requestResponseHolder.getResponse(), instanceOf(CookieSecurityContextRepository.SaveToCookieResponseWrapper.class));
         verifyNoInteractions(jwtTokenProvider);
     }
 
@@ -116,7 +111,6 @@ class CookieSecurityContextRepositoryTest {
         } catch (Exception e){
             assertSame(expectedException, e);
         }
-        assertThat(requestResponseHolder.getResponse(), instanceOf(CookieSecurityContextRepository.SaveToCookieResponseWrapper.class));
     }
 
     @Test
@@ -179,7 +173,6 @@ class CookieSecurityContextRepositoryTest {
     void shouldSetCookieWhenSaveContextIsRequestedAndUserIsAuthenticatedAndTokenIsCreatedSuccessfully(String contextPath){
         var request = mock(HttpServletRequest.class);
         var response = mock(HttpServletResponse.class);
-        var wrappedResponse = new CookieSecurityContextRepository.SaveToCookieResponseWrapper(request, response, jwtTokenProvider, logger);
         var context = mock(SecurityContext.class);
         var token = "token";
         var authentication = mock(Authentication.class);
@@ -191,7 +184,7 @@ class CookieSecurityContextRepositoryTest {
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(jwtTokenProvider.createToken(userDetails)).thenReturn(token);
 
-        sut.saveContext(context, request, wrappedResponse);
+        sut.saveContext(context, request, response);
 
         verify(jwtTokenProvider).createToken(userDetails);
 
@@ -200,7 +193,7 @@ class CookieSecurityContextRepositoryTest {
         var cookie = cookieArgumentCaptor.getValue();
         assertEquals(LdapAuthWebSecurityConfig.JWT_TOKEN_COOKIE_NAME, cookie.getName());
         assertEquals(token, cookie.getValue());
-        assertEquals(contextPath.equals("") ? "/" : contextPath, cookie.getPath());
+        assertEquals(contextPath.isEmpty() ? "/" : contextPath, cookie.getPath());
         assertTrue(cookie.getSecure());
         assertTrue(cookie.isHttpOnly());
     }
@@ -209,12 +202,11 @@ class CookieSecurityContextRepositoryTest {
     void shouldNotSetCookieWhenSaveContextIsRequestedAndAuthenticationIsMissing(){
         var request = mock(HttpServletRequest.class);
         var response = mock(HttpServletResponse.class);
-        var wrappedResponse = new CookieSecurityContextRepository.SaveToCookieResponseWrapper(request, response, jwtTokenProvider, logger);
         var context = mock(SecurityContext.class);
 
         when(context.getAuthentication()).thenReturn(null);
 
-        sut.saveContext(context, request, wrappedResponse);
+        sut.saveContext(context, request, response);
 
         verify(logger).debug(contains("No user authenticated"));
         verifyNoInteractions(jwtTokenProvider);
@@ -225,14 +217,13 @@ class CookieSecurityContextRepositoryTest {
     void shouldNotSetCookieWhenSaveContextIsRequestedAndAnonymousUserIsAuthenticated(){
         var request = mock(HttpServletRequest.class);
         var response = mock(HttpServletResponse.class);
-        var wrappedResponse = new CookieSecurityContextRepository.SaveToCookieResponseWrapper(request, response, jwtTokenProvider, logger);
         var context = mock(SecurityContext.class);
         var authentication = mock(Authentication.class);
 
         when(context.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(LdapAuthWebSecurityConfig.ANONYMOUS_USER);
 
-        sut.saveContext(context, request, wrappedResponse);
+        sut.saveContext(context, request, response);
 
         verify(logger).debug(contains("Anonymous User"));
         verifyNoInteractions(jwtTokenProvider);
@@ -243,14 +234,13 @@ class CookieSecurityContextRepositoryTest {
     void shouldNotSetCookieWhenSaveContextIsRequestedAndPrincipalIsOfUnsupportedType(){
         var request = mock(HttpServletRequest.class);
         var response = mock(HttpServletResponse.class);
-        var wrappedResponse = new CookieSecurityContextRepository.SaveToCookieResponseWrapper(request, response, jwtTokenProvider, logger);
         var context = mock(SecurityContext.class);
         var authentication = mock(Authentication.class);
 
         when(context.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn("invalid-principal");
 
-        sut.saveContext(context, request, wrappedResponse);
+        sut.saveContext(context, request, response);
 
         verify(logger).warn(contains("Principal of unsupported type"), anyString());
         verifyNoInteractions(jwtTokenProvider);
@@ -261,7 +251,6 @@ class CookieSecurityContextRepositoryTest {
     void shouldThrowExceptionWhenSaveContextIsRequestedAndJWTTokenCannotBeCreated(){
         var request = mock(HttpServletRequest.class);
         var response = mock(HttpServletResponse.class);
-        var wrappedResponse = new CookieSecurityContextRepository.SaveToCookieResponseWrapper(request, response, jwtTokenProvider, logger);
         var context = mock(SecurityContext.class);
         var authentication = mock(Authentication.class);
         var userDetails = mock(UserDetails.class);
@@ -272,7 +261,7 @@ class CookieSecurityContextRepositoryTest {
         when(jwtTokenProvider.createToken(userDetails)).thenThrow(expectedException);
 
         try {
-            sut.saveContext(context, request, wrappedResponse);
+            sut.saveContext(context, request, response);
             fail();
         } catch (JWTTokenCreationFailedException e){
             assertSame(expectedException, e);
@@ -280,14 +269,5 @@ class CookieSecurityContextRepositoryTest {
 
         verify(jwtTokenProvider).createToken(userDetails);
         verify(response, never()).addCookie(any(Cookie.class));
-    }
-
-    @Test
-    void shouldFailToSaveContextWhenResponseIsNotASaveToCookieResponseWrapper(){
-        var request = mock(HttpServletRequest.class);
-        var response = mock(HttpServletResponse.class);
-        var context = mock(SecurityContext.class);
-
-        assertThrows(ClassCastException.class, () -> sut.saveContext(context, request, response));
     }
 }

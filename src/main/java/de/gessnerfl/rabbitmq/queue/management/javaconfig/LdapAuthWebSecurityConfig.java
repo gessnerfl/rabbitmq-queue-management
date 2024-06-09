@@ -10,7 +10,6 @@ import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.ldap.EmbeddedLdapServerContextSourceFactoryBean;
@@ -69,7 +68,7 @@ public class LdapAuthWebSecurityConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "de.gessnerfl.security.authentication.ldap", name = "url", matchIfMissing = false)
+    @ConditionalOnProperty(prefix = "de.gessnerfl.security.authentication.ldap.context-source", name = "ldif", matchIfMissing = true)
     public ContextSource contextSource() {
         LdapContextSource contextSource = new LdapContextSource();
         contextSource.setUrl(ldapAuthenticationConfig.getContextSource().getUrl());
@@ -81,7 +80,7 @@ public class LdapAuthWebSecurityConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "de.gessnerfl.security.authentication.ldap", name = "url", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "de.gessnerfl.security.authentication.ldap.context-source", name = "ldif", matchIfMissing = false)
     public EmbeddedLdapServerContextSourceFactoryBean embeddedLdapServerContextSourceFactoryBean() {
         EmbeddedLdapServerContextSourceFactoryBean bean = EmbeddedLdapServerContextSourceFactoryBean.fromEmbeddedLdapServer();
         bean.setPort(ldapAuthenticationConfig.getContextSource().getPort());

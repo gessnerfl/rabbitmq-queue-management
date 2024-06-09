@@ -36,22 +36,41 @@ public class CookieSecurityContextRepository implements SecurityContextRepositor
     @Override
     public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
         var request = requestResponseHolder.getRequest();
-        var response = requestResponseHolder.getResponse();
-        requestResponseHolder.setResponse(new SaveToCookieResponseWrapper(request, response, jwtTokenProvider, LoggerFactory.getLogger(SaveToCookieResponseWrapper.class)));
-
         var context = SecurityContextHolder.createEmptyContext();
-        readUserInfoFromCookie(request).ifPresent(userDetails ->
-                context.setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, EMPTY_CREDENTIALS, userDetails.getAuthorities())));
-
+        readUserInfoFromCookie(request).ifPresent(userDetails -> context.setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, EMPTY_CREDENTIALS, userDetails.getAuthorities())));
         return context;
     }
 
     @Override
     public void saveContext(SecurityContext context, HttpServletRequest request, HttpServletResponse response) {
-        SaveToCookieResponseWrapper responseWrapper = (SaveToCookieResponseWrapper) response;
-        if (!responseWrapper.isContextSaved()) {
-            responseWrapper.saveContext(context);
+        Authentication authentication = context.getAuthentication();
+        if (authentication == null) {
+            logger.debug("No user authenticated, skip saveContext");
+            return;
         }
+
+        if (LdapAuthWebSecurityConfig.ANONYMOUS_USER.equals(authentication.getPrincipal())) {
+            logger.debug("Anonymous User logged in, skip saveContext");
+            return;
+        }
+
+        if (!(authentication.getPrincipal() instanceof UserDetails userDetails)) {
+            logger.warn("Principal of unsupported type {}, skip saveContext", authentication.getPrincipal().getClass().getCanonicalName());
+            return;
+        }
+
+        var jwtToken = jwtTokenProvider.createToken(userDetails);
+        var cookie = new Cookie(LdapAuthWebSecurityConfig.JWT_TOKEN_COOKIE_NAME, jwtToken);
+        cookie.setSecure(request.isSecure());
+        cookie.setHttpOnly(true);
+        cookie.setPath(getCookiePath(request));
+        response.addCookie(cookie);
+        logger.debug("SecurityContext for principal '{}' saved in Cookie", userDetails.getUsername());
+    }
+
+    private static String getCookiePath(HttpServletRequest request) {
+        String contextPath = request.getContextPath();
+        return StringUtils.hasText(contextPath) ? contextPath : "/";
     }
 
     @Override
@@ -77,52 +96,5 @@ public class CookieSecurityContextRepository implements SecurityContextRepositor
             logger.debug("No {} cookie in request", LdapAuthWebSecurityConfig.JWT_TOKEN_COOKIE_NAME);
         }
         return maybeCookie;
-    }
-
-    static class SaveToCookieResponseWrapper extends SaveContextOnUpdateOrErrorResponseWrapper {
-        private final Logger logger;
-        private final HttpServletRequest request;
-        private final JWTTokenProvider jwtTokenProvider;
-
-        SaveToCookieResponseWrapper(HttpServletRequest request, HttpServletResponse response, JWTTokenProvider jwtTokenProvider, Logger logger) {
-            super(response, true);
-            this.request = request;
-            this.jwtTokenProvider = jwtTokenProvider;
-            this.logger = logger;
-        }
-
-        @Override
-        protected void saveContext(SecurityContext securityContext) {
-            HttpServletResponse response = (HttpServletResponse) getResponse();
-            Authentication authentication = securityContext.getAuthentication();
-            if (authentication == null) {
-                logger.debug("No user authenticated, skip saveContext");
-                return;
-            }
-
-            if (LdapAuthWebSecurityConfig.ANONYMOUS_USER.equals(authentication.getPrincipal())) {
-                logger.debug("Anonymous User logged in, skip saveContext");
-                return;
-            }
-
-            if (!(authentication.getPrincipal() instanceof UserDetails)) {
-                logger.warn("Principal of unsupported type {}, skip saveContext", authentication.getPrincipal().getClass().getCanonicalName());
-                return;
-            }
-
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            var jwtToken = jwtTokenProvider.createToken(userDetails);
-            var cookie = new Cookie(LdapAuthWebSecurityConfig.JWT_TOKEN_COOKIE_NAME, jwtToken);
-            cookie.setSecure(request.isSecure());
-            cookie.setHttpOnly(true);
-            cookie.setPath(getCookiePath(request));
-            response.addCookie(cookie);
-            logger.debug("SecurityContext for principal '{}' saved in Cookie", userDetails.getUsername());
-        }
-
-        private static String getCookiePath(HttpServletRequest request) {
-            String contextPath = request.getContextPath();
-            return StringUtils.hasText(contextPath) ? contextPath : "/";
-        }
     }
 }
