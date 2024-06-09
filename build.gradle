@@ -87,7 +87,7 @@ sonar {
   properties {
     property 'sonar.host.url', 'https://sonarcloud.io'
     property 'sonar.organization', 'gessnerfl-github'
-    property "sonar.projectName", "RabbitMQ Queue Managment"
+    property "sonar.projectName", "RabbitMQ Queue Management"
     property "sonar.projectKey", "de.gessnerfl.rabbitmq-queue-management"
   }
 }
