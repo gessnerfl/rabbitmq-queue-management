@@ -112,27 +112,6 @@ de:
       useSsl: false                    #Enable SSL/TLS for the connection to RabbitMQ
 ```
 
-## LDAP Authentication
-The following snippet shows the configuration of the optional LDAP Authentication. By default authentication is disabled.
-
-```yaml
-de:
-  gessnerfl:
-    security:
-      authentication:
-        enabled: true #enable authentication. By default authentication is disabled
-        ldap:
-          user-search-base:  ou=users,ou=myorg,dc=example,dc=com    #ldap user search base 
-          user-search-filter: (uid={0})                             #ldap user search filter
-          group-search-base: ou=groups,ou=myorg,dc=example,dc=com   #ldap group search base
-          group-search-filter: member={0}                           #ldap group search filter
-          contextSource:
-            url: ldap://mylap.example.com:389   #ldap server URL
-            root: dc=example,dc=com             #ldap root DN
-            managerDn: manager                  #ldap manager DN
-            managerPassword: fXLREqUsc6Ies      #ldap manager DN password
-```
-
 ## Web UI
 The following snippet shows the pre-defined web application configuration
 

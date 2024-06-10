@@ -1,8 +1,8 @@
 plugins {
-  id 'pl.allegro.tech.build.axion-release' version '1.14.2'
-  id 'org.springframework.boot' version '2.7.5'
-  id "org.sonarqube" version "3.5.0.2730"
-  id 'com.google.cloud.tools.jib' version '3.3.1'
+  id 'pl.allegro.tech.build.axion-release' version '1.17.2'
+  id 'org.springframework.boot' version '3.3.0'
+  id "org.sonarqube" version "5.0.0.4638"
+  id 'com.google.cloud.tools.jib' version '3.4.3'
 }
 
 //apply plugin: 'java-library'
@@ -34,36 +34,29 @@ repositories { mavenCentral() }
 dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
   implementation 'org.springframework.boot:spring-boot-starter-web'
-  implementation 'org.springframework.boot:spring-boot-starter-security'
-  implementation 'org.springframework.security:spring-security-ldap'
   implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-  implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
   implementation 'org.springframework.boot:spring-boot-devtools'
   implementation('org.springframework.boot:spring-boot-starter-validation')
 
-  implementation 'com.nimbusds:nimbus-jose-jwt:9.25.6'
+  implementation 'io.github.openfeign:feign-core:13.2.1'
+  implementation 'io.github.openfeign:feign-gson:13.2.1'
+  implementation 'io.github.openfeign:feign-slf4j:13.2.1'
 
-  implementation 'io.github.openfeign:feign-core:12.1'
-  implementation 'io.github.openfeign:feign-gson:12.1'
-  implementation 'io.github.openfeign:feign-slf4j:12.1'
-
-  implementation 'com.google.code.gson:gson:2.10'
-  implementation 'commons-codec:commons-codec:1.15'
+  implementation 'com.google.code.gson:gson:2.11.0'
+  implementation 'commons-codec:commons-codec:1.17.0'
 
   implementation 'org.webjars.bowergithub.caldwell:renderjson:1.4.0'
-  implementation 'org.webjars.bower:bootstrap:5.2.2'
+  implementation 'org.webjars.bower:bootstrap:5.3.3'
   implementation 'org.webjars.bower:open-iconic:1.1.1'
 
-  implementation 'com.rabbitmq:amqp-client:5.16.0'
+  implementation 'com.rabbitmq:amqp-client:5.21.0'
 
-  testImplementation 'com.unboundid:unboundid-ldapsdk:6.0.6'
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
-  testImplementation 'org.springframework.security:spring-security-test'
-  testImplementation 'org.hamcrest:hamcrest-core:2.2'
-  testImplementation 'org.awaitility:awaitility:4.2.0'
-  testImplementation 'org.testcontainers:testcontainers:1.17.6'
-  testImplementation 'org.testcontainers:junit-jupiter:1.17.6'
-  testImplementation 'org.apache.commons:commons-lang3:3.12.0'
+  testImplementation 'org.hamcrest:hamcrest:2.2'
+  testImplementation 'org.awaitility:awaitility:4.2.1'
+  testImplementation 'org.testcontainers:testcontainers:1.19.8'
+  testImplementation 'org.testcontainers:junit-jupiter:1.19.8'
+  testImplementation 'org.apache.commons:commons-lang3:3.14.0'
 }
 
 java {
@@ -90,18 +83,18 @@ jacocoTestReport {
   }
 }
 
-sonarqube {
+sonar {
   properties {
     property 'sonar.host.url', 'https://sonarcloud.io'
     property 'sonar.organization', 'gessnerfl-github'
-    property "sonar.projectName", "RabbitMQ Queue Managment"
+    property "sonar.projectName", "RabbitMQ Queue Management"
     property "sonar.projectKey", "de.gessnerfl.rabbitmq-queue-management"
   }
 }
 
 jib{
   from {
-    image = 'amazoncorretto:17.0.5-al2'
+    image = 'amazoncorretto:17.0.11-al2023-headless'
     container {
       ports = ["8780", "8781"]
       creationTime='USE_CURRENT_TIMESTAMP'
