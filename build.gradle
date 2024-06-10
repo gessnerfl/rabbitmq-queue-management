@@ -94,7 +94,7 @@ sonar {
 
 jib{
   from {
-    image = 'amazoncorretto:17.0.9-al2023-headless'
+    image = 'amazoncorretto:17.0.11-al2023-headless'
     container {
       ports = ["8780", "8781"]
       creationTime='USE_CURRENT_TIMESTAMP'
