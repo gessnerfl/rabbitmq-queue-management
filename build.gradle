@@ -40,7 +40,7 @@ dependencies {
 
   implementation 'io.github.openfeign:feign-core:13.2.1'
   implementation 'io.github.openfeign:feign-gson:13.2.1'
-  implementation 'io.github.openfeign:feign-slf4j:13.2.1'
+  implementation 'io.github.openfeign:feign-slf4j:13.4'
 
   implementation 'com.google.code.gson:gson:2.11.0'
   implementation 'commons-codec:commons-codec:1.17.0'
