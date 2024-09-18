@@ -38,7 +38,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-devtools'
   implementation('org.springframework.boot:spring-boot-starter-validation')
 
-  implementation 'io.github.openfeign:feign-core:13.2.1'
+  implementation 'io.github.openfeign:feign-core:13.4'
   implementation 'io.github.openfeign:feign-gson:13.2.1'
   implementation 'io.github.openfeign:feign-slf4j:13.2.1'
 
