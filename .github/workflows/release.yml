@@ -13,17 +13,17 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
         with:
-          java-version: 17
+          java-version: 21
           distribution: corretto
 
       - name: Get version number
         id: get_version
-        run: echo ::set-output name=APP_VERSION::${GITHUB_REF#refs/tags/}
+        run: echo "APP_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Build with Gradle
         run: ./gradlew build jacocoTestReport sonarqube --info
@@ -37,27 +37,14 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
+          name: ${{ github.ref_name }}
           body: ${{ steps.release_notes.outputs.changelog }}
           draft: false
           prerelease: false
-
-      - name: Upload application jar
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/libs/rabbitmq-queue-management-${{ steps.get_version.outputs.APP_VERSION }}.jar
-          asset_name: rabbitmq-queue-management-${{ steps.get_version.outputs.APP_VERSION }}.jar
-          asset_content_type: application/java-archive
+          files: ./build/libs/rabbitmq-queue-management-${{ steps.get_version.outputs.APP_VERSION }}.jar
 
       - name: Setup Login to DockerHub
         run: |
