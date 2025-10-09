@@ -1,0 +1,19 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+#  app:
+#    image: gessnerfl/rabbitmq-queue-management:1.2.2
+#    container_name: rabbitmq-queue-management
+#    hostname: rabbitmq-queue-management
+#    ports:
+#      - "8780:8780"
+#    environment:
+#      DE_GESSNERFL_RABBITMQ_HOSTNAME: rabbitmq
+#      DE_GESSNERFL_RABBITMQ_USERNAME: tester
+#      DE_GESSNERFL_RABBITMQ_PASSWORD: Test1234
