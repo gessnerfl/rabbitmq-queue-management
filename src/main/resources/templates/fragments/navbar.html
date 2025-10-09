@@ -13,11 +13,5 @@
                 </li>
             </ul>
         </div>
-    
-        <span sec:authorize="isAuthenticated()" class="navbar-text pr-3" sec:authentication="name"></span>
-    
-        <form sec:authorize="isAuthenticated()" class="form-inline navbar-text" th:action="@{/logout}" method="POST">
-            <button type="submit" class="btn btn-outline-light"><i class="oi oi-power-standby"></i></button>
-        </form>
     </div>
 </nav>
