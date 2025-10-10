@@ -45,6 +45,7 @@ dependencies {
   implementation 'org.webjars.bowergithub.caldwell:renderjson:1.4.0'
   implementation 'org.webjars.bower:bootstrap:5.3.3'
   implementation 'org.webjars.bower:open-iconic:1.1.1'
+  implementation 'org.apache.commons:commons-compress:1.28.0'
 
   implementation 'com.rabbitmq:amqp-client:5.26.0'
 
