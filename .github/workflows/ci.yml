@@ -20,6 +20,9 @@ jobs:
           java-version: 21
           distribution: corretto
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
       - name: Build with Gradle
         run: ./gradlew build jacocoTestReport sonarqube --info
         env:
