@@ -52,8 +52,8 @@ dependencies {
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
   testImplementation 'org.hamcrest:hamcrest:3.0'
   testImplementation 'org.awaitility:awaitility:4.3.0'
-  testImplementation 'org.testcontainers:testcontainers:1.21.3'
-  testImplementation 'org.testcontainers:junit-jupiter:1.21.3'
+  testImplementation 'org.testcontainers:testcontainers:2.0.0'
+  testImplementation 'org.testcontainers:junit-jupiter:2.0.0'
   testImplementation 'org.apache.commons:commons-lang3:3.19.0'
 }
 
