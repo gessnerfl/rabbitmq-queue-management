@@ -47,7 +47,7 @@ dependencies {
   implementation 'org.webjars.bower:open-iconic:1.1.1'
   implementation 'org.apache.commons:commons-compress:1.28.0'
 
-  implementation 'com.rabbitmq:amqp-client:5.26.0'
+  implementation 'com.rabbitmq:amqp-client:5.27.0'
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
   testImplementation 'org.hamcrest:hamcrest:3.0'
