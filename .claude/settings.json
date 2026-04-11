@@ -4,7 +4,8 @@
       "Bash(tree:*)",
       "WebSearch",
       "WebFetch(domain:hub.docker.com)",
-      "Bash(./gradlew:*)"
+      "Bash(./gradlew:*)",
+      "mcp__plugin_context7_context7__resolve-library-id"
     ],
     "deny": [],
     "ask": []
