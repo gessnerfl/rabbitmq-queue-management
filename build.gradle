@@ -11,7 +11,6 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'jacoco'
-apply plugin: 'org.sonarqube'
 
 scmVersion {
   tag {
