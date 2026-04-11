@@ -7,9 +7,11 @@ RabbitMQ Queue Management is a Spring Boot application that provides a web inter
 
 ## Build Commands
 - **Build project**: `./gradlew build`
-- **Run tests**: `./gradlew test`
+- **Run all tests**: `./gradlew test`
+- **Run a single test class**: `./gradlew test --tests ClassName`
+- **Run a single test method**: `./gradlew test --tests ClassName.methodName`
 - **Run application**: `./gradlew bootRun`
-- **Build Docker image**: `./gradlew jib` (requires Docker Hub credentials)
+- **Build Docker image**: `./gradlew jib` (requires Docker Hub credentials in `gradle.properties`)
 - **Generate test coverage**: `./gradlew jacocoTestReport`
 
 ## Development Setup
@@ -48,6 +50,21 @@ RabbitMQ Queue Management is a Spring Boot application that provides a web inter
 - Default ports: 8780 (web), 8781 (management), 5672 (AMQP), 15672 (RabbitMQ Management)
 
 ### Testing
-- Uses JUnit 5 with Spring Boot Test
-- Integration tests with Testcontainers for RabbitMQ
-- Test utilities in `src/test/java` mirror main package structure
+- Unit tests: `*Test.java`; Integration tests: `*IntegrationTest.java` (use Testcontainers with a RabbitMQ container)
+- Integration test base classes: `AbstractIntegrationTest` (Spring Boot test with random port) and `AbstractIntegrationTestWithRabbitMqContainer` (adds a live RabbitMQ container via Testcontainers)
+- Test environment helpers: `RabbitMqTestEnvironment` / `RabbitMqTestEnvironmentBuilder` for programmatically creating queues and exchanges in tests
+- Integration tests activate the `integrationtest` Spring profile (`src/test/resources/application-integrationtest.yaml`)
+- `TestDataCreator` (in `src/test/java/.../util/`) is a standalone main class to seed a running local RabbitMQ instance with test data
+
+### Message Operation Data Flow
+All three operations (Delete, Move, Requeue) follow the same pattern:
+1. Fetch message from queue via AMQP
+2. Verify checksum (to prevent operating on wrong message)
+3. Perform operation; on error, nack the message so it stays in the queue
+
+Move and Requeue use publisher acknowledgements with return listeners to ensure delivery. Requeue reads the `x-death` header to determine the original exchange and routing key. Move and Requeue operations append custom headers (`x-rmqmgmt-move-count`, `x-rmqmgmt-requeue-count`) to track how many times a message has been processed.
+
+### Technology Notes
+- Java 21 (declared via Gradle toolchain)
+- ManagementApi HTTP client uses OpenFeign; JSON handled by Gson with a custom date format
+- UI uses Thymeleaf templates with Bootstrap 5 via WebJars
