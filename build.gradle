@@ -1,7 +1,7 @@
 plugins {
-  id 'pl.allegro.tech.build.axion-release' version '1.21.1'
-  id 'org.springframework.boot' version '4.0.6'
-  id "org.sonarqube" version "7.2.3.7755"
+  id 'pl.allegro.tech.build.axion-release' version '1.21.2'
+  id 'org.springframework.boot' version '4.1.0'
+  id "org.sonarqube" version "7.3.1.8318"
   id 'com.google.cloud.tools.jib' version '3.5.3'
 }
 
@@ -34,9 +34,9 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-devtools'
   implementation('org.springframework.boot:spring-boot-starter-validation')
 
-  implementation 'io.github.openfeign:feign-core:13.12'
-  implementation 'io.github.openfeign:feign-gson:13.12'
-  implementation 'io.github.openfeign:feign-slf4j:13.12'
+  implementation 'io.github.openfeign:feign-core:13.13'
+  implementation 'io.github.openfeign:feign-gson:13.13'
+  implementation 'io.github.openfeign:feign-slf4j:13.13'
 
   implementation 'com.google.code.gson:gson:2.14.0'
   implementation 'commons-codec:commons-codec:1.22.0'
@@ -46,7 +46,7 @@ dependencies {
   implementation 'org.webjars.bower:open-iconic:1.1.1'
   implementation 'org.apache.commons:commons-compress:1.28.0'
 
-  implementation 'com.rabbitmq:amqp-client:5.30.0'
+  implementation 'com.rabbitmq:amqp-client:5.34.0'
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
   testImplementation 'org.hamcrest:hamcrest:3.0'
