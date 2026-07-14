@@ -5,7 +5,6 @@ import de.gessnerfl.rabbitmq.queue.management.service.rabbitmq.RabbitMqFacade;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,7 +46,7 @@ public class MoveFirstMessageController {
                                    @RequestParam(name = Parameters.TARGET_ROUTING_KEY, required = false) String targetRoutingKey,
                                    Model model,
                                    RedirectAttributes redirectAttributes){
-        if(!StringUtils.hasText(targetRoutingKey)){
+        if(targetRoutingKey == null){
             return showViewWithRoutingKeysOfSelectedExchange(vhost, queue, checksum, targetExchange, model);
         }
 

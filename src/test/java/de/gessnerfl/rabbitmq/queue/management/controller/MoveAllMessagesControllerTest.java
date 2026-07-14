@@ -81,6 +81,26 @@ class MoveAllMessagesControllerTest {
     }
 
     @Test
+    void shouldMoveAllMessagesAndRedirectToMessagesPageWhenTargetExchangeIsProvidedAndTargetRoutingKeyIsEmpty(){
+        final String vhost = "vhost";
+        final String queue = "queue";
+        final String targetExchange = "targetExchange";
+        final String targetRoutingKey = "";
+        final Model model = mock(Model.class);
+        final RedirectAttributes redirectAttributes = mock(RedirectAttributes.class);
+
+        String result = sut.moveAllMessages(vhost, queue, targetExchange, targetRoutingKey, model, redirectAttributes);
+
+        assertEquals(Pages.MESSAGES.getRedirectString(), result);
+
+        verify(facade).moveAllMessagesInQueue(vhost, queue, targetExchange, targetRoutingKey);
+        verify(redirectAttributes).addAttribute(Parameters.VHOST, vhost);
+        verify(redirectAttributes).addAttribute(Parameters.QUEUE, queue);
+        verifyNoInteractions(model, logger);
+        verifyNoMoreInteractions(facade, redirectAttributes);
+    }
+
+    @Test
     void shouldMoveAllMessagesAndRedirectToMessagesPageWhenTargetExchangeAndRoutingKeyAreProvidedAndMoveWasSuccessful(){
         final String vhost = "vhost";
         final String queue = "queue";
