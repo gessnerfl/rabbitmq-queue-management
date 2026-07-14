@@ -90,6 +90,7 @@ sonar {
     property "sonar.projectName", "RabbitMQ Queue Management"
     property "sonar.projectKey", "de.gessnerfl.rabbitmq-queue-management"
     property 'sonar.sources', 'src/main/java,src/main/resources'
+    property 'sonar.scanner.skipJreProvisioning', 'true'
   }
 }
 
