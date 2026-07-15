@@ -2,7 +2,7 @@ plugins {
   id 'pl.allegro.tech.build.axion-release' version '1.21.2'
   id 'org.springframework.boot' version '4.1.0'
   id "org.sonarqube" version "7.3.1.8318"
-  id 'com.google.cloud.tools.jib' version '3.5.3'
+  id 'com.google.cloud.tools.jib' version '3.5.4'
 }
 
 //apply plugin: 'java-library'
