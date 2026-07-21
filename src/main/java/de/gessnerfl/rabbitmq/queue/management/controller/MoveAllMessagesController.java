@@ -48,9 +48,22 @@ public class MoveAllMessagesController {
                                   Model model,
                                   RedirectAttributes redirectAttributes){
         if(targetRoutingKey == null){
-            return showViewWithRoutingKeysForTargetExchange(vhost, queue, targetExchange, model);
+            List<String> routingKeys = getRoutingKeysForExchange(vhost, targetExchange);
+            if(routingKeys.isEmpty()){
+                return moveMessages(vhost, queue, targetExchange, "", model, redirectAttributes);
+            }
+            ParameterAppender.of(model)
+                    .vhost(vhost)
+                    .queue(queue)
+                    .targetExchange(targetExchange)
+                    .routingKeys(routingKeys);
+            return VIEW_NAME;
         }
 
+        return moveMessages(vhost, queue, targetExchange, targetRoutingKey, model, redirectAttributes);
+    }
+
+    private String moveMessages(String vhost, String queue, String targetExchange, String targetRoutingKey, Model model, RedirectAttributes redirectAttributes) {
         try {
             facade.moveAllMessagesInQueue(vhost, queue, targetExchange, targetRoutingKey);
             BasicRedirectAttributes.appendTo(redirectAttributes).vhost(vhost).queue(queue);
@@ -67,17 +80,11 @@ public class MoveAllMessagesController {
         }
     }
 
-    private String showViewWithRoutingKeysForTargetExchange(@RequestParam(Parameters.VHOST) String vhost, @RequestParam(Parameters.QUEUE) String queue, @RequestParam(Parameters.TARGET_EXCHANGE) String targetExchange, Model model) {
-        List<String> routingKeys = facade.getExchangeSourceBindings(vhost, targetExchange)
+    private List<String> getRoutingKeysForExchange(String vhost, String targetExchange) {
+        return facade.getExchangeSourceBindings(vhost, targetExchange)
                 .stream()
                 .map(Binding::getRoutingKey)
                 .distinct()
                 .toList();
-        ParameterAppender.of(model)
-                .vhost(vhost)
-                .queue(queue)
-                .targetExchange(targetExchange)
-                .routingKeys(routingKeys);
-        return VIEW_NAME;
     }
 }

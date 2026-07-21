@@ -81,6 +81,28 @@ class MoveAllMessagesControllerTest {
     }
 
     @Test
+    void shouldMoveAllMessagesImmediatelyWithEmptyRoutingKeyWhenTargetExchangeHasNoBindings(){
+        final String vhost = "vhost";
+        final String queue = "queue";
+        final String targetExchange = "targetExchange";
+        final Model model = mock(Model.class);
+        final RedirectAttributes redirectAttributes = mock(RedirectAttributes.class);
+
+        when(facade.getExchangeSourceBindings(vhost, targetExchange)).thenReturn(List.of());
+
+        String result = sut.moveAllMessages(vhost, queue, targetExchange, null, model, redirectAttributes);
+
+        assertEquals(Pages.MESSAGES.getRedirectString(), result);
+
+        verify(facade).getExchangeSourceBindings(vhost, targetExchange);
+        verify(facade).moveAllMessagesInQueue(vhost, queue, targetExchange, "");
+        verify(redirectAttributes).addAttribute(Parameters.VHOST, vhost);
+        verify(redirectAttributes).addAttribute(Parameters.QUEUE, queue);
+        verifyNoInteractions(model, logger);
+        verifyNoMoreInteractions(facade, redirectAttributes);
+    }
+
+    @Test
     void shouldMoveAllMessagesAndRedirectToMessagesPageWhenTargetExchangeIsProvidedAndTargetRoutingKeyIsEmpty(){
         final String vhost = "vhost";
         final String queue = "queue";
