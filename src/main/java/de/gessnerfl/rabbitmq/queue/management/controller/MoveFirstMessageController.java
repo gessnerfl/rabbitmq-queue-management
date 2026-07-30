@@ -47,9 +47,23 @@ public class MoveFirstMessageController {
                                    Model model,
                                    RedirectAttributes redirectAttributes){
         if(targetRoutingKey == null){
-            return showViewWithRoutingKeysOfSelectedExchange(vhost, queue, checksum, targetExchange, model);
+            List<String> routingKeys = getRoutingKeysForExchange(vhost, targetExchange);
+            if(routingKeys.isEmpty()){
+                return moveMessage(vhost, queue, checksum, targetExchange, "", model, redirectAttributes);
+            }
+            ParameterAppender.of(model)
+                    .vhost(vhost)
+                    .queue(queue)
+                    .checksum(checksum)
+                    .targetExchange(targetExchange)
+                    .routingKeys(routingKeys);
+            return VIEW_NAME;
         }
 
+        return moveMessage(vhost, queue, checksum, targetExchange, targetRoutingKey, model, redirectAttributes);
+    }
+
+    private String moveMessage(String vhost, String queue, String checksum, String targetExchange, String targetRoutingKey, Model model, RedirectAttributes redirectAttributes) {
         try {
             facade.moveFirstMessageInQueue(vhost, queue, checksum, targetExchange, targetRoutingKey);
             BasicRedirectAttributes.appendTo(redirectAttributes).vhost(vhost).queue(queue);
@@ -67,17 +81,6 @@ public class MoveFirstMessageController {
                     .errorMessage(e.getMessage());
             return VIEW_NAME;
         }
-    }
-
-    private String showViewWithRoutingKeysOfSelectedExchange(@RequestParam(Parameters.VHOST) String vhost, @RequestParam(Parameters.QUEUE) String queue, @RequestParam(Parameters.CHECKSUM) String checksum, @RequestParam(Parameters.TARGET_EXCHANGE) String targetExchange, Model model) {
-        List<String> routingKeys = getRoutingKeysForExchange(vhost, targetExchange);
-        ParameterAppender.of(model)
-                .vhost(vhost)
-                .queue(queue)
-                .checksum(checksum)
-                .targetExchange(targetExchange)
-                .routingKeys(routingKeys);
-        return VIEW_NAME;
     }
 
     private List<String> getRoutingKeysForExchange(@RequestParam(Parameters.VHOST) String vhost, @RequestParam(Parameters.TARGET_EXCHANGE) String targetExchange) {
