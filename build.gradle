@@ -39,7 +39,7 @@ dependencies {
   implementation 'io.github.openfeign:feign-slf4j:13.13'
 
   implementation 'com.google.code.gson:gson:2.14.0'
-  implementation 'commons-codec:commons-codec:1.22.0'
+  implementation 'commons-codec:commons-codec:1.22.1'
 
   implementation 'org.webjars.bowergithub.caldwell:renderjson:1.4.0'
   implementation 'org.webjars:bootstrap:5.3.8'
